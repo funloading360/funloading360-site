@@ -258,8 +258,6 @@ export default function HomePage() {
             ))}
           </motion.div>
 
-          {/* Testimonials Carousel */}
-          <TestimonialCarousel />
         </div>
 
         {/* Scroll indicator */}
@@ -384,7 +382,7 @@ export default function HomePage() {
             className="text-center mt-10"
           >
             <Link
-              href="/booths"
+              href="/services"
               className="inline-flex items-center gap-2 px-6 py-3 sm:py-2.5 rounded-full border border-[#2a2a3a] text-white font-medium hover:border-[#f5a623]/40 hover:bg-white/5 transition-all duration-200 min-h-[48px] sm:min-h-[44px]"
             >
               View All Booths

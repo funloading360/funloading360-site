@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { validatePhone } from "@/lib/validation";
 import { services, formatPrice, getPriceForTier, PricingTier } from "@/lib/services";
 import CustomCalendar from "@/components/CustomCalendar";
 
@@ -29,8 +27,6 @@ const upsells = [
 ];
 
 export default function BookPage() {
-  const router = useRouter();
-
   const photoBooths = services.find((s) => s.id === "photo-booths");
   const products = photoBooths?.products || [];
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
@@ -596,72 +592,74 @@ export default function BookPage() {
 
             {/* Summary Sidebar */}
             <div className="h-fit sticky top-24">
-                  <div className="bg-[#13131a] border border-[#2a2a3a] rounded-xl p-6 space-y-6">
-                    <h3
-                      className="text-xl font-bold text-white"
-                      style={{ fontFamily: "var(--font-playfair)" }}
-                    >
-                      Summary
-                    </h3>
+              <div className="bg-[#13131a] border border-[#2a2a3a] rounded-xl p-6 space-y-6">
+                <h3
+                  className="text-xl font-bold text-white"
+                  style={{ fontFamily: "var(--font-playfair)" }}
+                >
+                  Summary
+                </h3>
 
-                    {/* Selected Service */}
-                    {selectedProductData && selectedTier && (
-                      <div className="border-b border-[#2a2a3a] pb-4 space-y-3">
-                        <div>
-                          <p className="text-xs text-gray-400 mb-1">Service</p>
-                          <p className="text-white font-bold">{selectedProductData.name}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-400 mb-1">Package</p>
-                          <p className="text-[#f5a623] font-bold">
-                            {selectedProductData.tiers[selectedTier]?.name}
-                          </p>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400 text-sm">Price</span>
-                          <span className="text-white font-bold">
-                            {formatPrice(getPriceForTier(selectedProductData, selectedTier))}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Upsells */}
-                    {selectedUpsells.length > 0 && (
-                      <div className="border-b border-[#2a2a3a] pb-4 space-y-2">
-                        <p className="text-xs text-gray-400 mb-3">Selected Add-ons</p>
-                        {selectedUpsells.map((upsellId) => {
-                          const upsell = upsells.find(u => u.id === upsellId);
-                          return (
-                            <div key={upsellId} className="flex justify-between text-sm">
-                              <span className="text-gray-300">{upsell?.name}</span>
-                              <span className="text-[#f5a623] font-medium">+{formatPrice(upsell?.price || 0)}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {/* Deposit */}
-                    <div className="bg-[#f5a623]/10 border border-[#f5a623]/20 rounded-lg p-4">
-                      <p className="text-xs text-gray-400 mb-2">Deposit Required (15%)</p>
-                      <p className="text-xl font-bold text-[#f5a623]">
-                        {formatPrice(Math.round(getTotalPrice() * 0.15))}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-2">
-                        Balance due before event
+                {/* Selected Service */}
+                {selectedProductData && selectedTier ? (
+                  <div className="border-b border-[#2a2a3a] pb-4 space-y-3">
+                    <div>
+                      <p className="text-xs text-gray-400 mb-1">Service</p>
+                      <p className="text-white font-bold">{selectedProductData.name}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400 mb-1">Package</p>
+                      <p className="text-[#f5a623] font-bold">
+                        {selectedProductData.tiers[selectedTier]?.name}
                       </p>
                     </div>
-
-                    {/* Total */}
-                    <div className="border-t border-[#2a2a3a] pt-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-lg font-bold text-white">Total</span>
-                        <span className="text-2xl font-bold text-[#f5a623]">
-                          {formatPrice(getTotalPrice())}
-                        </span>
-                      </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400 text-sm">Price</span>
+                      <span className="text-white font-bold">
+                        {formatPrice(getPriceForTier(selectedProductData, selectedTier))}
+                      </span>
                     </div>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm">Select a booth and package above to see pricing</p>
+                )}
+
+                {/* Upsells */}
+                {selectedUpsells.length > 0 && (
+                  <div className="border-b border-[#2a2a3a] pb-4 space-y-2">
+                    <p className="text-xs text-gray-400 mb-3">Selected Add-ons</p>
+                    {selectedUpsells.map((upsellId) => {
+                      const upsell = upsells.find(u => u.id === upsellId);
+                      return (
+                        <div key={upsellId} className="flex justify-between text-sm">
+                          <span className="text-gray-300">{upsell?.name}</span>
+                          <span className="text-[#f5a623] font-medium">+{formatPrice(upsell?.price || 0)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Deposit */}
+                <div className="bg-[#f5a623]/10 border border-[#f5a623]/20 rounded-lg p-4">
+                  <p className="text-xs text-gray-400 mb-2">Deposit Required (15%)</p>
+                  <p className="text-xl font-bold text-[#f5a623]">
+                    {getTotalPrice() > 0 ? formatPrice(Math.round(getTotalPrice() * 0.15)) : "—"}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Balance due before event
+                  </p>
+                </div>
+
+                {/* Total */}
+                <div className="border-t border-[#2a2a3a] pt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-white">Total</span>
+                    <span className="text-2xl font-bold text-[#f5a623]">
+                      {getTotalPrice() > 0 ? formatPrice(getTotalPrice()) : "—"}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
