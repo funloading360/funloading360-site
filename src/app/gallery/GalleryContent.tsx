@@ -6,6 +6,8 @@ import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { Eye, ArrowRight, Star, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { galleryCaptions } from "@/lib/gallery-captions";
+import { useReducedMotion } from "@/lib/useReducedMotion";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -13,6 +15,7 @@ type FilterKey = "all" | "weddings" | "corporate" | "birthdays" | "proms" | "360
 
 interface GalleryCard {
   id: number;
+  imageId: string;
   eventType: "weddings" | "corporate" | "birthdays" | "proms";
   boothType: "360" | "glam" | "selfie";
   aspect: "portrait" | "landscape" | "square" | "tall";
@@ -58,53 +61,53 @@ const boothLabel: Record<string, string> = {
 
 const galleryItems: GalleryCard[] = [
   // 360° — Weddings
-  { id: 1,  eventType: "weddings",  boothType: "360",   aspect: "portrait",  src: "/images/events/360-couple-dancing.jpeg",    alt: "Couple dancing on the 360 booth platform, neon wedding atmosphere",           badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
-  { id: 2,  eventType: "weddings",  boothType: "360",   aspect: "landscape", src: "/images/events/360-two-women-blue.jpeg",    alt: "Two women posing on the 360 booth under blue neon at a wedding",             badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
-  { id: 3,  eventType: "weddings",  boothType: "360",   aspect: "square",    src: "/images/events/360-confetti-pose.jpeg",     alt: "Confetti raining down on guests posing on the 360 booth at a wedding",       badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 1,  imageId: "360-couple-dancing", eventType: "weddings",  boothType: "360",   aspect: "portrait",  src: "/images/events/360-couple-dancing.jpeg",    alt: "Couple dancing on the 360 booth platform, neon wedding atmosphere",           badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 2,  imageId: "360-two-women-blue", eventType: "weddings",  boothType: "360",   aspect: "landscape", src: "/images/events/360-two-women-blue.jpeg",    alt: "Two women posing on the 360 booth under blue neon at a wedding",             badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 3,  imageId: "360-confetti-pose", eventType: "weddings",  boothType: "360",   aspect: "square",    src: "/images/events/360-confetti-pose.jpeg",     alt: "Confetti raining down on guests posing on the 360 booth at a wedding",       badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
   // 360° — Birthdays
-  { id: 4,  eventType: "birthdays", boothType: "360",   aspect: "tall",      src: "/images/events/360-green-energy.jpeg",      alt: "High-energy birthday pose on the 360 booth with green lighting",             badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
-  { id: 5,  eventType: "birthdays", boothType: "360",   aspect: "portrait",  src: "/images/events/360-jazz-costume.jpeg",      alt: "Guests in jazz costumes striking poses on the 360 booth at a birthday party", badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
-  { id: 6,  eventType: "birthdays", boothType: "360",   aspect: "landscape", src: "/images/events/360-glamour-group.jpeg",     alt: "Glamorous group shot on the 360 booth at a birthday celebration",            badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 4,  imageId: "360-green-energy", eventType: "birthdays", boothType: "360",   aspect: "tall",      src: "/images/events/360-green-energy.jpeg",      alt: "High-energy birthday pose on the 360 booth with green lighting",             badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 5,  imageId: "360-jazz-costume", eventType: "birthdays", boothType: "360",   aspect: "portrait",  src: "/images/events/360-jazz-costume.jpeg",      alt: "Guests in jazz costumes striking poses on the 360 booth at a birthday party", badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 6,  imageId: "360-glamour-group", eventType: "birthdays", boothType: "360",   aspect: "landscape", src: "/images/events/360-glamour-group.jpeg",     alt: "Glamorous group shot on the 360 booth at a birthday celebration",            badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
   // Glam — Weddings
-  { id: 7,  eventType: "weddings",  boothType: "glam",  aspect: "portrait",  src: "/images/venues/glam-venue-grand.jpeg",      alt: "Glam Vintage booth set up in a grand wedding venue",                         badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
-  { id: 8,  eventType: "weddings",  boothType: "glam",  aspect: "square",    src: "/images/venues/glam-venue-2.jpeg",          alt: "Glam Vintage booth setup variation at a wedding venue",                      badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  { id: 7,  imageId: "glam-venue-grand", eventType: "weddings",  boothType: "glam",  aspect: "portrait",  src: "/images/venues/glam-venue-grand.jpeg",      alt: "Glam Vintage booth set up in a grand wedding venue",                         badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  { id: 8,  imageId: "glam-venue-2", eventType: "weddings",  boothType: "glam",  aspect: "square",    src: "/images/venues/glam-venue-2.jpeg",          alt: "Glam Vintage booth setup variation at a wedding venue",                      badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
   // Glam — Setup / All
-  { id: 9,  eventType: "weddings",  boothType: "glam",  aspect: "tall",      src: "/images/venues/glam-backdrop-printer.jpeg", alt: "Glam Vintage booth with colourful props, boas and printer on display",        badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
-  { id: 10, eventType: "weddings",  boothType: "glam",  aspect: "landscape", src: "/images/venues/glam-setup-3.jpeg",          alt: "Glam Vintage photo booth setup at an event venue",                           badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
-  // Glam print strip
-  { id: 11, eventType: "birthdays", boothType: "glam",  aspect: "portrait",  src: "/images/events/glam-print-strip.png",       alt: "Printed glam photo strip from the Glam Vintage booth",                      badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  { id: 9,  imageId: "glam-backdrop-printer", eventType: "weddings",  boothType: "glam",  aspect: "tall",      src: "/images/venues/glam-backdrop-printer.jpeg", alt: "Glam Vintage booth with colourful props, boas and printer on display",        badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  { id: 10, imageId: "glam-setup-3", eventType: "weddings",  boothType: "glam",  aspect: "landscape", src: "/images/venues/glam-setup-3.jpeg",          alt: "Glam Vintage photo booth setup at an event venue",                           badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  // Glam print strip (no caption - it's PNG)
+  { id: 11, imageId: "glam-print-strip", eventType: "birthdays", boothType: "glam",  aspect: "portrait",  src: "/images/events/glam-print-strip.png",       alt: "Printed glam photo strip from the Glam Vintage booth",                      badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
   // 360 venue setup
-  { id: 12, eventType: "weddings",  boothType: "360",   aspect: "square",    src: "/images/venues/glam-setup-props.jpeg",      alt: "360 booth setup in a venue with chandelier and green neon",                  badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 12, imageId: "glam-setup-props", eventType: "weddings",  boothType: "360",   aspect: "square",    src: "/images/venues/glam-setup-props.jpeg",      alt: "360 booth setup in a venue with chandelier and green neon",                  badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
   // Selfie Pod — Corporate
-  { id: 13, eventType: "corporate", boothType: "selfie", aspect: "landscape", src: "/images/venues/selfie-pod-venue.jpeg",     alt: "Selfie Pod at an elegant corporate venue with ring light",                   badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.selfie.bg, tagText: boothTag.selfie.text },
-  { id: 14, eventType: "corporate", boothType: "selfie", aspect: "portrait",  src: "/images/venues/selfie-pod-christmas.jpeg", alt: "Selfie Pod Christmas setup at a corporate event",                            badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.selfie.bg, tagText: boothTag.selfie.text },
+  { id: 13, imageId: "selfie-pod-venue", eventType: "corporate", boothType: "selfie", aspect: "landscape", src: "/images/venues/selfie-pod-venue.jpeg",     alt: "Selfie Pod at an elegant corporate venue with ring light",                   badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.selfie.bg, tagText: boothTag.selfie.text },
+  { id: 14, imageId: "selfie-pod-christmas", eventType: "corporate", boothType: "selfie", aspect: "portrait",  src: "/images/venues/selfie-pod-christmas.jpeg", alt: "Selfie Pod Christmas setup at a corporate event",                            badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.selfie.bg, tagText: boothTag.selfie.text },
   // Selfie Pod — Birthdays
-  { id: 15, eventType: "birthdays", boothType: "selfie", aspect: "square",   src: "/images/venues/selfie-pod-christmas-2.jpeg", alt: "Selfie Pod with festive Christmas decorations at a birthday party",        badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag.selfie.bg, tagText: boothTag.selfie.text },
+  { id: 15, imageId: "selfie-pod-christmas-2", eventType: "birthdays", boothType: "selfie", aspect: "square",   src: "/images/venues/selfie-pod-christmas-2.jpeg", alt: "Selfie Pod with festive Christmas decorations at a birthday party",        badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag.selfie.bg, tagText: boothTag.selfie.text },
   // Booth exterior
-  { id: 16, eventType: "weddings",  boothType: "360",   aspect: "tall",      src: "/images/equipment/booth-exterior-hero.jpeg", alt: "Black inflatable photo booth exterior with red carpet entrance",           badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 16, imageId: "booth-exterior-hero", eventType: "weddings",  boothType: "360",   aspect: "tall",      src: "/images/equipment/booth-exterior-hero.jpeg", alt: "Black inflatable photo booth exterior with red carpet entrance",           badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
   // Additional equipment
-  { id: 17, eventType: "weddings",  boothType: "360",   aspect: "portrait",  src: "/images/equipment/booth-exterior-1.jpeg",  alt: "Professional 360 booth exterior setup with LED lighting for wedding venue",     badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
-  { id: 18, eventType: "corporate", boothType: "360",   aspect: "landscape", src: "/images/equipment/booth-exterior-2.jpeg",  alt: "360 photo booth exterior at a corporate event with branding opportunities",    badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 17, imageId: "booth-exterior-1", eventType: "weddings",  boothType: "360",   aspect: "portrait",  src: "/images/equipment/booth-exterior-1.jpeg",  alt: "Professional 360 booth exterior setup with LED lighting for wedding venue",     badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 18, imageId: "booth-exterior-2", eventType: "corporate", boothType: "360",   aspect: "landscape", src: "/images/equipment/booth-exterior-2.jpeg",  alt: "360 photo booth exterior at a corporate event with branding opportunities",    badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
   // 360° — Additional venue setups
-  { id: 19, eventType: "weddings",  boothType: "360",   aspect: "tall",      src: "/images/venues/360-booth-outdoor.jpeg",    alt: "360 photo booth setup outdoors in natural garden venue with golden backdrop",   badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
-  { id: 20, eventType: "corporate", boothType: "360",   aspect: "landscape", src: "/images/venues/360-full-setup.jpeg",       alt: "Full 360 booth setup at a corporate gala with professional lighting",         badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
-  { id: 21, eventType: "weddings",  boothType: "360",   aspect: "square",    src: "/images/venues/360-platform-lit.jpeg",     alt: "Illuminated 360 booth platform at an elegant wedding venue with guests",     badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
-  { id: 22, eventType: "birthdays", boothType: "360",   aspect: "landscape", src: "/images/venues/360-setup-neon.jpeg",       alt: "360 booth with vibrant neon lighting setup for an energetic birthday party",   badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
-  { id: 23, eventType: "corporate", boothType: "360",   aspect: "portrait",  src: "/images/venues/360-setup-venue.jpeg",      alt: "Professional 360 booth setup at a corporate team building event venue",       badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 19, imageId: "360-booth-outdoor", eventType: "weddings",  boothType: "360",   aspect: "tall",      src: "/images/venues/360-booth-outdoor.jpeg",    alt: "360 photo booth setup outdoors in natural garden venue with golden backdrop",   badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 20, imageId: "360-full-setup", eventType: "corporate", boothType: "360",   aspect: "landscape", src: "/images/venues/360-full-setup.jpeg",       alt: "Full 360 booth setup at a corporate gala with professional lighting",         badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 21, imageId: "360-platform-lit", eventType: "weddings",  boothType: "360",   aspect: "square",    src: "/images/venues/360-platform-lit.jpeg",     alt: "Illuminated 360 booth platform at an elegant wedding venue with guests",     badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 22, imageId: "360-setup-neon", eventType: "birthdays", boothType: "360",   aspect: "landscape", src: "/images/venues/360-setup-neon.jpeg",       alt: "360 booth with vibrant neon lighting setup for an energetic birthday party",   badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 23, imageId: "360-setup-venue", eventType: "corporate", boothType: "360",   aspect: "portrait",  src: "/images/venues/360-setup-venue.jpeg",      alt: "Professional 360 booth setup at a corporate team building event venue",       badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
   // Glam — Additional setups
-  { id: 24, eventType: "corporate", boothType: "glam",  aspect: "portrait",  src: "/images/venues/glam-setup-2.jpeg",        alt: "Glam Vintage booth setup with elegant props and backdrop at a corporate event",  badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
-  { id: 25, eventType: "birthdays", boothType: "glam",  aspect: "landscape", src: "/images/venues/glam-setup-4.jpeg",        alt: "Glam booth with colourful props setup for a fun birthday celebration",         badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
-  { id: 26, eventType: "weddings",  boothType: "glam",  aspect: "square",    src: "/images/venues/glam-setup-5.jpeg",        alt: "Glam Vintage booth elegantly decorated for a romantic wedding reception",     badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
-  { id: 27, eventType: "corporate", boothType: "glam",  aspect: "portrait",  src: "/images/venues/glam-setup-6.jpeg",        alt: "Glam photo booth at a luxury corporate gala with premium backdrop setup",     badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
-  { id: 28, eventType: "proms",     boothType: "glam",  aspect: "landscape", src: "/images/venues/glam-setup-7.jpeg",        alt: "Glam booth setup at a glamorous prom night with festive decorations",         badgeBg: eventBadge.proms.bg,    badgeText: eventBadge.proms.text,    tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
-  { id: 29, eventType: "corporate", boothType: "glam",  aspect: "tall",      src: "/images/venues/glam-venue-christmas.jpeg",  alt: "Glam booth decorated with festive Christmas backdrop at corporate party",      badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
-  { id: 30, eventType: "weddings",  boothType: "glam",  aspect: "square",    src: "/images/venues/IMG_3067.jpeg",             alt: "Glam Vintage booth setup with beautiful backdrop at a wedding venue",        badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  { id: 24, imageId: "glam-setup-2", eventType: "corporate", boothType: "glam",  aspect: "portrait",  src: "/images/venues/glam-setup-2.jpeg",        alt: "Glam Vintage booth setup with elegant props and backdrop at a corporate event",  badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  { id: 25, imageId: "glam-setup-4", eventType: "birthdays", boothType: "glam",  aspect: "landscape", src: "/images/venues/glam-setup-4.jpeg",        alt: "Glam booth with colourful props setup for a fun birthday celebration",         badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  { id: 26, imageId: "glam-setup-5", eventType: "weddings",  boothType: "glam",  aspect: "square",    src: "/images/venues/glam-setup-5.jpeg",        alt: "Glam Vintage booth elegantly decorated for a romantic wedding reception",     badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  { id: 27, imageId: "glam-setup-6", eventType: "corporate", boothType: "glam",  aspect: "portrait",  src: "/images/venues/glam-setup-6.jpeg",        alt: "Glam photo booth at a luxury corporate gala with premium backdrop setup",     badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  { id: 28, imageId: "glam-setup-7", eventType: "proms",     boothType: "glam",  aspect: "landscape", src: "/images/venues/glam-setup-7.jpeg",        alt: "Glam booth setup at a glamorous prom night with festive decorations",         badgeBg: eventBadge.proms.bg,    badgeText: eventBadge.proms.text,    tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  { id: 29, imageId: "glam-venue-christmas", eventType: "corporate", boothType: "glam",  aspect: "tall",      src: "/images/venues/glam-venue-christmas.jpeg",  alt: "Glam booth decorated with festive Christmas backdrop at corporate party",      badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
+  { id: 30, imageId: "IMG_3067", eventType: "weddings",  boothType: "glam",  aspect: "square",    src: "/images/venues/IMG_3067.jpeg",             alt: "Glam Vintage booth setup with beautiful backdrop at a wedding venue",        badgeBg: eventBadge.weddings.bg,  badgeText: eventBadge.weddings.text,  tagBg: boothTag.glam.bg,   tagText: boothTag.glam.text },
   // Selfie Pod — Additional setups
-  { id: 31, eventType: "birthdays", boothType: "selfie", aspect: "portrait",  src: "/images/venues/selfie-pod-christmas-3.jpeg", alt: "Selfie Pod with festive Christmas props and bright ring light setup",       badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag.selfie.bg, tagText: boothTag.selfie.text },
-  { id: 32, eventType: "corporate", boothType: "selfie", aspect: "square",    src: "/images/venues/selfie-pod-setup-2.jpeg",    alt: "Selfie Pod with professional ring light and clean backdrop at corporate event", badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.selfie.bg, tagText: boothTag.selfie.text },
+  { id: 31, imageId: "selfie-pod-christmas-3", eventType: "birthdays", boothType: "selfie", aspect: "portrait",  src: "/images/venues/selfie-pod-christmas-3.jpeg", alt: "Selfie Pod with festive Christmas props and bright ring light setup",       badgeBg: eventBadge.birthdays.bg, badgeText: eventBadge.birthdays.text, tagBg: boothTag.selfie.bg, tagText: boothTag.selfie.text },
+  { id: 32, imageId: "selfie-pod-setup-2", eventType: "corporate", boothType: "selfie", aspect: "square",    src: "/images/venues/selfie-pod-setup-2.jpeg",    alt: "Selfie Pod with professional ring light and clean backdrop at corporate event", badgeBg: eventBadge.corporate.bg, badgeText: eventBadge.corporate.text, tagBg: boothTag.selfie.bg, tagText: boothTag.selfie.text },
   // Prom nights
-  { id: 33, eventType: "proms",     boothType: "360",   aspect: "landscape", src: "/images/venues/venue-setup-1.jpeg",        alt: "360 booth setup at a glamorous prom venue with elegant decorations",         badgeBg: eventBadge.proms.bg,    badgeText: eventBadge.proms.text,    tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
-  { id: 34, eventType: "proms",     boothType: "360",   aspect: "portrait",  src: "/images/venues/venue-setup-2.jpeg",        alt: "Professional 360 photo booth at prom with vibrant lighting and setup",        badgeBg: eventBadge.proms.bg,    badgeText: eventBadge.proms.text,    tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 33, imageId: "venue-setup-1", eventType: "proms",     boothType: "360",   aspect: "landscape", src: "/images/venues/venue-setup-1.jpeg",        alt: "360 booth setup at a glamorous prom venue with elegant decorations",         badgeBg: eventBadge.proms.bg,    badgeText: eventBadge.proms.text,    tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
+  { id: 34, imageId: "venue-setup-2", eventType: "proms",     boothType: "360",   aspect: "portrait",  src: "/images/venues/venue-setup-2.jpeg",        alt: "Professional 360 photo booth at prom with vibrant lighting and setup",        badgeBg: eventBadge.proms.bg,    badgeText: eventBadge.proms.text,    tagBg: boothTag["360"].bg, tagText: boothTag["360"].text },
 ];
 
 const aspectClass: Record<string, string> = {
@@ -132,79 +135,128 @@ const GalleryCard = forwardRef<
     onKeyDown: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
   }
 >(({ card, index, onClick, onKeyDown }, ref) => {
+  const captionData = galleryCaptions[card.imageId];
+
   return (
-    <motion.button
-      ref={ref}
-      layout
-      initial={{ opacity: 0, y: 40, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.04,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      onClick={onClick}
-      onKeyDown={onKeyDown}
-      tabIndex={0}
-      aria-label={`${card.alt}. Press Enter to view full image.`}
-      aria-pressed={false}
-      className="group relative overflow-hidden rounded-2xl border border-[#2a2a3a] cursor-pointer hover:border-[#f5a623]/30 focus-visible:ring-2 focus-visible:ring-[#f5a623] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0e] transition-all duration-300 break-inside-avoid mb-4"
-    >
-      {/* Real photo */}
-      <div className={cn("relative w-full overflow-hidden", aspectClass[card.aspect])}>
-        <Image
-          src={card.src}
-          alt=""
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width: 768px) 50vw, 33vw"
-        />
+    <div>
+      <motion.button
+        ref={ref}
+        layout
+        initial={{ opacity: 0, y: 40, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+        transition={{
+          duration: 0.5,
+          delay: index * 0.04,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        onClick={onClick}
+        onKeyDown={onKeyDown}
+        tabIndex={0}
+        aria-label={`${card.alt}. Press Enter to view full image.`}
+        aria-pressed={false}
+        className="group relative overflow-hidden rounded-2xl border border-[#2a2a3a] cursor-pointer hover:border-[#f5a623]/30 focus-visible:ring-2 focus-visible:ring-[#f5a623] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0e] transition-all duration-300 break-inside-avoid mb-4 w-full"
+      >
+        {/* Real photo */}
+        <div className={cn("relative w-full overflow-hidden", aspectClass[card.aspect])}>
+          <Image
+            src={card.src}
+            alt=""
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            loading="lazy"
+            quality={85}
+          />
 
-        {/* Subtle dark vignette so badges are always readable */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0e]/50 via-transparent to-[#0a0a0e]/20 pointer-events-none" />
+          {/* Subtle dark vignette so badges are always readable */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0e]/50 via-transparent to-[#0a0a0e]/20 pointer-events-none" />
 
-        {/* Light sweep on hover */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          {/* Light sweep on hover */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-        {/* Event type badge — top left */}
-        <div className="absolute top-3 left-3 z-10">
-          <span
-            className={cn(
-              "px-2.5 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm",
-              card.badgeBg,
-              card.badgeText
+          {/* Event type badge — top left */}
+          <div className="absolute top-3 left-3 z-10">
+            <span
+              className={cn(
+                "px-2.5 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm",
+                card.badgeBg,
+                card.badgeText
+              )}
+            >
+              {eventLabel[card.eventType]}
+            </span>
+          </div>
+
+          {/* Booth type tag — top right */}
+          <div className="absolute top-3 right-3 z-10">
+            <span
+              className={cn(
+                "px-2.5 py-1 rounded-full text-xs font-medium border backdrop-blur-sm",
+                card.tagBg,
+                card.tagText
+              )}
+            >
+              {boothLabel[card.boothType]}
+            </span>
+          </div>
+
+          {/* Desktop hover overlay with caption and eye icon */}
+          <div className="absolute inset-0 bg-[#0a0a0e]/60 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-all duration-300 flex flex-col items-center justify-center z-20 hidden sm:flex">
+            <motion.div
+              initial={{ scale: 0.7, opacity: 0 }}
+              whileHover={{ scale: 1 }}
+              className="w-14 h-14 rounded-full bg-[#f5a623] flex items-center justify-center shadow-xl shadow-[#f5a623]/30 mb-4"
+            >
+              <Eye className="w-6 h-6 text-[#0a0a0e]" />
+            </motion.div>
+
+            {/* Caption overlay for desktop */}
+            {captionData && (
+              <div className="text-center px-4">
+                <p className="text-white text-sm font-semibold mb-2 line-clamp-3">
+                  {captionData.caption}
+                </p>
+                <Link
+                  href={`/locations/${captionData.citySlug}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-[#f5a623] text-xs hover:underline inline-block transition-colors"
+                >
+                  Hire in {captionData.city} →
+                </Link>
+              </div>
             )}
-          >
-            {eventLabel[card.eventType]}
-          </span>
-        </div>
+          </div>
 
-        {/* Booth type tag — top right */}
-        <div className="absolute top-3 right-3 z-10">
-          <span
-            className={cn(
-              "px-2.5 py-1 rounded-full text-xs font-medium border backdrop-blur-sm",
-              card.tagBg,
-              card.tagText
-            )}
-          >
-            {boothLabel[card.boothType]}
-          </span>
+          {/* Mobile eye icon only (no caption on hover) */}
+          <div className="absolute inset-0 bg-[#0a0a0e]/60 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-all duration-300 flex items-center justify-center z-20 sm:hidden">
+            <motion.div
+              initial={{ scale: 0.7, opacity: 0 }}
+              whileHover={{ scale: 1 }}
+              className="w-14 h-14 rounded-full bg-[#f5a623] flex items-center justify-center shadow-xl shadow-[#f5a623]/30"
+            >
+              <Eye className="w-6 h-6 text-[#0a0a0e]" />
+            </motion.div>
+          </div>
         </div>
+      </motion.button>
 
-        {/* Hover overlay with eye icon */}
-        <div className="absolute inset-0 bg-[#0a0a0e]/60 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-all duration-300 flex items-center justify-center z-20">
-          <motion.div
-            initial={{ scale: 0.7, opacity: 0 }}
-            whileHover={{ scale: 1 }}
-            className="w-14 h-14 rounded-full bg-[#f5a623] flex items-center justify-center shadow-xl shadow-[#f5a623]/30"
+      {/* Mobile caption display below image */}
+      {captionData && (
+        <div className="mt-3 sm:hidden px-1">
+          <p className="text-white text-xs leading-relaxed mb-2">
+            {captionData.caption}
+          </p>
+          <Link
+            href={`/locations/${captionData.citySlug}`}
+            className="text-[#f5a623] text-xs hover:underline inline-flex items-center gap-1 transition-colors"
           >
-            <Eye className="w-6 h-6 text-[#0a0a0e]" />
-          </motion.div>
+            Hire in {captionData.city}
+            <ArrowRight className="w-3 h-3" />
+          </Link>
         </div>
-      </div>
-    </motion.button>
+      )}
+    </div>
   );
 });
 
@@ -217,6 +269,7 @@ function GalleryHero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, 80]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <section
@@ -231,21 +284,21 @@ function GalleryHero() {
 
       {/* Parallax content */}
       <motion.div
-        style={{ y, opacity }}
+        style={prefersReducedMotion ? {} : { y, opacity }}
         className="relative z-10 text-center px-4"
       >
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+          animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
           className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-4"
         >
           Our Portfolio
         </motion.p>
         <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
+          animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7, delay: 0.1 }}
           className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight"
           style={{ fontFamily: "var(--font-playfair)" }}
         >
@@ -262,9 +315,9 @@ function GalleryHero() {
           </span>
         </motion.h1>
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+          animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
           className="text-gray-400 text-lg mt-5 max-w-xl mx-auto"
         >
           Real events. Real guests. Real memories — from weddings in Essex to
@@ -283,6 +336,7 @@ export default function GalleryPage() {
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [announcement, setAnnouncement] = useState<string>("");
   const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const prefersReducedMotion = useReducedMotion();
 
   const filtered = galleryItems.filter((card) => {
     if (activeFilter === "all") return true;
@@ -459,8 +513,8 @@ export default function GalleryPage() {
 
           {filtered.length === 0 && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+              animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
               className="text-center py-24"
             >
               <p className="text-gray-600 text-lg">No photos in this category yet.</p>
@@ -568,6 +622,8 @@ export default function GalleryPage() {
                 height={800}
                 className="max-w-full max-h-[80vh] rounded-lg object-contain"
                 priority
+                quality={90}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
               />
             </motion.div>
 

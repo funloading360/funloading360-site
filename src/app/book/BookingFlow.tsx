@@ -1,36 +1,49 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronRight, Calendar, User, Package, Star, Loader2 } from "lucide-react";
+import { Check, ChevronRight, Calendar, User, Package, Loader2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { validatePhone } from "@/lib/validation";
-import { packages, formatPrice } from "@/lib/packages";
+import { services, formatPrice, getPriceForTier, PricingTier } from "@/lib/services";
 
 const eventTypes = [
-  "Wedding",
-  "Birthday",
-  "Corporate Event",
-  "School Prom",
-  "Anniversary",
-  "Christening",
-  "Engagement Party",
-  "Other",
+  "Nuntă",
+  "Zi de naștere",
+  "Eveniment corporativ",
+  "Bal de liceu",
+  "Aniversare",
+  "Botez",
+  "Petrecere de logodnă",
+  "Altele",
+];
+
+const upsells = [
+  { id: "guest-book", name: "Carte de oaspeți", price: 40, description: "Oaspeții semnează amintiri" },
+  { id: "extra-hour", name: "Oră suplimentară", price: 75, description: "Mai mult timp pentru distracție" },
+  { id: "highlight-reel", name: "Montaj video", price: 79, description: "Editare profesională următoarea zi" },
 ];
 
 const steps = [
-  { id: 1, label: "Choose Package", icon: Package },
-  { id: 2, label: "Pick Date", icon: Calendar },
-  { id: 3, label: "Your Details", icon: User },
+  { id: 0, label: "Selectare", icon: Package },
+  { id: 1, label: "Detalii", icon: User },
 ];
 
 export default function BookPage() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
+  const router = useRouter();
+
+  const photoBooths = services.find((s) => s.id === "photo-booths");
+  const products = photoBooths?.products || [];
+
+  const [currentStep, setCurrentStep] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [selectedTier, setSelectedTier] = useState<PricingTier | null>(null);
+  const [selectedUpsells, setSelectedUpsells] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [phoneError, setPhoneError] = useState<string>("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     name: "",
@@ -43,41 +56,57 @@ export default function BookPage() {
     specialRequests: "",
   });
 
-  const handleNextStep = () => {
-    if (currentStep < 3) setCurrentStep(currentStep + 1);
+  const selectedProductData = products.find((p) => p.id === selectedProduct);
+  const canProceed = selectedProduct && selectedTier;
+
+  const handleToggleUpsell = (upsellId: string) => {
+    setSelectedUpsells(prev =>
+      prev.includes(upsellId)
+        ? prev.filter(id => id !== upsellId)
+        : [...prev, upsellId]
+    );
   };
 
-  const handlePrevStep = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
+  const calculateUpsellTotal = () => {
+    return selectedUpsells.reduce((sum, id) => {
+      const upsell = upsells.find(u => u.id === id);
+      return sum + (upsell?.price || 0);
+    }, 0);
+  };
+
+  const getTotalPrice = () => {
+    if (!selectedProductData || !selectedTier) return 0;
+    const basePrice = getPriceForTier(selectedProductData, selectedTier);
+    return basePrice + calculateUpsellTotal();
   };
 
   const validateField = (name: string, value: string): string => {
     switch (name) {
       case 'name':
-        if (!value.trim()) return 'Full name is required';
-        if (value.trim().length < 2) return 'Name must be at least 2 characters';
+        if (!value.trim()) return 'Numele complet este obligatoriu';
+        if (value.trim().length < 2) return 'Numele trebuie să aibă cel puțin 2 caractere';
         return '';
       case 'email':
-        if (!value) return 'Email is required';
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Invalid email format';
+        if (!value) return 'Email-ul este obligatoriu';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Formatul email-ului este invalid';
         return '';
       case 'phone':
         const cleaned = value.replace(/[\s\-()\.]/g, '');
-        if (!cleaned) return 'Phone number is required';
-        if (!/^\+?\d{10,}$/.test(cleaned)) return 'Invalid format. Try: +44 7482 112110';
+        if (!cleaned) return 'Numărul de telefon este obligatoriu';
+        if (!/^\+?\d{10,}$/.test(cleaned)) return 'Format invalid. Încercați: +44 7482 112110';
         return '';
       case 'eventDate':
-        if (!value) return 'Event date is required';
+        if (!value) return 'Data evenimentului este obligatorie';
         const selectedDate = new Date(value);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        if (selectedDate < today) return 'Date must be in the future';
+        if (selectedDate < today) return 'Data trebuie să fie în viitor';
         return '';
       case 'venue':
-        if (!value.trim()) return 'Venue is required';
+        if (!value.trim()) return 'Locul evenimentului este obligatoriu';
         return '';
       case 'eventType':
-        if (!value) return 'Event type is required';
+        if (!value) return 'Tipul evenimentului este obligatoriu';
         return '';
       default:
         return '';
@@ -94,9 +123,6 @@ export default function BookPage() {
   };
 
   const handlePhoneBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const result = validatePhone(e.target.value);
-    setPhoneError(result.error || "");
-    // Also validate with field errors
     const error = validateField('phone', e.target.value);
     setFieldErrors(prev => ({
       ...prev,
@@ -136,13 +162,20 @@ export default function BookPage() {
       const res = await fetch("/api/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ packageId: selectedPackage, ...formData, _hp: "" }),
+        body: JSON.stringify({
+          productId: selectedProduct,
+          tier: selectedTier,
+          upsells: selectedUpsells,
+          totalPrice: getTotalPrice(),
+          ...formData,
+          _hp: "",
+        }),
       });
       if (!res.ok) throw new Error("submission failed");
       window.location.href = "/thank-you";
     } catch {
       setIsSubmitting(false);
-      setSubmitError("Something went wrong. Please try again or email us at hello@funloading360.co.uk");
+      setSubmitError("A apărut o eroare. Vă rugăm să încercați din nou sau să ne contactați la hello@funloading360.co.uk");
     }
   };
 
@@ -160,17 +193,16 @@ export default function BookPage() {
             transition={{ duration: 0.6 }}
           >
             <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">
-              Secure Your Date
+              Finalizează Rezervarea
             </p>
             <h1
               className="text-4xl sm:text-5xl font-bold text-white mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Book Your Photo Booth
+              Rezervă Photo Booth-ul Tău
             </h1>
             <p className="text-gray-400">
-              Complete the steps below to request your booking. We&apos;ll confirm
-              within 2 hours.
+              Finalizează în 2 ușoare pași. Vom confirma disponibilitatea în maxim 2 ore.
             </p>
           </motion.div>
         </div>
@@ -224,7 +256,121 @@ export default function BookPage() {
       {/* Step content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <AnimatePresence mode="wait">
-          {/* STEP 1: Choose Package */}
+          {/* STEP 0: Select Service & Tier */}
+          {currentStep === 0 && (
+            <motion.div
+              key="step0"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.3 }}
+            >
+              <h2
+                className="text-2xl font-bold text-white text-center mb-2"
+                style={{ fontFamily: "var(--font-playfair)" }}
+              >
+                Alege Photo Booth-ul
+              </h2>
+              <p className="text-center text-gray-400 mb-10">
+                Selectează serviciul și pachetul care se potrivesc evenimentului tău
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {products.map((product) => (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={cn(
+                      "relative rounded-2xl border-2 overflow-hidden transition-all duration-300 cursor-pointer",
+                      selectedProduct === product.id
+                        ? "border-[#f5a623] bg-[#f5a623]/10"
+                        : "border-[#2a2a3a] hover:border-[#f5a623]/50 bg-[#13131a]"
+                    )}
+                    onClick={() => {
+                      setSelectedProduct(product.id);
+                      setSelectedTier(null);
+                    }}
+                  >
+                    {/* Image */}
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0e] via-transparent to-transparent" />
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-6">
+                      <h3
+                        className="text-lg font-bold text-white mb-1"
+                        style={{ fontFamily: "var(--font-playfair)" }}
+                      >
+                        {product.name}
+                      </h3>
+                      <p className="text-gray-400 text-sm mb-4">{product.description}</p>
+
+                      {/* Tier Selection */}
+                      {selectedProduct === product.id && (
+                        <div className="space-y-2 mt-4 pt-4 border-t border-[#2a2a3a]">
+                          {(Object.entries(product.tiers) as Array<[PricingTier, any]>).map(
+                            ([tierKey, tier]) => (
+                              <button
+                                key={tierKey}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTier(tierKey);
+                                }}
+                                className={cn(
+                                  "w-full p-3 rounded-lg text-left text-sm transition-all",
+                                  selectedTier === tierKey
+                                    ? "bg-[#f5a623] text-[#0a0a0e] font-semibold"
+                                    : "bg-[#2a2a3a] text-gray-300 hover:bg-[#3a3a4a]"
+                                )}
+                              >
+                                <div className="flex justify-between items-center">
+                                  <span>{tier.name}</span>
+                                  <span className="font-bold">{formatPrice(getPriceForTier(product, tierKey))}</span>
+                                </div>
+                              </button>
+                            )
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {selectedProduct === product.id && selectedTier && (
+                      <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-[#f5a623] flex items-center justify-center">
+                        <Check className="w-3.5 h-3.5 text-[#0a0a0e]" />
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Next Button */}
+              <div className="flex justify-end mt-10">
+                <button
+                  onClick={() => setCurrentStep(1)}
+                  disabled={!canProceed}
+                  className={cn(
+                    "inline-flex items-center gap-2 px-8 py-3 sm:py-2.5 rounded-full font-semibold text-sm transition-all duration-200 min-h-[48px] sm:min-h-[44px]",
+                    canProceed
+                      ? "bg-[#f5a623] text-[#0a0a0e] hover:bg-[#fbbf4a] shadow-lg shadow-[#f5a623]/25 hover:-translate-y-0.5"
+                      : "bg-[#13131a] text-gray-500 border border-[#2a2a3a] cursor-not-allowed"
+                  )}
+                >
+                  Continuă
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 1: Date + Details + Upsells */}
           {currentStep === 1 && (
             <motion.div
               key="step1"
@@ -233,471 +379,406 @@ export default function BookPage() {
               exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.3 }}
             >
-              <h2
-                className="text-2xl font-bold text-white text-center mb-8"
-                style={{ fontFamily: "var(--font-playfair)" }}
-              >
-                Choose Your Package
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                {packages.map((pkg) => (
-                  <button
-                    key={pkg.id}
-                    onClick={() => setSelectedPackage(pkg.id)}
-                    className={cn(
-                      "relative p-6 rounded-2xl border-2 text-left transition-all duration-200 group",
-                      selectedPackage === pkg.id
-                        ? "border-[#f5a623] bg-[#f5a623]/10"
-                        : pkg.popular
-                          ? "border-[#f5a623]/30 bg-[#13131a] hover:border-[#f5a623]/50"
-                          : "border-[#2a2a3a] bg-[#13131a] hover:border-[#f5a623]/30"
-                    )}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Form */}
+                <div className="lg:col-span-2">
+                  <h2
+                    className="text-2xl font-bold text-white mb-8"
+                    style={{ fontFamily: "var(--font-playfair)" }}
                   >
-                    {pkg.popular && (
-                      <div className="absolute -top-3 left-4">
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#f5a623] text-[#0a0a0e] text-xs font-bold">
-                          <Star className="w-3 h-3 fill-current" />
-                          Most Popular
-                        </span>
+                    Detalii & Upsells
+                  </h2>
+
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Date Section */}
+                    <div className="rounded-2xl bg-[#13131a] border border-[#2a2a3a] p-6">
+                      <h3 className="text-lg font-bold text-white mb-4">Data Evenimentului</h3>
+
+                      <div className="space-y-4">
+                        <div>
+                          <label htmlFor="book-event-date" className="block text-sm font-medium text-gray-300 mb-2">
+                            Data preferată <span className="text-[#f5a623]">*</span>
+                          </label>
+                          <input
+                            id="book-event-date"
+                            type="date"
+                            required
+                            value={formData.eventDate}
+                            onChange={(e) =>
+                              setFormData({ ...formData, eventDate: e.target.value })
+                            }
+                            onBlur={handleFieldBlur}
+                            min={new Date().toISOString().split("T")[0]}
+                            className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border ${
+                              fieldErrors.eventDate ? 'border-red-500/50' : 'border-[#2a2a3a]'
+                            } text-white text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors [color-scheme:dark] min-h-[48px] sm:min-h-[44px]`}
+                          />
+                          {fieldErrors.eventDate && (
+                            <div className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
+                              <span className="flex-shrink-0 mt-0.5">⚠️</span>
+                              <span>{fieldErrors.eventDate}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <label htmlFor="book-alt-date" className="block text-sm font-medium text-gray-300 mb-2">
+                            Dată alternativă <span className="text-gray-500 font-normal">(opțional)</span>
+                          </label>
+                          <input
+                            id="book-alt-date"
+                            type="date"
+                            value={formData.altDate ?? ""}
+                            onChange={(e) =>
+                              setFormData({ ...formData, altDate: e.target.value })
+                            }
+                            min={new Date().toISOString().split("T")[0]}
+                            className="w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border border-[#2a2a3a] text-white text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors [color-scheme:dark] min-h-[48px] sm:min-h-[44px]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Contact Details */}
+                    <div className="rounded-2xl bg-[#13131a] border border-[#2a2a3a] p-6">
+                      <h3 className="text-lg font-bold text-white mb-4">Date Personale</h3>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="book-name" className="block text-sm font-medium text-gray-300 mb-2">
+                            Nume complet <span className="text-[#f5a623]">*</span>
+                          </label>
+                          <input
+                            id="book-name"
+                            type="text"
+                            name="name"
+                            required
+                            value={formData.name}
+                            onChange={(e) =>
+                              setFormData({ ...formData, name: e.target.value })
+                            }
+                            onBlur={handleFieldBlur}
+                            placeholder="ex. Maria Popescu"
+                            className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border ${
+                              fieldErrors.name ? 'border-red-500/50' : 'border-[#2a2a3a]'
+                            } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors min-h-[48px] sm:min-h-[44px]`}
+                          />
+                          {fieldErrors.name && (
+                            <div className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
+                              <span className="flex-shrink-0 mt-0.5">⚠️</span>
+                              <span>{fieldErrors.name}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <label htmlFor="book-email" className="block text-sm font-medium text-gray-300 mb-2">
+                            Email <span className="text-[#f5a623]">*</span>
+                          </label>
+                          <input
+                            id="book-email"
+                            type="email"
+                            name="email"
+                            required
+                            value={formData.email}
+                            onChange={(e) =>
+                              setFormData({ ...formData, email: e.target.value })
+                            }
+                            onBlur={handleFieldBlur}
+                            placeholder="maria@exemplu.com"
+                            className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border ${
+                              fieldErrors.email ? 'border-red-500/50' : 'border-[#2a2a3a]'
+                            } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors min-h-[48px] sm:min-h-[44px]`}
+                          />
+                          {fieldErrors.email && (
+                            <div className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
+                              <span className="flex-shrink-0 mt-0.5">⚠️</span>
+                              <span>{fieldErrors.email}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <label htmlFor="book-phone" className="block text-sm font-medium text-gray-300 mb-2">
+                            Telefon <span className="text-[#f5a623]">*</span>
+                          </label>
+                          <input
+                            id="book-phone"
+                            type="tel"
+                            name="phone"
+                            required
+                            value={formData.phone}
+                            onChange={(e) =>
+                              setFormData({ ...formData, phone: e.target.value })
+                            }
+                            onBlur={handlePhoneBlur}
+                            placeholder="+44 7482 112110"
+                            className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border ${
+                              fieldErrors.phone ? 'border-red-500/50' : 'border-[#2a2a3a]'
+                            } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors min-h-[48px] sm:min-h-[44px]`}
+                          />
+                          {fieldErrors.phone && (
+                            <div className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
+                              <span className="flex-shrink-0 mt-0.5">⚠️</span>
+                              <span>{fieldErrors.phone}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <label htmlFor="book-event-type" className="block text-sm font-medium text-gray-300 mb-2">
+                            Tip eveniment <span className="text-[#f5a623]">*</span>
+                          </label>
+                          <select
+                            id="book-event-type"
+                            name="eventType"
+                            required
+                            value={formData.eventType}
+                            onChange={(e) =>
+                              setFormData({ ...formData, eventType: e.target.value })
+                            }
+                            onBlur={handleFieldBlur}
+                            className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border ${
+                              fieldErrors.eventType ? 'border-red-500/50' : 'border-[#2a2a3a]'
+                            } text-white text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors appearance-none min-h-[48px] sm:min-h-[44px]`}
+                          >
+                            <option value="" disabled className="text-gray-600">
+                              Selectează tip
+                            </option>
+                            {eventTypes.map((type) => (
+                              <option key={type} value={type} className="bg-[#0d0d16]">
+                                {type}
+                              </option>
+                            ))}
+                          </select>
+                          {fieldErrors.eventType && (
+                            <div className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
+                              <span className="flex-shrink-0 mt-0.5">⚠️</span>
+                              <span>{fieldErrors.eventType}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <label htmlFor="book-venue" className="block text-sm font-medium text-gray-300 mb-2">
+                          Locul evenimentului <span className="text-[#f5a623]">*</span>
+                        </label>
+                        <input
+                          id="book-venue"
+                          type="text"
+                          name="venue"
+                          required
+                          value={formData.venue}
+                          onChange={(e) =>
+                            setFormData({ ...formData, venue: e.target.value })
+                          }
+                          onBlur={handleFieldBlur}
+                          placeholder="ex. Hotel Grand, 123 Strada Mare, Chelmş, CM1 1AA"
+                          className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border ${
+                            fieldErrors.venue ? 'border-red-500/50' : 'border-[#2a2a3a]'
+                          } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors min-h-[48px] sm:min-h-[44px]`}
+                        />
+                        {fieldErrors.venue && (
+                          <div className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
+                            <span className="flex-shrink-0 mt-0.5">⚠️</span>
+                            <span>{fieldErrors.venue}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-4">
+                        <label htmlFor="book-requests" className="block text-sm font-medium text-gray-300 mb-2">
+                          Cerințe speciale <span className="text-gray-500 font-normal">(opțional)</span>
+                        </label>
+                        <textarea
+                          id="book-requests"
+                          rows={3}
+                          value={formData.specialRequests}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              specialRequests: e.target.value,
+                            })
+                          }
+                          placeholder="Teme, alergii, nevoi de accesibilitate..."
+                          className="w-full px-4 py-3 rounded-xl bg-[#0d0d16] border border-[#2a2a3a] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors resize-none"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Upsells */}
+                    <div className="rounded-2xl bg-[#13131a] border border-[#2a2a3a] p-6">
+                      <h3 className="text-lg font-bold text-white mb-4">Îmbunătățiri Disponibile</h3>
+                      <p className="text-gray-400 text-sm mb-4">Selectează serviciile suplimentare care se potrivesc</p>
+
+                      <div className="space-y-3">
+                        {upsells.map((upsell) => (
+                          <button
+                            key={upsell.id}
+                            type="button"
+                            onClick={() => handleToggleUpsell(upsell.id)}
+                            className={cn(
+                              "w-full p-4 rounded-xl border-2 text-left transition-all",
+                              selectedUpsells.includes(upsell.id)
+                                ? "border-[#f5a623] bg-[#f5a623]/10"
+                                : "border-[#2a2a3a] hover:border-[#f5a623]/50"
+                            )}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h4 className="font-bold text-white">{upsell.name}</h4>
+                                <p className="text-gray-400 text-sm">{upsell.description}</p>
+                              </div>
+                              <div className="flex-shrink-0 ml-4">
+                                <p className="text-[#f5a623] font-bold">+{formatPrice(upsell.price)}</p>
+                                <div className={cn(
+                                  "w-5 h-5 rounded border-2 flex items-center justify-center mt-2",
+                                  selectedUpsells.includes(upsell.id)
+                                    ? "border-[#f5a623] bg-[#f5a623]"
+                                    : "border-[#2a2a3a]"
+                                )}>
+                                  {selectedUpsells.includes(upsell.id) && (
+                                    <Check className="w-3 h-3 text-[#0a0a0e]" />
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {submitError && (
+                      <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                        <span className="mt-0.5 flex-shrink-0">⚠️</span>
+                        <span>{submitError}</span>
                       </div>
                     )}
-                    {selectedPackage === pkg.id && (
-                      <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-[#f5a623] flex items-center justify-center">
-                        <Check className="w-3.5 h-3.5 text-[#0a0a0e]" />
-                      </div>
-                    )}
+
+                    {/* Buttons */}
+                    <div className="flex justify-between pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setCurrentStep(0)}
+                        className="inline-flex items-center gap-2 px-6 py-3 sm:py-2.5 rounded-full border border-[#2a2a3a] text-white font-medium text-sm hover:border-[#f5a623]/40 hover:bg-white/5 transition-all duration-200 min-h-[48px] sm:min-h-[44px]"
+                      >
+                        Înapoi
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={cn(
+                          "inline-flex items-center gap-2 px-8 py-3 sm:py-2.5 rounded-full font-bold text-sm transition-all duration-200 min-h-[48px] sm:min-h-[44px]",
+                          isSubmitting
+                            ? "bg-[#f5a623]/70 text-[#0a0a0e] cursor-not-allowed"
+                            : "bg-[#f5a623] text-[#0a0a0e] hover:bg-[#fbbf4a] shadow-lg shadow-[#f5a623]/25 hover:-translate-y-0.5"
+                        )}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Se trimite...
+                          </>
+                        ) : (
+                          <>
+                            Solicită Ofertă
+                            <ChevronRight className="w-4 h-4" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    <p className="text-gray-500 text-xs leading-relaxed">
+                      Prin trimiterea acestui formular sunteți de acord cu{" "}
+                      <Link href="/privacy-policy" className="text-[#f5a623] hover:underline">
+                        Politica de confidențialitate
+                      </Link>{" "}
+                      și{" "}
+                      <Link href="/terms" className="text-[#f5a623] hover:underline">
+                        Termenii și condițiile
+                      </Link>
+                      . Datele dumneavoastră vor fi utilizate doar pentru a procesa cererea de rezervare.
+                    </p>
+                  </form>
+                </div>
+
+                {/* Summary Sidebar */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="h-fit sticky top-24"
+                >
+                  <div className="bg-[#13131a] border border-[#2a2a3a] rounded-xl p-6 space-y-6">
                     <h3
-                      className="text-lg font-bold text-white mb-1"
+                      className="text-xl font-bold text-white"
                       style={{ fontFamily: "var(--font-playfair)" }}
                     >
-                      {pkg.name}
+                      Rezumat
                     </h3>
-                    <p className="text-gray-400 text-xs mb-4">{pkg.tagline}</p>
-                    <div className="text-3xl font-bold text-[#f5a623] mb-1" style={{ fontFamily: "var(--font-playfair)" }}>
-                      {formatPrice(pkg.price)}
-                    </div>
-                    <p className="text-gray-500 text-xs mb-4">
-                      {pkg.duration} · {pkg.booth}
-                    </p>
-                    <ul className="space-y-1.5">
-                      {pkg.features.map((f) => (
-                        <li key={f} className="flex items-center gap-2 text-xs text-gray-300">
-                          <Check className="w-3 h-3 text-[#f5a623] flex-shrink-0" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                  </button>
-                ))}
-              </div>
-              <div className="flex justify-end mt-8">
-                <button
-                  onClick={handleNextStep}
-                  disabled={!selectedPackage}
-                  className={cn(
-                    "inline-flex items-center gap-2 px-8 py-3 sm:py-2.5 rounded-full font-semibold text-sm transition-all duration-200 min-h-[48px] sm:min-h-[44px]",
-                    selectedPackage
-                      ? "bg-[#f5a623] text-[#0a0a0e] hover:bg-[#fbbf4a] shadow-lg shadow-[#f5a623]/25 hover:-translate-y-0.5"
-                      : "bg-[#13131a] text-gray-500 border border-[#2a2a3a] cursor-not-allowed"
-                  )}
-                >
-                  Continue
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </motion.div>
-          )}
 
-          {/* STEP 2: Pick Date */}
-          {currentStep === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h2
-                className="text-2xl font-bold text-white text-center mb-4"
-                style={{ fontFamily: "var(--font-playfair)" }}
-              >
-                Your Preferred Date
-              </h2>
-              <p className="text-gray-400 text-center text-sm mb-10">
-                Tell us your event date and we&apos;ll confirm availability within 2 hours.
-              </p>
+                    {/* Selected Service */}
+                    {selectedProductData && selectedTier && (
+                      <div className="border-b border-[#2a2a3a] pb-4 space-y-3">
+                        <div>
+                          <p className="text-xs text-gray-400 mb-1">Serviciu</p>
+                          <p className="text-white font-bold">{selectedProductData.name}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400 mb-1">Pachet</p>
+                          <p className="text-[#f5a623] font-bold">
+                            {selectedProductData.tiers[selectedTier]?.name}
+                          </p>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400 text-sm">Preț</span>
+                          <span className="text-white font-bold">
+                            {formatPrice(getPriceForTier(selectedProductData, selectedTier))}
+                          </span>
+                        </div>
+                      </div>
+                    )}
 
-              <div className="rounded-3xl bg-[#13131a] border border-[#2a2a3a] overflow-hidden">
-                <div className="p-8 lg:p-10">
-                  <div className="flex items-start gap-4 mb-8 p-4 rounded-2xl bg-[#f5a623]/5 border border-[#f5a623]/20">
-                    <div className="w-10 h-10 rounded-xl bg-[#f5a623]/10 border border-[#f5a623]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Calendar className="w-5 h-5 text-[#f5a623]" />
-                    </div>
-                    <div>
-                      <p className="text-white text-sm font-semibold mb-1">How it works</p>
-                      <p className="text-gray-400 text-xs leading-relaxed">
-                        Submit your preferred date below. We&apos;ll check our calendar and confirm
-                        availability within 2 hours — usually much sooner. No payment is taken until
-                        your date is confirmed.
+                    {/* Upsells */}
+                    {selectedUpsells.length > 0 && (
+                      <div className="border-b border-[#2a2a3a] pb-4 space-y-2">
+                        <p className="text-xs text-gray-400 mb-3">Îmbunătățiri selectate</p>
+                        {selectedUpsells.map((upsellId) => {
+                          const upsell = upsells.find(u => u.id === upsellId);
+                          return (
+                            <div key={upsellId} className="flex justify-between text-sm">
+                              <span className="text-gray-300">{upsell?.name}</span>
+                              <span className="text-[#f5a623] font-medium">+{formatPrice(upsell?.price || 0)}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Deposit */}
+                    <div className="bg-[#f5a623]/10 border border-[#f5a623]/20 rounded-lg p-4">
+                      <p className="text-xs text-gray-400 mb-2">Depozit necesar (15%)</p>
+                      <p className="text-xl font-bold text-[#f5a623]">
+                        {formatPrice(Math.round(getTotalPrice() * 0.15))}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Restul se plătește înainte de eveniment
                       </p>
                     </div>
-                  </div>
 
-                  <div className="space-y-5">
-                    <div>
-                      <label htmlFor="step2-event-date" className="block text-sm font-medium text-gray-300 mb-2">
-                        Preferred Event Date <span className="text-[#f5a623]">*</span>
-                      </label>
-                      <input
-                        id="step2-event-date"
-                        type="date"
-                        required
-                        value={formData.eventDate}
-                        onChange={(e) =>
-                          setFormData({ ...formData, eventDate: e.target.value })
-                        }
-                        min={new Date().toISOString().split("T")[0]}
-                        className="w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border border-[#2a2a3a] text-white text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors [color-scheme:dark] min-h-[48px] sm:min-h-[44px]"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="step2-alt-date" className="block text-sm font-medium text-gray-300 mb-2">
-                        Alternative Date{" "}
-                        <span className="text-gray-500 font-normal">(optional, if flexible)</span>
-                      </label>
-                      <input
-                        id="step2-alt-date"
-                        type="date"
-                        value={formData.altDate ?? ""}
-                        onChange={(e) =>
-                          setFormData({ ...formData, altDate: e.target.value })
-                        }
-                        min={new Date().toISOString().split("T")[0]}
-                        className="w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border border-[#2a2a3a] text-white text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors [color-scheme:dark] min-h-[48px] sm:min-h-[44px]"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid grid-cols-3 gap-4 pt-6 border-t border-[#2a2a3a]">
-                    {[
-                      { label: "Response time", value: "Within 2 hours" },
-                      { label: "Payment", value: "After confirmation" },
-                      { label: "Cancellation", value: "Free within 90 days" },
-                    ].map((fact) => (
-                      <div key={fact.label} className="text-center">
-                        <p className="text-[#f5a623] text-xs font-semibold mb-1">{fact.value}</p>
-                        <p className="text-gray-500 text-[11px]">{fact.label}</p>
+                    {/* Total */}
+                    <div className="border-t border-[#2a2a3a] pt-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-bold text-white">Total</span>
+                        <span className="text-2xl font-bold text-[#f5a623]">
+                          {formatPrice(getTotalPrice())}
+                        </span>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
-
-              <div className="flex justify-between mt-8">
-                <button
-                  onClick={handlePrevStep}
-                  className="inline-flex items-center gap-2 px-6 py-3 sm:py-2.5 rounded-full border border-[#2a2a3a] text-white font-medium text-sm hover:border-[#f5a623]/40 hover:bg-white/5 transition-all duration-200 min-h-[48px] sm:min-h-[44px]"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handleNextStep}
-                  disabled={!formData.eventDate}
-                  className={cn(
-                    "inline-flex items-center gap-2 px-8 py-3 sm:py-2.5 rounded-full font-semibold text-sm transition-all duration-200 min-h-[48px] sm:min-h-[44px]",
-                    formData.eventDate
-                      ? "bg-[#f5a623] text-[#0a0a0e] hover:bg-[#fbbf4a] shadow-lg shadow-[#f5a623]/25 hover:-translate-y-0.5"
-                      : "bg-[#13131a] text-gray-500 border border-[#2a2a3a] cursor-not-allowed"
-                  )}
-                >
-                  Continue
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* STEP 3: Your Details */}
-          {currentStep === 3 && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h2
-                className="text-2xl font-bold text-white text-center mb-4"
-                style={{ fontFamily: "var(--font-playfair)" }}
-              >
-                Your Details
-              </h2>
-              <p className="text-gray-400 text-center text-sm mb-10">
-                We&apos;ll use these details to confirm your booking within 2 hours.
-              </p>
-
-              <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Honeypot — hidden from real users, traps bots */}
-                <input type="text" name="_hp" aria-hidden="true" tabIndex={-1} className="hidden" defaultValue="" readOnly />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label htmlFor="book-name" className="block text-sm font-medium text-gray-300 mb-2">
-                      Full Name <span className="text-[#f5a623]">*</span>
-                    </label>
-                    <input
-                      id="book-name"
-                      type="text"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      onBlur={handleFieldBlur}
-                      aria-invalid={!!fieldErrors.name}
-                      aria-describedby={fieldErrors.name ? "name-error" : undefined}
-                      placeholder="e.g. Sarah Johnson"
-                      className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#13131a] border ${
-                        fieldErrors.name ? 'border-red-500/50' : 'border-[#2a2a3a]'
-                      } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors min-h-[48px] sm:min-h-[44px]`}
-                    />
-                    {fieldErrors.name && (
-                      <div id="name-error" role="alert" className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
-                        <span className="flex-shrink-0 mt-0.5">⚠️</span>
-                        <span>{fieldErrors.name}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <label htmlFor="book-email" className="block text-sm font-medium text-gray-300 mb-2">
-                      Email Address <span className="text-[#f5a623]">*</span>
-                    </label>
-                    <input
-                      id="book-email"
-                      type="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      onBlur={handleFieldBlur}
-                      aria-invalid={!!fieldErrors.email}
-                      aria-describedby={fieldErrors.email ? "email-error" : undefined}
-                      placeholder="sarah@example.com"
-                      className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#13131a] border ${
-                        fieldErrors.email ? 'border-red-500/50' : 'border-[#2a2a3a]'
-                      } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors min-h-[48px] sm:min-h-[44px]`}
-                    />
-                    {fieldErrors.email && (
-                      <div id="email-error" role="alert" className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
-                        <span className="flex-shrink-0 mt-0.5">⚠️</span>
-                        <span>{fieldErrors.email}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label htmlFor="book-phone" className="block text-sm font-medium text-gray-300 mb-2">
-                      Phone Number <span className="text-[#f5a623]">*</span>
-                    </label>
-                    <input
-                      id="book-phone"
-                      type="tel"
-                      name="phone"
-                      required
-                      value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
-                      onBlur={handlePhoneBlur}
-                      aria-invalid={!!fieldErrors.phone}
-                      aria-describedby={fieldErrors.phone ? "phone-error" : undefined}
-                      placeholder="+44 7482 112110"
-                      className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#13131a] border ${
-                        fieldErrors.phone ? 'border-red-500/50' : 'border-[#2a2a3a]'
-                      } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors min-h-[48px] sm:min-h-[44px]`}
-                    />
-                    {fieldErrors.phone && (
-                      <div id="phone-error" role="alert" className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
-                        <span className="flex-shrink-0 mt-0.5">⚠️</span>
-                        <span>{fieldErrors.phone}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <label htmlFor="book-event-type" className="block text-sm font-medium text-gray-300 mb-2">
-                      Event Type <span className="text-[#f5a623]">*</span>
-                    </label>
-                    <select
-                      id="book-event-type"
-                      name="eventType"
-                      required
-                      value={formData.eventType}
-                      onChange={(e) =>
-                        setFormData({ ...formData, eventType: e.target.value })
-                      }
-                      onBlur={handleFieldBlur}
-                      aria-invalid={!!fieldErrors.eventType}
-                      aria-describedby={fieldErrors.eventType ? "eventType-error" : undefined}
-                      className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#13131a] border ${
-                        fieldErrors.eventType ? 'border-red-500/50' : 'border-[#2a2a3a]'
-                      } text-white text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors appearance-none min-h-[48px] sm:min-h-[44px]`}
-                    >
-                      <option value="" disabled className="text-gray-600">
-                        Select event type
-                      </option>
-                      {eventTypes.map((type) => (
-                        <option key={type} value={type} className="bg-[#13131a]">
-                          {type}
-                        </option>
-                      ))}
-                    </select>
-                    {fieldErrors.eventType && (
-                      <div id="eventType-error" role="alert" className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
-                        <span className="flex-shrink-0 mt-0.5">⚠️</span>
-                        <span>{fieldErrors.eventType}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="book-event-date" className="block text-sm font-medium text-gray-300 mb-2">
-                    Event Date <span className="text-[#f5a623]">*</span>
-                  </label>
-                  <input
-                    id="book-event-date"
-                    type="date"
-                    name="eventDate"
-                    required
-                    value={formData.eventDate}
-                    onChange={(e) =>
-                      setFormData({ ...formData, eventDate: e.target.value })
-                    }
-                    onBlur={handleFieldBlur}
-                    aria-invalid={!!fieldErrors.eventDate}
-                    aria-describedby={fieldErrors.eventDate ? "eventDate-error" : undefined}
-                    min={new Date().toISOString().split("T")[0]}
-                    className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#13131a] border ${
-                      fieldErrors.eventDate ? 'border-red-500/50' : 'border-[#2a2a3a]'
-                    } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors [color-scheme:dark] min-h-[48px] sm:min-h-[44px]`}
-                  />
-                  {fieldErrors.eventDate && (
-                    <div id="eventDate-error" role="alert" className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
-                      <span className="flex-shrink-0 mt-0.5">⚠️</span>
-                      <span>{fieldErrors.eventDate}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="book-venue" className="block text-sm font-medium text-gray-300 mb-2">
-                    Venue / Address <span className="text-[#f5a623]">*</span>
-                  </label>
-                  <input
-                    id="book-venue"
-                    type="text"
-                    name="venue"
-                    required
-                    value={formData.venue}
-                    onChange={(e) =>
-                      setFormData({ ...formData, venue: e.target.value })
-                    }
-                    onBlur={handleFieldBlur}
-                    aria-invalid={!!fieldErrors.venue}
-                    aria-describedby={fieldErrors.venue ? "venue-error" : undefined}
-                    placeholder="e.g. The Grand Hotel, 123 High Street, Chelmsford, CM1 1AA"
-                    className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#13131a] border ${
-                      fieldErrors.venue ? 'border-red-500/50' : 'border-[#2a2a3a]'
-                    } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors min-h-[48px] sm:min-h-[44px]`}
-                  />
-                  {fieldErrors.venue && (
-                    <div id="venue-error" role="alert" className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
-                      <span className="flex-shrink-0 mt-0.5">⚠️</span>
-                      <span>{fieldErrors.venue}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="book-requests" className="block text-sm font-medium text-gray-300 mb-2">
-                    Special Requests{" "}
-                    <span className="text-gray-500 font-normal">(optional)</span>
-                  </label>
-                  <textarea
-                    id="book-requests"
-                    rows={4}
-                    value={formData.specialRequests}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        specialRequests: e.target.value,
-                      })
-                    }
-                    placeholder="Any specific requirements, theme details, allergies, accessibility needs..."
-                    className="w-full px-4 py-3 rounded-xl bg-[#13131a] border border-[#2a2a3a] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors resize-none"
-                  />
-                </div>
-
-                <p className="text-gray-500 text-xs leading-relaxed">
-                  By submitting this form you agree to our{" "}
-                  <Link href="/privacy-policy" className="text-[#f5a623] hover:underline">
-                    Privacy Policy
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/terms" className="text-[#f5a623] hover:underline">
-                    Terms & Conditions
-                  </Link>
-                  . Your details will only be used to process your booking enquiry.
-                </p>
-
-                {submitError && (
-                  <div
-                    role="alert"
-                    aria-live="assertive"
-                    className="flex items-start gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
-                  >
-                    <span className="mt-0.5 flex-shrink-0">&#9888;</span>
-                    <span>{submitError}</span>
-                  </div>
-                )}
-
-                <div className="flex justify-between pt-2">
-                  <button
-                    type="button"
-                    onClick={handlePrevStep}
-                    className="inline-flex items-center gap-2 px-6 py-3 sm:py-2.5 rounded-full border border-[#2a2a3a] text-white font-medium text-sm hover:border-[#f5a623]/40 hover:bg-white/5 transition-all duration-200 min-h-[48px] sm:min-h-[44px]"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={cn(
-                      "inline-flex items-center gap-2 px-8 py-3 sm:py-2.5 rounded-full font-bold text-sm transition-all duration-200 min-h-[48px] sm:min-h-[44px]",
-                      isSubmitting
-                        ? "bg-[#f5a623]/70 text-[#0a0a0e] cursor-not-allowed"
-                        : "bg-[#f5a623] text-[#0a0a0e] hover:bg-[#fbbf4a] shadow-lg shadow-[#f5a623]/25 hover:-translate-y-0.5"
-                    )}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        Submit Booking Request
-                        <ChevronRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
             </motion.div>
           )}
         </AnimatePresence>

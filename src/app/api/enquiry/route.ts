@@ -1,8 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { Resend } from "resend";
 import { EnquirySchema } from "@/lib/schemas";
 import { validatePhone } from "@/lib/validation";
 import { checkRateLimit } from "@/lib/ratelimit";
+import {
+  successResponse,
+  errorResponse,
+  validationErrorResponse,
+  rateLimitResponse,
+  serverErrorResponse,
+} from "@/lib/apiResponse";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO_EMAIL = process.env.CONTACT_EMAIL ?? "hello@funloading360.co.uk";
@@ -13,36 +20,27 @@ export async function POST(req: NextRequest) {
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
     const rateLimit = await checkRateLimit(ip);
     if (!rateLimit.success) {
-      return NextResponse.json(
-        { error: "Too many requests. Please try again later." },
-        { status: 429 }
-      );
+      return rateLimitResponse();
     }
 
     const body = await req.json();
 
     // Honeypot check — bots fill hidden fields, humans don't
     if (body._hp) {
-      return NextResponse.json({ ok: true }); // silent discard
+      return successResponse({ enquiryId: "pending" }); // silent discard
     }
 
     // Double-check phone validation server-side (only if provided)
     if (body.phone) {
       const phoneValidation = validatePhone(body.phone);
       if (!phoneValidation.valid) {
-        return NextResponse.json(
-          { error: phoneValidation.error },
-          { status: 400 }
-        );
+        return errorResponse(phoneValidation.error || "Invalid phone number", "phone");
       }
     }
 
     const result = EnquirySchema.safeParse(body);
     if (!result.success) {
-      return NextResponse.json(
-        { error: "Invalid input", fields: result.error.flatten().fieldErrors },
-        { status: 422 }
-      );
+      return validationErrorResponse(result.error.flatten().fieldErrors);
     }
 
     const { company, name, email, phone, eventType, guestCount, eventDate, message } =
@@ -65,9 +63,9 @@ export async function POST(req: NextRequest) {
       ].join("\n"),
     });
 
-    return NextResponse.json({ ok: true });
+    return successResponse({ enquiryId: "pending", email });
   } catch (err) {
     console.error("[/api/enquiry]", err);
-    return NextResponse.json({ error: "Failed to send enquiry" }, { status: 500 });
+    return serverErrorResponse("Failed to send enquiry");
   }
 }

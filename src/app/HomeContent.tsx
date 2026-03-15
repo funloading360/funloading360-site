@@ -18,14 +18,15 @@ import {
 } from "lucide-react";
 
 import { fadeUp, stagger } from "@/lib/variants";
-
+import { useReducedMotion } from "@/lib/useReducedMotion";
+import TestimonialCarousel from "@/components/TestimonialCarousel";
 
 const googleBusinessUrl =
   "https://www.google.com/maps/dir/FunLoading360+Photo+Booth,+Guys+Farm+Rd,+South+Woodham+Ferrers,+Chelmsford+CM3+5NF/FunLoading360+Photo+Booth,+Guys+Farm+Rd,+South+Woodham+Ferrers,+Chelmsford+CM3+5NF/@51.6390912,0.3506176,13z/data=!3m1!4b1!4m13!4m12!1m5!1m1!1s0x47d8ddbcb32b8c1f:0x36198f1517fd1c93!2m2!1d0.6127473!2d51.6457952!1m5!1m1!1s0x47d8ddbcb32b8c1f:0x36198f1517fd1c93!2m2!1d0.6127473!2d51.6457952";
 
 const trustBadges = [
   { icon: Star, label: "5-Star Rated", sub: "Reviews", href: googleBusinessUrl },
-  { icon: Camera, label: "3 Premium Booths", sub: "360, Glam & Selfie", href: "/booths" },
+  { icon: Camera, label: "3 Premium Booths", sub: "360, Glam & Selfie", href: "/services" },
   { icon: Truck, label: "Free Setup", sub: "& collection included", href: "/pricing" },
   { icon: Smartphone, label: "Instant Sharing", sub: "digital gallery", href: "/gallery" },
 ];
@@ -39,7 +40,7 @@ const booths = [
     features: ["Slow-mo video", "RGB backdrop", "Instant sharing", "Custom overlay"],
     gradient: "from-purple-900/60 to-blue-900/60",
     accentColor: "bg-purple-400",
-    href: "/booths",
+    href: "/services",
     image: "/images/events/360-couple-dancing.jpeg",
   },
   {
@@ -55,7 +56,7 @@ const booths = [
     ],
     gradient: "from-amber-900/60 to-rose-900/60",
     accentColor: "bg-amber-400",
-    href: "/booths",
+    href: "/services",
     image: "/images/venues/glam-setup-props.jpeg",
   },
   {
@@ -71,7 +72,7 @@ const booths = [
     ],
     gradient: "from-emerald-900/60 to-teal-900/60",
     accentColor: "bg-emerald-400",
-    href: "/booths",
+    href: "/services",
     image: "/images/venues/selfie-pod-venue.jpeg",
   },
 ];
@@ -94,30 +95,6 @@ const steps = [
     title: "We Handle Everything",
     description:
       "Our team arrives early, sets up the booth, operates it throughout your event, and dismantles everything. You just enjoy the night.",
-  },
-];
-
-const testimonials = [
-  {
-    name: "Sarah M.",
-    event: "Wedding — Chelmsford",
-    quote:
-      "Absolutely incredible! Our guests couldn't stop talking about the 360 booth. The team were professional, friendly and went above and beyond. Would book again in a heartbeat!",
-    rating: 5,
-  },
-  {
-    name: "James & Rachel T.",
-    event: "Corporate Event — Canary Wharf",
-    quote:
-      "We hired the Glam Vintage booth for our company Christmas party. The branded overlays looked stunning and every single employee was queuing up to use it. Brilliant service.",
-    rating: 5,
-  },
-  {
-    name: "Emma L.",
-    event: "21st Birthday — Maidstone",
-    quote:
-      "From booking to the night itself, everything was seamless. The photo prints were gorgeous quality and the props were so fun. My guests absolutely loved it!",
-    rating: 5,
   },
 ];
 
@@ -157,6 +134,8 @@ const eventTypes = [
 ];
 
 export default function HomePage() {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <div className="bg-[#0a0a0e] text-white overflow-x-hidden">
       {/* ── HERO ── */}
@@ -170,6 +149,7 @@ export default function HomePage() {
             sizes="100vw"
             className="object-cover"
             priority
+            quality={90}
           />
           {/* Dark overlay for text readability */}
           <div className="absolute inset-0 bg-black/60" />
@@ -182,9 +162,9 @@ export default function HomePage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* Pre-headline badge */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f5a623]/10 border border-[#f5a623]/20 text-[#f5a623] text-sm font-medium mb-8"
           >
             <Star className="w-3.5 h-3.5 fill-current" />
@@ -193,9 +173,9 @@ export default function HomePage() {
 
           {/* Main headline */}
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7, delay: 0.1 }}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-6"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
@@ -216,9 +196,9 @@ export default function HomePage() {
 
           {/* Subline */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
             className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
             Premium Photo Booth Hire — Essex, Kent &amp; London
@@ -230,9 +210,9 @@ export default function HomePage() {
 
           {/* CTAs */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
           >
             <Link
@@ -252,9 +232,9 @@ export default function HomePage() {
 
           {/* Trust badges */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.4 }}
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto"
           >
             {trustBadges.map((badge) => (
@@ -277,23 +257,28 @@ export default function HomePage() {
               </Link>
             ))}
           </motion.div>
+
+          {/* Testimonials Carousel */}
+          <TestimonialCarousel />
         </div>
 
         {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <div className="w-6 h-10 rounded-full border-2 border-[#2a2a3a] flex items-start justify-center p-1.5">
-            <motion.div
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              className="w-1 h-2.5 bg-[#f5a623] rounded-full"
-            />
-          </div>
-        </motion.div>
+        {!prefersReducedMotion && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          >
+            <div className="w-6 h-10 rounded-full border-2 border-[#2a2a3a] flex items-start justify-center p-1.5">
+              <motion.div
+                animate={{ y: [0, 12, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                className="w-1 h-2.5 bg-[#f5a623] rounded-full"
+              />
+            </div>
+          </motion.div>
+        )}
       </section>
 
       {/* ── OUR BOOTHS ── */}
@@ -341,10 +326,11 @@ export default function HomePage() {
                     src={booth.image}
                     alt={booth.name}
                     fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    quality={90}
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    quality={85}
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                     priority={i === 0}
+                    loading={i === 0 ? "eager" : "lazy"}
                   />
                   {/* Gradient overlay */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${booth.gradient}`} />
@@ -470,78 +456,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
+      {/* ── TESTIMONIALS CAROUSEL ── */}
       <section className="py-24 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeUp}
-            className="text-center mb-16"
-          >
-            <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">
-              Real Reviews
-            </p>
-            <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
-              style={{ fontFamily: "var(--font-playfair)" }}
-            >
-              What Our Clients Say
-            </h2>
-            <div className="flex items-center justify-center gap-1 mb-2" role="img" aria-label="5 out of 5 stars">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className="w-5 h-5 text-[#f5a623] fill-current"
-                  aria-hidden="true"
-                />
-              ))}
-            </div>
-            <Link
-              href={googleBusinessUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-500 text-sm hover:text-[#f5a623] transition-colors inline-block"
-            >
-              See all reviews
-            </Link>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
-          >
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={t.name}
-                variants={fadeUp}
-                custom={i}
-                className="p-6 rounded-3xl bg-[#13131a] border border-[#2a2a3a] flex flex-col"
-              >
-                <div className="flex items-center gap-1 mb-4" role="img" aria-label={`${t.rating} out of 5 stars`}>
-                  {[...Array(t.rating)].map((_, j) => (
-                    <Star
-                      key={j}
-                      className="w-4 h-4 text-[#f5a623] fill-current"
-                      aria-hidden="true"
-                    />
-                  ))}
-                </div>
-                <blockquote className="text-gray-300 text-sm leading-relaxed flex-1 mb-6">
-                  &ldquo;{t.quote}&rdquo;
-                </blockquote>
-                <div className="border-t border-[#2a2a3a] pt-4">
-                  <p className="text-white font-semibold text-sm">{t.name}</p>
-                  <p className="text-[#f5a623] text-xs mt-0.5">{t.event}</p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+        <TestimonialCarousel />
       </section>
 
       {/* ── PERFECT FOR ── */}

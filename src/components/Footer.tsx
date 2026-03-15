@@ -14,7 +14,7 @@ const TikTokIcon = () => (
 
 const quickLinks = [
   { label: "Home", href: "/" },
-  { label: "Our Booths", href: "/booths" },
+  { label: "Our Services", href: "/services" },
   { label: "Pricing & Packages", href: "/pricing" },
   { label: "Gallery", href: "/gallery" },
   { label: "Corporate Events", href: "/corporate" },

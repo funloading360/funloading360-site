@@ -13,8 +13,10 @@ import {
   Sparkles,
 } from "lucide-react";
 import { boothPricing, formatPrice } from "@/lib/packages";
+import PricingComparisonModal from "./PricingComparisonModal";
 
 import { fadeUp } from "@/lib/variants";
+import { useReducedMotion } from "@/lib/useReducedMotion";
 
 const tierIcons: Record<string, typeof Camera> = {
   essential: Camera,
@@ -79,6 +81,8 @@ const faqs = [
 
 export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showComparison, setShowComparison] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <div className="bg-[#0a0a0e] text-white pt-20">
@@ -89,9 +93,9 @@ export default function PricingPage() {
         </div>
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
           >
             <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">
               Transparent Pricing
@@ -111,167 +115,199 @@ export default function PricingPage() {
       </section>
 
       {/* Pricing by Booth Type */}
-      <section className="pb-24 lg:pb-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-20">
-            {boothPricing.map((booth, boothIdx) => (
-              <motion.div
-                key={booth.booth}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, delay: boothIdx * 0.1 }}
-              >
-                {/* Booth header */}
-                <div className="text-center mb-12">
-                  <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-2">
-                    {booth.tagline}
-                  </p>
-                  <h2
-                    className="text-3xl sm:text-4xl font-bold text-white"
-                    style={{ fontFamily: "var(--font-playfair)" }}
-                  >
-                    {booth.booth}
-                  </h2>
-                </div>
+      {/* Comparison CTA */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 lg:pb-32">
+        <motion.div
+          initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+          whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
+          className="mb-16 p-8 rounded-2xl bg-[#13131a] border border-[#2a2a3a]"
+        >
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-white mb-2">
+                Comparing Our Packages?
+              </h3>
+              <p className="text-gray-400 text-sm">
+                View all tiers and booths side-by-side to find the perfect match for your event.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowComparison(true)}
+              className="px-6 py-2.5 rounded-full border border-[#f5a623] text-[#f5a623] hover:bg-[#f5a623]/10 transition-all duration-200 font-semibold text-sm whitespace-nowrap"
+            >
+              Compare All Packages
+            </button>
+          </div>
+        </motion.div>
+      </div>
 
-                {/* Three pricing tiers for this booth */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-                  {Object.entries(booth.tiers).map(([tierKey, tier], tierIdx) => {
-                    const isSignature = tierKey === "signature";
-                    return (
-                      <motion.div
-                        key={tierKey}
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{
-                          duration: 0.6,
-                          delay: tierIdx * 0.1,
-                        }}
-                        className={`relative rounded-3xl flex flex-col ${
-                          isSignature
-                            ? "bg-gradient-to-b from-[#1c1228] to-[#13131a] border-2 border-[#f5a623]/50 shadow-xl shadow-[#f5a623]/10"
-                            : "bg-[#13131a] border border-[#2a2a3a]"
-                        }`}
-                      >
-                        {isSignature && (
-                          <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#f5a623] text-[#0a0a0e] text-xs font-bold uppercase tracking-wide shadow-lg shadow-[#f5a623]/30">
-                              <Star className="w-3 h-3 fill-current" />
-                              Most Popular
-                            </span>
-                          </div>
-                        )}
+      {/* Booth Sections - Full Width */}
+      {boothPricing.map((booth, boothIdx) => (
+        <section
+          key={booth.booth}
+          className={`py-20 lg:py-24 ${boothIdx % 2 === 0 ? "bg-[#13131a]/30" : "bg-[#0a0a0e]"}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={prefersReducedMotion ? {} : { opacity: 0, y: 40 }}
+              whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
+            >
+              {/* Booth header - Minimal */}
+              <div className="text-left mb-12">
+                <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-2">
+                  {booth.tagline}
+                </p>
+                <h2
+                  className="text-3xl sm:text-4xl font-bold text-white"
+                  style={{ fontFamily: "var(--font-playfair)" }}
+                >
+                  {booth.booth}
+                </h2>
+              </div>
 
-                        <div className="p-7 flex flex-col flex-1">
-                          {/* Tier header */}
-                          <div className="mb-6">
-                            <div
-                              className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${
-                                isSignature
-                                  ? "bg-[#f5a623]/20 border border-[#f5a623]/30"
-                                  : "bg-white/5 border border-[#2a2a3a]"
-                              }`}
-                            >
-                              {(() => {
-                                const Icon = tierIcons[tierKey];
-                                return (
-                                  <Icon
-                                    className={`w-6 h-6 ${
-                                      isSignature
-                                        ? "text-[#f5a623]"
-                                        : "text-gray-400"
-                                    }`}
-                                  />
-                                );
-                              })()}
-                            </div>
-                            <h3
-                              className="text-2xl font-bold text-white mb-1"
-                              style={{ fontFamily: "var(--font-playfair)" }}
-                            >
-                              {tier.name}
-                            </h3>
-                            <p className="text-gray-400 text-sm">
-                              {tier.tagline}
-                            </p>
-                          </div>
+              {/* Three pricing tiers for this booth - Responsive Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                {Object.entries(booth.tiers).map(([tierKey, tier], tierIdx) => {
+                  const isSignature = tierKey === "signature";
+                  return (
+                    <motion.div
+                      key={tierKey}
+                      initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
+                      whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={prefersReducedMotion ? { duration: 0 } : {
+                        duration: 0.6,
+                        delay: tierIdx * 0.1,
+                      }}
+                      className={`relative rounded-3xl flex flex-col ${
+                        isSignature
+                          ? "bg-gradient-to-b from-[#1c1228] to-[#13131a] border-2 border-[#f5a623]/50 shadow-xl shadow-[#f5a623]/10"
+                          : "bg-[#13131a] border border-[#2a2a3a]"
+                      }`}
+                    >
+                      {isSignature && (
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#f5a623] text-[#0a0a0e] text-xs font-bold uppercase tracking-wide shadow-lg shadow-[#f5a623]/30">
+                            <Star className="w-3 h-3 fill-current" />
+                            Most Popular
+                          </span>
+                        </div>
+                      )}
 
-                          {/* Pricing options */}
-                          <div className="mb-6 pb-6 border-b border-[#2a2a3a]">
-                            <div className="space-y-2">
-                              {tier.prices.map((priceOpt) => (
-                                <div
-                                  key={priceOpt.duration}
-                                  className="flex items-center justify-between"
-                                >
-                                  <span className="text-gray-400 text-sm">
-                                    {priceOpt.duration}
-                                  </span>
-                                  <span
-                                    className={`text-lg font-bold ${
-                                      isSignature
-                                        ? "text-[#f5a623]"
-                                        : "text-white"
-                                    }`}
-                                  >
-                                    {formatPrice(priceOpt.price)}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Features */}
-                          <ul className="space-y-2.5 flex-1 mb-8">
-                            {tier.features.map((f) => (
-                              <li
-                                key={f}
-                                className="flex items-start gap-2.5 text-sm text-gray-300"
-                              >
-                                <Check
-                                  className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
-                                    isSignature
-                                      ? "text-[#f5a623]"
-                                      : "text-emerald-400"
-                                  }`}
-                                />
-                                {f}
-                              </li>
-                            ))}
-                          </ul>
-
-                          {/* CTA */}
-                          <Link
-                            href="/book"
-                            className={`block w-full text-center py-3 sm:py-2.5 rounded-full font-semibold text-sm transition-all duration-200 min-h-[48px] sm:min-h-[44px] flex items-center justify-center ${
+                      <div className="p-7 flex flex-col flex-1">
+                        {/* Tier header */}
+                        <div className="mb-6">
+                          <div
+                            className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${
                               isSignature
-                                ? "bg-[#f5a623] text-[#0a0a0e] hover:bg-[#fbbf4a] shadow-lg shadow-[#f5a623]/25 hover:shadow-[#f5a623]/40 hover:-translate-y-0.5"
-                                : "border border-[#2a2a3a] text-white hover:border-[#f5a623]/40 hover:bg-white/5"
+                                ? "bg-[#f5a623]/20 border border-[#f5a623]/30"
+                                : "bg-white/5 border border-[#2a2a3a]"
                             }`}
                           >
-                            Book This Package
-                          </Link>
+                            {(() => {
+                              const Icon = tierIcons[tierKey];
+                              return (
+                                <Icon
+                                  className={`w-6 h-6 ${
+                                    isSignature
+                                      ? "text-[#f5a623]"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                              );
+                            })()}
+                          </div>
+                          <h3
+                            className="text-2xl font-bold text-white mb-1"
+                            style={{ fontFamily: "var(--font-playfair)" }}
+                          >
+                            {tier.name}
+                          </h3>
+                          <p className="text-gray-400 text-sm">
+                            {tier.tagline}
+                          </p>
                         </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            ))}
-          </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-center text-gray-500 text-sm mt-16"
-          >
-            All prices include VAT. 30% deposit required to secure your date.
-          </motion.p>
-        </div>
-      </section>
+                        {/* Pricing options */}
+                        <div className="mb-6 pb-6 border-b border-[#2a2a3a]">
+                          <div className="space-y-2">
+                            {tier.prices.map((priceOpt) => (
+                              <div
+                                key={priceOpt.duration}
+                                className="flex items-center justify-between"
+                              >
+                                <span className="text-gray-400 text-sm">
+                                  {priceOpt.duration}
+                                </span>
+                                <span
+                                  className={`text-lg font-bold ${
+                                    isSignature
+                                      ? "text-[#f5a623]"
+                                      : "text-white"
+                                  }`}
+                                >
+                                  {formatPrice(priceOpt.price)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Features */}
+                        <ul className="space-y-2.5 flex-1 mb-8">
+                          {tier.features.map((f) => (
+                            <li
+                              key={f}
+                              className="flex items-start gap-2.5 text-sm text-gray-300"
+                            >
+                              <Check
+                                className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
+                                  isSignature
+                                    ? "text-[#f5a623]"
+                                    : "text-emerald-400"
+                                }`}
+                              />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+
+                        {/* CTA */}
+                        <Link
+                          href="/book"
+                          className={`block w-full text-center py-3 sm:py-2.5 rounded-full font-semibold text-sm transition-all duration-200 min-h-[48px] sm:min-h-[44px] flex items-center justify-center ${
+                            isSignature
+                              ? "bg-[#f5a623] text-[#0a0a0e] hover:bg-[#fbbf4a] shadow-lg shadow-[#f5a623]/25 hover:shadow-[#f5a623]/40 hover:-translate-y-0.5"
+                              : "border border-[#2a2a3a] text-white hover:border-[#f5a623]/40 hover:bg-white/5"
+                          }`}
+                        >
+                          Book This Package
+                        </Link>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      ))}
+
+      {/* Pricing footer note */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-center text-gray-500 text-sm py-8"
+        >
+          All prices include VAT. 30% deposit required to secure your date.
+        </motion.p>
+      </div>
 
       {/* Add-ons */}
       <section className="py-24 lg:py-32 bg-[#080810]">
@@ -421,6 +457,12 @@ export default function PricingPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Comparison Modal */}
+      <PricingComparisonModal
+        isOpen={showComparison}
+        onClose={() => setShowComparison(false)}
+      />
     </div>
   );
 }

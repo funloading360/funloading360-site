@@ -42,6 +42,23 @@
   --font-display: var(--font-playfair);
 }
 
+/* ── Performance optimizations ── */
+/* Enable GPU acceleration for animations */
+.animate-ping {
+  will-change: opacity, transform;
+}
+
+/* Optimize images for better CWV metrics */
+img {
+  content-visibility: auto;
+}
+
+/* Critical image loading optimization */
+img[loading="lazy"] {
+  content-visibility: auto;
+  contain: strict;
+}
+
 /* ── Box model ── */
 *,
 *::before,

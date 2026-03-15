@@ -1,8 +1,22 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { Resend } from "resend";
 import { BookingSchema } from "@/lib/schemas";
 import { validatePhone } from "@/lib/validation";
 import { checkRateLimit } from "@/lib/ratelimit";
+import {
+  successResponse,
+  errorResponse,
+  validationErrorResponse,
+  rateLimitResponse,
+  serverErrorResponse,
+} from "@/lib/apiResponse";
+import {
+  sendConfirmationEmail,
+  triggerQuoteGeneration,
+  type BookingEmailData,
+} from "@/lib/email";
+import { sendConfirmationSMSWithRetry, type BookingSMSData } from "@/lib/sms";
+import { getProductById } from "@/lib/services";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO_EMAIL = process.env.CONTACT_EMAIL ?? "hello@funloading360.co.uk";
@@ -10,65 +24,140 @@ const TO_EMAIL = process.env.CONTACT_EMAIL ?? "hello@funloading360.co.uk";
 export async function POST(req: NextRequest) {
   try {
     // Rate limiting — max 5 requests per 10 minutes per IP
-    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+    const ip =
+      req.headers.get("x-forwarded-for") ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
     const rateLimit = await checkRateLimit(ip);
     if (!rateLimit.success) {
-      return NextResponse.json(
-        { error: "Too many requests. Please try again later." },
-        { status: 429 }
-      );
+      return rateLimitResponse();
     }
 
     const body = await req.json();
 
     // Honeypot check — bots fill hidden fields, humans don't
     if (body._hp) {
-      return NextResponse.json({ ok: true }); // silent discard
+      return successResponse({ bookingId: "pending" }); // silent discard
     }
 
     // Double-check phone validation server-side
     const phoneValidation = validatePhone(body.phone);
     if (!phoneValidation.valid) {
-      return NextResponse.json(
-        { error: phoneValidation.error },
-        { status: 400 }
-      );
+      return errorResponse(phoneValidation.error || "Invalid phone number", "phone");
     }
 
     const result = BookingSchema.safeParse(body);
     if (!result.success) {
-      return NextResponse.json(
-        { error: "Invalid input", fields: result.error.flatten().fieldErrors },
-        { status: 422 }
-      );
+      return validationErrorResponse(result.error.flatten().fieldErrors);
     }
 
-    const { packageId, name, email, phone, eventType, eventDate, altDate, venue, specialRequests } =
-      result.data;
+    const {
+      packageId,
+      productId,
+      tier,
+      name,
+      email,
+      phone,
+      eventType,
+      eventDate,
+      altDate,
+      venue,
+      specialRequests,
+      upsells = [],
+      totalPrice = 0,
+    } = result.data;
 
+    // Support both old packageId and new productId format
+    const selectedProductId = productId || packageId;
+    if (!selectedProductId) {
+      return errorResponse("Invalid product selected", "productId");
+    }
+
+    // Get product details for email (only if using new format)
+    let product = null;
+    if (productId) {
+      product = getProductById(productId);
+      if (!product) {
+        return errorResponse("Invalid product selected", "productId");
+      }
+    }
+
+    // Prepare email data (only for new format with product details)
+    if (product && tier) {
+      const emailData: BookingEmailData = {
+        name,
+        email,
+        phone,
+        productName: product.name,
+        tier: product.tiers[tier as keyof typeof product.tiers]?.name || tier,
+        date: eventDate,
+        altDate,
+        venue,
+        totalPrice,
+        depositPrice: Math.round(totalPrice * 0.15),
+        upsells: upsells.map((id) => {
+          const upsellMap: Record<string, { name: string; price: number }> = {
+            "guest-book": { name: "Carte de oaspeți", price: 40 },
+            "extra-hour": { name: "Oră suplimentară", price: 75 },
+            "highlight-reel": { name: "Montaj video", price: 79 },
+          };
+          return upsellMap[id] || { name: id, price: 0 };
+        }),
+      };
+
+      // Prepare SMS data
+      const smsData: BookingSMSData = {
+        phone,
+        name,
+        productName: product.name,
+        tier: emailData.tier,
+        date: eventDate,
+        totalPrice,
+      };
+
+      // Send confirmation email to customer (async, non-blocking)
+      sendConfirmationEmail(emailData).catch((err) => {
+        console.error("[EMAIL] Customer confirmation failed:", err);
+      });
+
+      // Send SMS confirmation with retry logic (async, non-blocking)
+      sendConfirmationSMSWithRetry(smsData).catch((err) => {
+        console.error("[SMS] Confirmation failed:", err);
+      });
+
+      // Trigger quote generation via Zapier (async, non-blocking)
+      triggerQuoteGeneration(emailData).catch((err) => {
+        console.error("[ZAPIER] Quote trigger failed:", err);
+      });
+    }
+
+    // Send admin notification (existing flow)
     await resend.emails.send({
       from: "Website Booking <noreply@funloading360.co.uk>",
       to: TO_EMAIL,
       replyTo: email,
-      subject: `New Booking Enquiry — ${name} (${eventType})`,
+      subject: `Cerere Rezervare Nouă — ${name} (${eventType})`,
       text: [
-        `Package: ${packageId}`,
-        `Name: ${name}`,
+        product ? `Produs: ${product.name}` : `Pachet: ${packageId}`,
+        tier ? `Pachet: ${tier}` : null,
+        `Nume: ${name}`,
         `Email: ${email}`,
-        `Phone: ${phone}`,
-        `Event Type: ${eventType}`,
-        `Preferred Date: ${eventDate}`,
-        altDate ? `Alternative Date: ${altDate}` : null,
-        `Venue: ${venue}`,
-        `Special Requests: ${specialRequests || "—"}`,
+        `Telefon: ${phone}`,
+        `Tip eveniment: ${eventType}`,
+        `Data preferată: ${eventDate}`,
+        altDate ? `Dată alternativă: ${altDate}` : null,
+        `Locul evenimentului: ${venue}`,
+        totalPrice > 0 ? `Preț total: £${totalPrice}` : null,
+        upsells.length > 0 ? `Îmbunătățiri: ${upsells.join(", ")}` : null,
+        `Cerințe speciale: ${specialRequests || "—"}`,
       ]
         .filter(Boolean)
         .join("\n"),
     });
 
-    return NextResponse.json({ ok: true });
+    return successResponse({ bookingId: "pending", email });
   } catch (err) {
     console.error("[/api/book]", err);
-    return NextResponse.json({ error: "Failed to send booking request" }, { status: 500 });
+    return serverErrorResponse("Failed to send booking request");
   }
 }

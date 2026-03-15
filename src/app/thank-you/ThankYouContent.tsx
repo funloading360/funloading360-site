@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { CheckCircle, Mail, Phone, ArrowRight } from "lucide-react";
+import { CheckCircle, Mail, MessageCircle, ArrowRight, Clock } from "lucide-react";
 
 export default function ThankYouContent() {
   return (
@@ -32,29 +32,72 @@ export default function ThankYouContent() {
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Enquiry Received!
+              Cererea ta a fost primită!
             </h1>
 
-            <p className="text-gray-300 text-lg leading-relaxed mb-8">
-              Thank you for your interest in FunLoading360. We've received your enquiry and our team will be in touch within <span className="text-[#f5a623] font-semibold">2 hours</span> to confirm availability and discuss your event.
+            <p className="text-gray-300 text-lg leading-relaxed mb-3">
+              Mulțumesc pentru interesul în FunLoading360. Am primit cererea ta și echipa noastră va veni în contact în maxim <span className="text-[#f5a623] font-semibold">2 ore</span> pentru a confirma disponibilitatea.
             </p>
 
+            <p className="text-gray-400 text-sm mb-8">
+              Oferta ta va fi trimisă prin email și SMS în următoarele 5 minute.
+            </p>
+
+            {/* Confirmation Messages */}
+            <div className="grid sm:grid-cols-2 gap-4 mb-10">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="bg-[#f5a623]/10 border border-[#f5a623]/30 rounded-2xl p-6 text-left"
+              >
+                <div className="flex items-start gap-3 mb-2">
+                  <Mail className="w-5 h-5 text-[#f5a623] flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="text-white font-semibold">Email de confirmare</h3>
+                    <p className="text-gray-400 text-xs mt-1">Verific-ți inbox și folderul de spam</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+                className="bg-[#f5a623]/10 border border-[#f5a623]/30 rounded-2xl p-6 text-left"
+              >
+                <div className="flex items-start gap-3 mb-2">
+                  <MessageCircle className="w-5 h-5 text-[#f5a623] flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="text-white font-semibold">SMS de confirmare</h3>
+                    <p className="text-gray-400 text-xs mt-1">Mesaj text cu detaliile rezervării</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Next Steps */}
             <div className="bg-[#13131a] border border-[#2a2a3a] rounded-2xl p-8 mb-8">
-              <p className="text-gray-400 text-sm mb-4">
-                In the meantime, you can:
-              </p>
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <Clock className="w-5 h-5 text-[#f5a623]" />
+                Ce se întâmplă acum?
+              </h3>
               <ul className="space-y-3 text-left text-gray-300 text-sm">
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-[#f5a623] flex-shrink-0 mt-0.5" />
-                  <span>Check out our <Link href="/gallery" className="text-[#f5a623] hover:underline">gallery of past events</Link></span>
+                  <span className="text-[#f5a623] font-bold flex-shrink-0 w-6">1.</span>
+                  <span>Oferta ta va fi generată în ~5 minute și trimisă prin email</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-[#f5a623] flex-shrink-0 mt-0.5" />
-                  <span>Explore our <Link href="/booths" className="text-[#f5a623] hover:underline">three premium booths</Link> in detail</span>
+                  <span className="text-[#f5a623] font-bold flex-shrink-0 w-6">2.</span>
+                  <span>Echipa noastră va revizui disponibilitatea și va confirma în 2 ore</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-[#f5a623] flex-shrink-0 mt-0.5" />
-                  <span>Review our <Link href="/pricing" className="text-[#f5a623] hover:underline">transparent pricing and packages</Link></span>
+                  <span className="text-[#f5a623] font-bold flex-shrink-0 w-6">3.</span>
+                  <span>Te vom contacta prin telefon pentru a discuta detalii și a finaliza rezervarea</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-[#f5a623] font-bold flex-shrink-0 w-6">4.</span>
+                  <span>Plătește depozitul de 15% pentru a confirma data</span>
                 </li>
               </ul>
             </div>
@@ -65,15 +108,13 @@ export default function ThankYouContent() {
                 href="tel:+447482112110"
                 className="flex items-center justify-center gap-2 px-6 py-4 rounded-full border border-[#f5a623]/30 text-white hover:bg-[#f5a623]/10 transition-all duration-200"
               >
-                <Phone className="w-5 h-5 text-[#f5a623]" />
                 <span className="font-semibold">+44 7482 112110</span>
               </a>
               <a
-                href="mailto:FunLoading360@gmail.com"
+                href="mailto:hello@funloading360.co.uk"
                 className="flex items-center justify-center gap-2 px-6 py-4 rounded-full border border-[#f5a623]/30 text-white hover:bg-[#f5a623]/10 transition-all duration-200"
               >
-                <Mail className="w-5 h-5 text-[#f5a623]" />
-                <span className="font-semibold">Email us</span>
+                <span className="font-semibold">hello@funloading360.co.uk</span>
               </a>
             </div>
 
@@ -82,7 +123,7 @@ export default function ThankYouContent() {
               href="/"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#f5a623] text-[#0a0a0e] font-bold hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-[#f5a623]/25 hover:-translate-y-0.5"
             >
-              Back to Home
+              Înapoi la Acasă
               <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
@@ -102,35 +143,35 @@ export default function ThankYouContent() {
               className="text-3xl sm:text-4xl font-bold text-white mb-12 text-center"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Questions in the Meantime?
+              Întrebări?
             </h2>
 
             <div className="space-y-4">
               <div className="p-6 rounded-2xl bg-[#13131a] border border-[#2a2a3a]">
-                <h3 className="text-white font-semibold mb-2">What happens next?</h3>
+                <h3 className="text-white font-semibold mb-2">Ce se întâmplă mai departe?</h3>
                 <p className="text-gray-400 text-sm">
-                  Our team reviews your enquiry and calls within 2 hours (Monday–Sunday, 9am–9pm) to confirm your date, discuss package options, and answer any questions.
+                  Echipa noastră revizuiește cererea și ia contact în 2 ore (luni-duminică, 9:00-21:00) pentru a confirma data și discuta detalii.
                 </p>
               </div>
 
               <div className="p-6 rounded-2xl bg-[#13131a] border border-[#2a2a3a]">
-                <h3 className="text-white font-semibold mb-2">How do I book?</h3>
+                <h3 className="text-white font-semibold mb-2">Cum se finalizează rezervarea?</h3>
                 <p className="text-gray-400 text-sm">
-                  Once you've confirmed your date and package, we'll send a booking link. A 30% deposit secures your date, with the balance due 14 days before your event.
+                  După confirmarea disponibilității, vei primi o cerere de plată pentru depozitul de 15%. Restul se plătește înainte de eveniment.
                 </p>
               </div>
 
               <div className="p-6 rounded-2xl bg-[#13131a] border border-[#2a2a3a]">
-                <h3 className="text-white font-semibold mb-2">What if my date isn't available?</h3>
+                <h3 className="text-white font-semibold mb-2">Ce se întâmplă dacă data nu este disponibilă?</h3>
                 <p className="text-gray-400 text-sm">
-                  No problem! Our team will suggest alternative dates that work for you. We typically have availability across Essex, Kent, and London.
+                  Fără probleme! Echipa noastră va sugera date alternative care se potrivesc. Avem disponibilitate în Essex, Kent și Londra.
                 </p>
               </div>
 
               <div className="p-6 rounded-2xl bg-[#13131a] border border-[#2a2a3a]">
-                <h3 className="text-white font-semibold mb-2">Do you offer add-ons?</h3>
+                <h3 className="text-white font-semibold mb-2">Oferiți îmbunătățiri?</h3>
                 <p className="text-gray-400 text-sm">
-                  Yes! We offer extras like custom overlays, guest books, backdrop upgrades, and more. Our team will discuss these options when they call.
+                  Da! Oferim servicii suplimentare precum carte de oaspeți, montaj video și oră suplimentară. Echipa va discuta aceste opțiuni.
                 </p>
               </div>
             </div>
