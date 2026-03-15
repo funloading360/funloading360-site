@@ -9,6 +9,7 @@ import { Check, ChevronRight, Calendar, User, Package, Loader2, ArrowRight } fro
 import { cn } from "@/lib/utils";
 import { validatePhone } from "@/lib/validation";
 import { services, formatPrice, getPriceForTier, PricingTier } from "@/lib/services";
+import CustomCalendar from "@/components/CustomCalendar";
 
 const eventTypes = [
   "Nuntă",
@@ -396,22 +397,16 @@ export default function BookPage() {
 
                       <div className="space-y-4">
                         <div>
-                          <label htmlFor="book-event-date" className="block text-sm font-medium text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
                             Data preferată <span className="text-[#f5a623]">*</span>
                           </label>
-                          <input
-                            id="book-event-date"
-                            type="date"
-                            required
+                          <CustomCalendar
                             value={formData.eventDate}
-                            onChange={(e) =>
-                              setFormData({ ...formData, eventDate: e.target.value })
-                            }
-                            onBlur={handleFieldBlur}
-                            min={new Date().toISOString().split("T")[0]}
-                            className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border ${
-                              fieldErrors.eventDate ? 'border-red-500/50' : 'border-[#2a2a3a]'
-                            } text-white text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors [color-scheme:dark] min-h-[48px] sm:min-h-[44px]`}
+                            onChange={(date) => {
+                              setFormData({ ...formData, eventDate: date });
+                              setFieldErrors(prev => ({...prev, eventDate: ""}));
+                            }}
+                            minDate={new Date().toISOString().split("T")[0]}
                           />
                           {fieldErrors.eventDate && (
                             <div className="mt-1.5 flex items-start gap-2 text-red-400 text-xs">
