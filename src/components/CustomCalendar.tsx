@@ -124,12 +124,12 @@ export default function CustomCalendar({
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const emptyDays = Array.from({ length: firstDay }, (_, i) => i);
 
-  const monthName = currentMonth.toLocaleDateString("ro-RO", {
+  const monthName = currentMonth.toLocaleDateString("en-GB", {
     month: "long",
     year: "numeric",
   });
 
-  const weekDays = ["Du", "Lu", "Ma", "Mi", "Jo", "Vi", "Sa"];
+  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
     <div className="bg-[#13131a] border border-[#2a2a3a] rounded-lg p-4">
@@ -226,7 +226,7 @@ export default function CustomCalendar({
 
       {/* Info text */}
       <p className="text-xs text-gray-500 mt-4 text-center">
-        Dateile gri sunt indisponibile
+        Gray dates are unavailable
       </p>
     </div>
   );
