@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { services, formatPrice, getPriceForTier, PricingTier } from "@/lib/services";
+import { useCart } from "@/hooks/useCart";
 import CustomCalendar from "@/components/CustomCalendar";
 
 const eventTypes = [
@@ -29,8 +30,19 @@ const upsells = [
 export default function BookPage() {
   const photoBooths = services.find((s) => s.id === "photo-booths");
   const products = photoBooths?.products || [];
+  const { items: cartItems } = useCart();
+
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [selectedTier, setSelectedTier] = useState<PricingTier | null>(null);
+
+  // Pre-populate from cart if available
+  useEffect(() => {
+    if (cartItems.length > 0 && !selectedProduct) {
+      const firstItem = cartItems[0];
+      setSelectedProduct(firstItem.productId);
+      setSelectedTier(firstItem.selectedTier);
+    }
+  }, [cartItems]);
   const [selectedUpsells, setSelectedUpsells] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
