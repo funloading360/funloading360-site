@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -7,10 +8,43 @@ import { Trash2, ArrowRight, ShoppingCart } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { getPriceForTier, formatPrice, PricingTier } from "@/lib/services";
 import { cn } from "@/lib/utils";
+import { trackViewCart, trackRemoveFromCart, trackBeginCheckout } from "@/lib/analytics";
+import { trackFunnelStage } from "@/lib/conversionFunnel";
 
 export default function CartContent() {
   const { items, removeFromCart, updateQuantity, updateTier, getProduct, getCartTotal } =
     useCart();
+
+  // Track cart view on mount
+  useEffect(() => {
+    const totalPrice = getCartTotal();
+    if (items.length > 0) {
+      const cartItems = items
+        .map((item) => {
+          const product = getProduct(item.productId);
+          if (!product) return null;
+          return {
+            productId: item.productId,
+            productName: product.name,
+            tier: item.selectedTier,
+            price: getPriceForTier(product, item.selectedTier),
+            quantity: item.quantity,
+          };
+        })
+        .filter((item) => item !== null) as Array<{
+        productId: string;
+        productName: string;
+        tier: string;
+        price: number;
+        quantity: number;
+      }>;
+
+      if (cartItems.length > 0) {
+        trackViewCart(cartItems, totalPrice);
+        trackFunnelStage("cart_view", { itemCount: items.length, cartTotal: totalPrice });
+      }
+    }
+  }, []);
 
   const isEmpty = items.length === 0;
   const totalPrice = getCartTotal();
@@ -175,7 +209,14 @@ export default function CartContent() {
                             </p>
                           </div>
                           <button
-                            onClick={() => removeFromCart(item.productId)}
+                            onClick={() => {
+                              const product = getProduct(item.productId);
+                              if (product) {
+                                const price = getPriceForTier(product, item.selectedTier);
+                                trackRemoveFromCart(item.productId, product.name, price);
+                              }
+                              removeFromCart(item.productId);
+                            }}
                             className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/40 transition-all"
                             title="Șterge articolul"
                           >
