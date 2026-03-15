@@ -18,12 +18,12 @@ export interface BookingSMSData {
  */
 export function generateConfirmationSMS(data: BookingSMSData): string {
   const dateObj = new Date(data.date);
-  const dateStr = dateObj.toLocaleDateString("ro-RO", {
+  const dateStr = dateObj.toLocaleDateString("en-GB", {
     month: "short",
     day: "numeric",
   });
 
-  return `Mulțumesc ${data.name}! Am primit rezervarea pentru ${data.productName} (${data.tier}) pe ${dateStr}. Vei primi oferta în 5 min. Dezinformare? +447482112110 - FunLoading360`;
+  return `Hi ${data.name}! Your booking for ${data.productName} (${data.tier}) on ${dateStr} is confirmed. Quote in 5 min. Questions? +447482112110 - FunLoading360`;
 }
 
 /**

@@ -89,7 +89,7 @@ export default function ServicesContent() {
         </div>
       </section>
 
-      {/* Coș Badge - Top Right */}
+      {/* Cart Badge - Top Right */}
       <div className="fixed top-24 right-6 z-40">
         <Link href="/cart" className="relative inline-flex">
           <div className="p-3 rounded-full bg-[#f5a623] text-[#0a0a0e] hover:bg-[#fbbf4a] transition-colors shadow-lg">
@@ -117,7 +117,7 @@ export default function ServicesContent() {
         )}
       </AnimatePresence>
 
-      {/* Servicii Grid */}
+      {/* Services Grid */}
       <section className="pb-24 lg:pb-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
           {products.map((product, i) => (
@@ -134,7 +134,7 @@ export default function ServicesContent() {
                 i % 2 === 1 ? "lg:grid-flow-dense" : ""
               }`}
             >
-              {/* Imagine */}
+              {/* Image */}
               <motion.div
                 variants={fadeUp}
                 className={`relative rounded-3xl overflow-hidden aspect-[4/3] border ${product.borderColor}`}
@@ -157,7 +157,7 @@ export default function ServicesContent() {
                 </div>
               </motion.div>
 
-              {/* Conținut */}
+              {/* Content */}
               <motion.div
                 variants={fadeUp}
                 className={i % 2 === 1 ? "lg:col-start-1 lg:row-start-1" : ""}
@@ -178,7 +178,7 @@ export default function ServicesContent() {
                   {product.longDescription}
                 </p>
 
-                {/* Tieruri de Preț */}
+                {/* Pricing Tiers */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
                   {(Object.entries(product.tiers) as Array<[PricingTier, any]>).map(
                     ([tierKey, tier]) => (
@@ -201,7 +201,7 @@ export default function ServicesContent() {
                   )}
                 </div>
 
-                {/* Caracteristici */}
+                {/* Features */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
                   {product.tiers.essential.features.slice(0, 8).map((f) => (
                     <div key={f} className="flex items-center gap-2.5 text-sm text-gray-300">

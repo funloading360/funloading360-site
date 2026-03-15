@@ -21,14 +21,14 @@ export interface BookingEmailData {
  * Generate confirmation email HTML
  */
 export function generateConfirmationEmail(data: BookingEmailData): string {
-  const formattedDate = new Date(data.date).toLocaleDateString("ro-RO", {
+  const formattedDate = new Date(data.date).toLocaleDateString("en-GB", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 
   const altDateFormatted = data.altDate
-    ? new Date(data.altDate).toLocaleDateString("ro-RO", {
+    ? new Date(data.altDate).toLocaleDateString("en-GB", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -37,11 +37,11 @@ export function generateConfirmationEmail(data: BookingEmailData): string {
 
   return `
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirmarea Rezervării - FunLoading360</title>
+  <title>Booking Confirmation - FunLoading360</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -133,41 +133,41 @@ export function generateConfirmationEmail(data: BookingEmailData): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1>✓ Rezervarea ta a fost primită!</h1>
+      <h1>✓ Your Booking Has Been Received!</h1>
     </div>
 
     <div class="content">
-      <p>Bună, ${data.name}!</p>
+      <p>Hi ${data.name},</p>
 
-      <p>Mulțumim pentru rezervarea la <strong>FunLoading360</strong>. Am primit cererea ta și vei primi o ofertă detaliată în următoarele 5 minute.</p>
+      <p>Thank you for booking with <strong>FunLoading360</strong>. We've received your request and you'll receive a detailed quote within the next 5 minutes.</p>
 
       <div class="info-box">
-        <strong>🚀 Pasul următor:</strong><br>
-        Echipa noastră va revizui disponibilitatea și te va contacta în maxim 2 ore pentru a confirma data și a discuta detalii.
+        <strong>🚀 Next Step:</strong><br>
+        Our team will review availability and contact you within 2 hours to confirm your date and discuss details.
       </div>
 
       <div class="section">
-        <div class="section-title">Rezumatul Rezervării</div>
+        <div class="section-title">Booking Summary</div>
         <div class="detail-row">
-          <span class="detail-label">Serviciu:</span>
+          <span class="detail-label">Service:</span>
           <span class="detail-value">${data.productName}</span>
         </div>
         <div class="detail-row">
-          <span class="detail-label">Pachet:</span>
+          <span class="detail-label">Package:</span>
           <span class="detail-value">${data.tier}</span>
         </div>
         <div class="detail-row">
-          <span class="detail-label">Data:</span>
+          <span class="detail-label">Date:</span>
           <span class="detail-value">${formattedDate}</span>
         </div>
         ${altDateFormatted
           ? `<div class="detail-row">
-          <span class="detail-label">Dată alternativă:</span>
+          <span class="detail-label">Alternative Date:</span>
           <span class="detail-value">${altDateFormatted}</span>
         </div>`
           : ""}
         <div class="detail-row">
-          <span class="detail-label">Locul evenimentului:</span>
+          <span class="detail-label">Event Venue:</span>
           <span class="detail-value">${data.venue}</span>
         </div>
       </div>
@@ -175,31 +175,31 @@ export function generateConfirmationEmail(data: BookingEmailData): string {
       ${
         data.upsells.length > 0
           ? `<div class="section">
-        <div class="section-title">Îmbunătățiri Selectate</div>
+        <div class="section-title">Selected Add-ons</div>
         ${data.upsells.map((u) => `<div class="detail-row"><span class="detail-label">${u.name}:</span><span class="detail-value">£${u.price}</span></div>`).join("")}
       </div>`
           : ""
       }
 
       <div class="section">
-        <div class="section-title">Preț</div>
+        <div class="section-title">Pricing</div>
         <div class="detail-row">
-          <span class="detail-label">Preț total:</span>
+          <span class="detail-label">Total Price:</span>
           <span class="detail-value">£${data.totalPrice}</span>
         </div>
         <div class="detail-row total">
-          <span>Depozit (15%):</span>
+          <span>Deposit (15%):</span>
           <span>£${data.depositPrice}</span>
         </div>
         <p style="color: #666; font-size: 12px; margin-top: 10px;">
-          Restul de £${data.totalPrice - data.depositPrice} se va plăti înainte de eveniment.
+          The remaining £${data.totalPrice - data.depositPrice} will be paid before your event.
         </p>
       </div>
 
       <div class="section">
-        <div class="section-title">Datele de Contact</div>
+        <div class="section-title">Contact Details</div>
         <div class="detail-row">
-          <span class="detail-label">Telefon:</span>
+          <span class="detail-label">Phone:</span>
           <span class="detail-value">${data.phone}</span>
         </div>
         <div class="detail-row">
@@ -209,15 +209,15 @@ export function generateConfirmationEmail(data: BookingEmailData): string {
       </div>
 
       <p style="color: #666; font-size: 14px;">
-        <strong>Contactează-ne dacă ai întrebări:</strong><br>
+        <strong>Contact us if you have questions:</strong><br>
         📞 +44 7482 112110<br>
         ✉️ hello@funloading360.co.uk
       </p>
     </div>
 
     <div class="footer">
-      <p>© 2026 FunLoading360. Toate drepturile rezervate.</p>
-      <p>Acest email conține detaliile rezervării tale. Te rugăm să o păstrezi pentru referință.</p>
+      <p>© 2026 FunLoading360. All rights reserved.</p>
+      <p>This email contains your booking details. Please keep it for your records.</p>
     </div>
   </div>
 </body>
@@ -237,7 +237,7 @@ export async function sendConfirmationEmail(data: BookingEmailData): Promise<voi
     // const response = await resend.emails.send({
     //   from: 'booking@funloading360.co.uk',
     //   to: data.email,
-    //   subject: 'Confirmarea Rezervării - FunLoading360',
+    //   subject: 'Booking Confirmation - FunLoading360',
     //   html,
     // });
 

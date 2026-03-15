@@ -84,7 +84,7 @@ export default function StripePaymentModal({
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-white">Plăteşte Depozit</h2>
+          <h2 className="text-xl font-bold text-white">Pay Deposit</h2>
           <button
             onClick={onClose}
             disabled={isProcessing}
@@ -98,15 +98,15 @@ export default function StripePaymentModal({
         {/* Amount Info */}
         <div className="bg-[#0a0a0e] rounded-lg p-4 mb-6">
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-gray-400">Total rezervare:</span>
+            <span className="text-gray-400">Total Booking:</span>
             <span className="text-white font-semibold">£{totalPrice.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm mb-3 pb-3 border-b border-[#2a2a3a]">
-            <span className="text-gray-400">Depozit (15%):</span>
+            <span className="text-gray-400">Deposit (15%):</span>
             <span className="text-[#f5a623] font-semibold">£{depositAmount.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-300 text-xs">Restul (85%) se plateste inainte de eveniment</span>
+            <span className="text-gray-300 text-xs">Remaining (85%) due before event</span>
           </div>
         </div>
 
@@ -121,10 +121,10 @@ export default function StripePaymentModal({
               <Check className="w-8 h-8 text-[#f5a623]" />
             </div>
             <h3 className="text-lg font-bold text-white mb-2">
-              Plată Confirmată!
+              Payment Confirmed!
             </h3>
             <p className="text-sm text-gray-400">
-              Email de confirmare a fost trimis la {email}
+              Confirmation email sent to {email}
             </p>
           </motion.div>
         ) : (
@@ -133,7 +133,7 @@ export default function StripePaymentModal({
             {/* Card Number */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Numărul cardului
+                Card Number
               </label>
               <input
                 type="text"
@@ -151,7 +151,7 @@ export default function StripePaymentModal({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Data expirării
+                  Expiry Date
                 </label>
                 <input
                   type="text"
@@ -190,7 +190,7 @@ export default function StripePaymentModal({
 
             {/* Info Text */}
             <p className="text-xs text-gray-500 text-center">
-              Pentru testare: 4242 4242 4242 4242 | Orice data viitoare | Orice CVC
+              For testing: 4242 4242 4242 4242 | Any future date | Any CVC
             </p>
 
             {/* Submit Button */}
@@ -205,7 +205,7 @@ export default function StripePaymentModal({
               )}
             >
               {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
-              {isProcessing ? "Se procesează..." : `Plăteste £${depositAmount.toFixed(2)}`}
+              {isProcessing ? "Processing..." : `Pay £${depositAmount.toFixed(2)}`}
             </button>
 
             <button
@@ -214,7 +214,7 @@ export default function StripePaymentModal({
               disabled={isProcessing}
               className="w-full py-2 px-4 rounded-lg font-medium text-gray-300 hover:text-white transition-colors disabled:opacity-50"
             >
-              Anulează
+              Cancel
             </button>
           </form>
         )}

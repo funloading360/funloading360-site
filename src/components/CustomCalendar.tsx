@@ -210,9 +210,9 @@ export default function CustomCalendar({
                   )}
                   title={
                     isUnavailable
-                      ? "Dată indisponibilă"
+                      ? "Date unavailable"
                       : isPast
-                        ? "Data a trecut"
+                        ? "Date has passed"
                         : undefined
                   }
                 >
