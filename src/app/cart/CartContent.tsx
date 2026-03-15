@@ -67,10 +67,10 @@ export default function CartContent() {
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Coșul tău
+              Your Cart
             </h1>
             <p className="text-gray-400 text-lg">
-              {isEmpty ? "Coșul este gol" : `${items.length} articol${items.length !== 1 ? "e" : ""} în coș`}
+              {isEmpty ? "Cart is empty" : `${items.length} item${items.length !== 1 ? "s" : ""} in cart`}
             </p>
           </motion.div>
         </div>
@@ -85,15 +85,15 @@ export default function CartContent() {
             className="text-center py-20"
           >
             <ShoppingCart className="w-16 h-16 mx-auto mb-6 text-gray-500" />
-            <h2 className="text-2xl font-bold mb-3">Coșul este gol</h2>
+            <h2 className="text-2xl font-bold mb-3">Cart is Empty</h2>
             <p className="text-gray-400 mb-8 max-w-md mx-auto">
-              Explorează serviciile noastre și adaugă pachete în coș pentru a continua.
+              Browse our services and add packages to your cart to continue.
             </p>
             <Link
               href="/services"
               className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-[#f5a623] text-[#0a0a0e] font-bold text-sm hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-[#f5a623]/20"
             >
-              Explorează Serviciile
+              Browse Services
               <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
@@ -149,7 +149,7 @@ export default function CartContent() {
                             {/* Tier Selection */}
                             <div className="mb-4">
                               <label className="block text-xs font-semibold text-gray-300 mb-2">
-                                Pachet
+                                Package
                               </label>
                               <select
                                 value={item.selectedTier}
@@ -171,7 +171,7 @@ export default function CartContent() {
                             {/* Quantity */}
                             <div>
                               <label className="block text-xs font-semibold text-gray-300 mb-2">
-                                Cantitate
+                                Quantity
                               </label>
                               <div className="flex items-center gap-2">
                                 <button
@@ -218,7 +218,7 @@ export default function CartContent() {
                               removeFromCart(item.productId);
                             }}
                             className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/40 transition-all"
-                            title="Șterge articolul"
+                            title="Delete item"
                           >
                             <Trash2 className="w-5 h-5" />
                           </button>
@@ -242,23 +242,23 @@ export default function CartContent() {
                   className="text-xl font-bold text-white"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
-                  Rezumat
+                  Summary
                 </h3>
 
                 {/* Summary Items */}
                 <div className="space-y-3 border-b border-[#2a2a3a] pb-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Articole ({items.length})</span>
+                    <span className="text-gray-400">Items ({items.length})</span>
                     <span className="text-white font-medium">{formatPrice(totalPrice)}</span>
                   </div>
                 </div>
 
                 {/* Deposit Info */}
                 <div className="bg-[#f5a623]/10 border border-[#f5a623]/20 rounded-lg p-4">
-                  <p className="text-xs text-gray-400 mb-2">Depozit necesar (15%)</p>
+                  <p className="text-xs text-gray-400 mb-2">Deposit Required (15%)</p>
                   <p className="text-xl font-bold text-[#f5a623]">{formatPrice(depositPrice)}</p>
                   <p className="text-xs text-gray-500 mt-2">
-                    Restul se plătește înainte de eveniment
+                    Balance due before event
                   </p>
                 </div>
 
@@ -275,14 +275,14 @@ export default function CartContent() {
                       href="/book"
                       className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-[#f5a623] text-[#0a0a0e] font-bold text-sm hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-[#f5a623]/20"
                     >
-                      Continuă Checkout
+                      Continue to Checkout
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                     <Link
                       href="/services"
                       className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border border-[#2a2a3a] text-white font-semibold text-sm hover:border-[#f5a623]/40 hover:bg-white/5 transition-all duration-200"
                     >
-                      Continuă Cumpărături
+                      Continue Shopping
                     </Link>
                   </div>
                 </div>

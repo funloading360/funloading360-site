@@ -97,9 +97,9 @@ export async function POST(req: NextRequest) {
         depositPrice: Math.round(totalPrice * 0.15),
         upsells: upsells.map((id) => {
           const upsellMap: Record<string, { name: string; price: number }> = {
-            "guest-book": { name: "Carte de oaspeți", price: 40 },
-            "extra-hour": { name: "Oră suplimentară", price: 75 },
-            "highlight-reel": { name: "Montaj video", price: 79 },
+            "guest-book": { name: "Guest Book", price: 40 },
+            "extra-hour": { name: "Extra Hour", price: 75 },
+            "highlight-reel": { name: "Highlight Reel", price: 79 },
           };
           return upsellMap[id] || { name: id, price: 0 };
         }),
@@ -136,20 +136,20 @@ export async function POST(req: NextRequest) {
       from: "Website Booking <noreply@funloading360.co.uk>",
       to: TO_EMAIL,
       replyTo: email,
-      subject: `Cerere Rezervare Nouă — ${name} (${eventType})`,
+      subject: `New Booking Request — ${name} (${eventType})`,
       text: [
-        product ? `Produs: ${product.name}` : `Pachet: ${packageId}`,
-        tier ? `Pachet: ${tier}` : null,
-        `Nume: ${name}`,
+        product ? `Service: ${product.name}` : `Package: ${packageId}`,
+        tier ? `Package: ${tier}` : null,
+        `Name: ${name}`,
         `Email: ${email}`,
-        `Telefon: ${phone}`,
-        `Tip eveniment: ${eventType}`,
-        `Data preferată: ${eventDate}`,
-        altDate ? `Dată alternativă: ${altDate}` : null,
-        `Locul evenimentului: ${venue}`,
-        totalPrice > 0 ? `Preț total: £${totalPrice}` : null,
-        upsells.length > 0 ? `Îmbunătățiri: ${upsells.join(", ")}` : null,
-        `Cerințe speciale: ${specialRequests || "—"}`,
+        `Phone: ${phone}`,
+        `Event Type: ${eventType}`,
+        `Preferred Date: ${eventDate}`,
+        altDate ? `Alternative Date: ${altDate}` : null,
+        `Venue: ${venue}`,
+        totalPrice > 0 ? `Total Price: £${totalPrice}` : null,
+        upsells.length > 0 ? `Add-ons: ${upsells.join(", ")}` : null,
+        `Special Requests: ${specialRequests || "—"}`,
       ]
         .filter(Boolean)
         .join("\n"),

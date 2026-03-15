@@ -32,15 +32,15 @@ export default function ThankYouContent() {
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Cererea ta a fost primită!
+              Your Request Has Been Received!
             </h1>
 
             <p className="text-gray-300 text-lg leading-relaxed mb-3">
-              Mulțumesc pentru interesul în FunLoading360. Am primit cererea ta și echipa noastră va veni în contact în maxim <span className="text-[#f5a623] font-semibold">2 ore</span> pentru a confirma disponibilitatea.
+              Thank you for your interest in FunLoading360. We've received your request and our team will get in touch within <span className="text-[#f5a623] font-semibold">2 hours</span> to confirm availability.
             </p>
 
             <p className="text-gray-400 text-sm mb-8">
-              Oferta ta va fi trimisă prin email și SMS în următoarele 5 minute.
+              Your quote will be sent via email and SMS within the next 5 minutes.
             </p>
 
             {/* Confirmation Messages */}
@@ -54,8 +54,8 @@ export default function ThankYouContent() {
                 <div className="flex items-start gap-3 mb-2">
                   <Mail className="w-5 h-5 text-[#f5a623] flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="text-white font-semibold">Email de confirmare</h3>
-                    <p className="text-gray-400 text-xs mt-1">Verific-ți inbox și folderul de spam</p>
+                    <h3 className="text-white font-semibold">Confirmation Email</h3>
+                    <p className="text-gray-400 text-xs mt-1">Check your inbox and spam folder</p>
                   </div>
                 </div>
               </motion.div>
@@ -69,8 +69,8 @@ export default function ThankYouContent() {
                 <div className="flex items-start gap-3 mb-2">
                   <MessageCircle className="w-5 h-5 text-[#f5a623] flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="text-white font-semibold">SMS de confirmare</h3>
-                    <p className="text-gray-400 text-xs mt-1">Mesaj text cu detaliile rezervării</p>
+                    <h3 className="text-white font-semibold">Confirmation SMS</h3>
+                    <p className="text-gray-400 text-xs mt-1">Text message with booking details</p>
                   </div>
                 </div>
               </motion.div>
@@ -80,24 +80,24 @@ export default function ThankYouContent() {
             <div className="bg-[#13131a] border border-[#2a2a3a] rounded-2xl p-8 mb-8">
               <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-[#f5a623]" />
-                Ce se întâmplă acum?
+                What happens now?
               </h3>
               <ul className="space-y-3 text-left text-gray-300 text-sm">
                 <li className="flex items-start gap-3">
                   <span className="text-[#f5a623] font-bold flex-shrink-0 w-6">1.</span>
-                  <span>Oferta ta va fi generată în ~5 minute și trimisă prin email</span>
+                  <span>Your quote will be generated in ~5 minutes and sent via email</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#f5a623] font-bold flex-shrink-0 w-6">2.</span>
-                  <span>Echipa noastră va revizui disponibilitatea și va confirma în 2 ore</span>
+                  <span>Our team will review availability and confirm within 2 hours</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#f5a623] font-bold flex-shrink-0 w-6">3.</span>
-                  <span>Te vom contacta prin telefon pentru a discuta detalii și a finaliza rezervarea</span>
+                  <span>We'll call you to discuss details and finalize your booking</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#f5a623] font-bold flex-shrink-0 w-6">4.</span>
-                  <span>Plătește depozitul de 15% pentru a confirma data</span>
+                  <span>Pay the 15% deposit to confirm your date</span>
                 </li>
               </ul>
             </div>
@@ -123,7 +123,7 @@ export default function ThankYouContent() {
               href="/"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#f5a623] text-[#0a0a0e] font-bold hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-[#f5a623]/25 hover:-translate-y-0.5"
             >
-              Înapoi la Acasă
+              Back Home
               <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
@@ -143,35 +143,35 @@ export default function ThankYouContent() {
               className="text-3xl sm:text-4xl font-bold text-white mb-12 text-center"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Întrebări?
+              Questions?
             </h2>
 
             <div className="space-y-4">
               <div className="p-6 rounded-2xl bg-[#13131a] border border-[#2a2a3a]">
-                <h3 className="text-white font-semibold mb-2">Ce se întâmplă mai departe?</h3>
+                <h3 className="text-white font-semibold mb-2">What happens next?</h3>
                 <p className="text-gray-400 text-sm">
-                  Echipa noastră revizuiește cererea și ia contact în 2 ore (luni-duminică, 9:00-21:00) pentru a confirma data și discuta detalii.
+                  Our team reviews your request and contacts you within 2 hours (Mon-Sun, 9am-9pm) to confirm your date and discuss details.
                 </p>
               </div>
 
               <div className="p-6 rounded-2xl bg-[#13131a] border border-[#2a2a3a]">
-                <h3 className="text-white font-semibold mb-2">Cum se finalizează rezervarea?</h3>
+                <h3 className="text-white font-semibold mb-2">How is my booking finalized?</h3>
                 <p className="text-gray-400 text-sm">
-                  După confirmarea disponibilității, vei primi o cerere de plată pentru depozitul de 15%. Restul se plătește înainte de eveniment.
+                  After confirming availability, you'll receive a payment request for the 15% deposit. The balance is due before your event.
                 </p>
               </div>
 
               <div className="p-6 rounded-2xl bg-[#13131a] border border-[#2a2a3a]">
-                <h3 className="text-white font-semibold mb-2">Ce se întâmplă dacă data nu este disponibilă?</h3>
+                <h3 className="text-white font-semibold mb-2">What if my date isn't available?</h3>
                 <p className="text-gray-400 text-sm">
-                  Fără probleme! Echipa noastră va sugera date alternative care se potrivesc. Avem disponibilitate în Essex, Kent și Londra.
+                  No problem! Our team will suggest alternative dates that work. We have availability across Essex, Kent and London.
                 </p>
               </div>
 
               <div className="p-6 rounded-2xl bg-[#13131a] border border-[#2a2a3a]">
-                <h3 className="text-white font-semibold mb-2">Oferiți îmbunătățiri?</h3>
+                <h3 className="text-white font-semibold mb-2">Do you offer add-ons?</h3>
                 <p className="text-gray-400 text-sm">
-                  Da! Oferim servicii suplimentare precum carte de oaspeți, montaj video și oră suplimentară. Echipa va discuta aceste opțiuni.
+                  Yes! We offer add-ons like guest books, highlight reels and extra hours. Our team will discuss these options.
                 </p>
               </div>
             </div>

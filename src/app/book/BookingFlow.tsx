@@ -12,25 +12,25 @@ import { services, formatPrice, getPriceForTier, PricingTier } from "@/lib/servi
 import CustomCalendar from "@/components/CustomCalendar";
 
 const eventTypes = [
-  "Nuntă",
-  "Zi de naștere",
-  "Eveniment corporativ",
-  "Bal de liceu",
-  "Aniversare",
-  "Botez",
-  "Petrecere de logodnă",
-  "Altele",
+  "Wedding",
+  "Birthday",
+  "Corporate Event",
+  "School Prom",
+  "Anniversary",
+  "Christening",
+  "Engagement Party",
+  "Other",
 ];
 
 const upsells = [
-  { id: "guest-book", name: "Carte de oaspeți", price: 40, description: "Oaspeții semnează amintiri" },
-  { id: "extra-hour", name: "Oră suplimentară", price: 75, description: "Mai mult timp pentru distracție" },
-  { id: "highlight-reel", name: "Montaj video", price: 79, description: "Editare profesională următoarea zi" },
+  { id: "guest-book", name: "Guest Book", price: 40, description: "Guests sign memories" },
+  { id: "extra-hour", name: "Extra Hour", price: 75, description: "More time for fun" },
+  { id: "highlight-reel", name: "Highlight Reel", price: 79, description: "Professional edit next day" },
 ];
 
 const steps = [
-  { id: 0, label: "Selectare", icon: Package },
-  { id: 1, label: "Detalii", icon: User },
+  { id: 0, label: "Selection", icon: Package },
+  { id: 1, label: "Details", icon: User },
 ];
 
 export default function BookPage() {
@@ -84,30 +84,30 @@ export default function BookPage() {
   const validateField = (name: string, value: string): string => {
     switch (name) {
       case 'name':
-        if (!value.trim()) return 'Numele complet este obligatoriu';
-        if (value.trim().length < 2) return 'Numele trebuie să aibă cel puțin 2 caractere';
+        if (!value.trim()) return 'Full name is required';
+        if (value.trim().length < 2) return 'Name must be at least 2 characters';
         return '';
       case 'email':
-        if (!value) return 'Email-ul este obligatoriu';
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Formatul email-ului este invalid';
+        if (!value) return 'Email is required';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Invalid email format';
         return '';
       case 'phone':
         const cleaned = value.replace(/[\s\-()\.]/g, '');
-        if (!cleaned) return 'Numărul de telefon este obligatoriu';
-        if (!/^\+?\d{10,}$/.test(cleaned)) return 'Format invalid. Încercați: +44 7482 112110';
+        if (!cleaned) return 'Phone number is required';
+        if (!/^\+?\d{10,}$/.test(cleaned)) return 'Invalid format. Try: +44 7482 112110';
         return '';
       case 'eventDate':
-        if (!value) return 'Data evenimentului este obligatorie';
+        if (!value) return 'Event date is required';
         const selectedDate = new Date(value);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        if (selectedDate < today) return 'Data trebuie să fie în viitor';
+        if (selectedDate < today) return 'Event date must be in the future';
         return '';
       case 'venue':
-        if (!value.trim()) return 'Locul evenimentului este obligatoriu';
+        if (!value.trim()) return 'Venue is required';
         return '';
       case 'eventType':
-        if (!value) return 'Tipul evenimentului este obligatoriu';
+        if (!value) return 'Event type is required';
         return '';
       default:
         return '';
@@ -176,7 +176,7 @@ export default function BookPage() {
       window.location.href = "/thank-you";
     } catch {
       setIsSubmitting(false);
-      setSubmitError("A apărut o eroare. Vă rugăm să încercați din nou sau să ne contactați la hello@funloading360.co.uk");
+      setSubmitError("An error occurred. Please try again or contact us at hello@funloading360.co.uk");
     }
   };
 
@@ -194,16 +194,16 @@ export default function BookPage() {
             transition={{ duration: 0.6 }}
           >
             <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">
-              Finalizează Rezervarea
+              Complete Your Booking
             </p>
             <h1
               className="text-4xl sm:text-5xl font-bold text-white mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Rezervă Photo Booth-ul Tău
+              Book Your Photo Booth
             </h1>
             <p className="text-gray-400">
-              Finalizează în 2 ușoare pași. Vom confirma disponibilitatea în maxim 2 ore.
+              Complete in 2 easy steps. We'll confirm availability within 2 hours.
             </p>
           </motion.div>
         </div>
@@ -270,10 +270,10 @@ export default function BookPage() {
                 className="text-2xl font-bold text-white text-center mb-2"
                 style={{ fontFamily: "var(--font-playfair)" }}
               >
-                Alege Photo Booth-ul
+                Choose Your Photo Booth
               </h2>
               <p className="text-center text-gray-400 mb-10">
-                Selectează serviciul și pachetul care se potrivesc evenimentului tău
+                Select the service and package that suits your event
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -364,7 +364,7 @@ export default function BookPage() {
                       : "bg-[#13131a] text-gray-500 border border-[#2a2a3a] cursor-not-allowed"
                   )}
                 >
-                  Continuă
+                  Continue
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
@@ -387,18 +387,18 @@ export default function BookPage() {
                     className="text-2xl font-bold text-white mb-8"
                     style={{ fontFamily: "var(--font-playfair)" }}
                   >
-                    Detalii & Upsells
+                    Details & Add-ons
                   </h2>
 
                   <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Date Section */}
                     <div className="rounded-2xl bg-[#13131a] border border-[#2a2a3a] p-6">
-                      <h3 className="text-lg font-bold text-white mb-4">Data Evenimentului</h3>
+                      <h3 className="text-lg font-bold text-white mb-4">Event Date</h3>
 
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Data preferată <span className="text-[#f5a623]">*</span>
+                            Preferred Date <span className="text-[#f5a623]">*</span>
                           </label>
                           <CustomCalendar
                             value={formData.eventDate}
@@ -418,7 +418,7 @@ export default function BookPage() {
 
                         <div>
                           <label htmlFor="book-alt-date" className="block text-sm font-medium text-gray-300 mb-2">
-                            Dată alternativă <span className="text-gray-500 font-normal">(opțional)</span>
+                            Alternative Date <span className="text-gray-500 font-normal">(optional)</span>
                           </label>
                           <input
                             id="book-alt-date"
@@ -436,12 +436,12 @@ export default function BookPage() {
 
                     {/* Contact Details */}
                     <div className="rounded-2xl bg-[#13131a] border border-[#2a2a3a] p-6">
-                      <h3 className="text-lg font-bold text-white mb-4">Date Personale</h3>
+                      <h3 className="text-lg font-bold text-white mb-4">Personal Details</h3>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label htmlFor="book-name" className="block text-sm font-medium text-gray-300 mb-2">
-                            Nume complet <span className="text-[#f5a623]">*</span>
+                            Full Name <span className="text-[#f5a623]">*</span>
                           </label>
                           <input
                             id="book-name"
@@ -453,7 +453,7 @@ export default function BookPage() {
                               setFormData({ ...formData, name: e.target.value })
                             }
                             onBlur={handleFieldBlur}
-                            placeholder="ex. Maria Popescu"
+                            placeholder="e.g. John Smith"
                             className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border ${
                               fieldErrors.name ? 'border-red-500/50' : 'border-[#2a2a3a]'
                             } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors min-h-[48px] sm:min-h-[44px]`}
@@ -480,7 +480,7 @@ export default function BookPage() {
                               setFormData({ ...formData, email: e.target.value })
                             }
                             onBlur={handleFieldBlur}
-                            placeholder="maria@exemplu.com"
+                            placeholder="john@example.com"
                             className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border ${
                               fieldErrors.email ? 'border-red-500/50' : 'border-[#2a2a3a]'
                             } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors min-h-[48px] sm:min-h-[44px]`}
@@ -495,7 +495,7 @@ export default function BookPage() {
 
                         <div>
                           <label htmlFor="book-phone" className="block text-sm font-medium text-gray-300 mb-2">
-                            Telefon <span className="text-[#f5a623]">*</span>
+                            Phone <span className="text-[#f5a623]">*</span>
                           </label>
                           <input
                             id="book-phone"
@@ -522,7 +522,7 @@ export default function BookPage() {
 
                         <div>
                           <label htmlFor="book-event-type" className="block text-sm font-medium text-gray-300 mb-2">
-                            Tip eveniment <span className="text-[#f5a623]">*</span>
+                            Event Type <span className="text-[#f5a623]">*</span>
                           </label>
                           <select
                             id="book-event-type"
@@ -538,7 +538,7 @@ export default function BookPage() {
                             } text-white text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors appearance-none min-h-[48px] sm:min-h-[44px]`}
                           >
                             <option value="" disabled className="text-gray-600">
-                              Selectează tip
+                              Select event type
                             </option>
                             {eventTypes.map((type) => (
                               <option key={type} value={type} className="bg-[#0d0d16]">
@@ -557,7 +557,7 @@ export default function BookPage() {
 
                       <div className="mt-4">
                         <label htmlFor="book-venue" className="block text-sm font-medium text-gray-300 mb-2">
-                          Locul evenimentului <span className="text-[#f5a623]">*</span>
+                          Event Venue <span className="text-[#f5a623]">*</span>
                         </label>
                         <input
                           id="book-venue"
@@ -569,7 +569,7 @@ export default function BookPage() {
                             setFormData({ ...formData, venue: e.target.value })
                           }
                           onBlur={handleFieldBlur}
-                          placeholder="ex. Hotel Grand, 123 Strada Mare, Chelmş, CM1 1AA"
+                          placeholder="e.g. Grand Hotel, 123 Main Street, London, SW1A 1AA"
                           className={`w-full px-4 py-3 sm:py-2.5 rounded-xl bg-[#0d0d16] border ${
                             fieldErrors.venue ? 'border-red-500/50' : 'border-[#2a2a3a]'
                           } text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors min-h-[48px] sm:min-h-[44px]`}
@@ -584,7 +584,7 @@ export default function BookPage() {
 
                       <div className="mt-4">
                         <label htmlFor="book-requests" className="block text-sm font-medium text-gray-300 mb-2">
-                          Cerințe speciale <span className="text-gray-500 font-normal">(opțional)</span>
+                          Special Requests <span className="text-gray-500 font-normal">(optional)</span>
                         </label>
                         <textarea
                           id="book-requests"
@@ -596,7 +596,7 @@ export default function BookPage() {
                               specialRequests: e.target.value,
                             })
                           }
-                          placeholder="Teme, alergii, nevoi de accesibilitate..."
+                          placeholder="Themes, allergies, accessibility needs..."
                           className="w-full px-4 py-3 rounded-xl bg-[#0d0d16] border border-[#2a2a3a] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 transition-colors resize-none"
                         />
                       </div>
@@ -604,8 +604,8 @@ export default function BookPage() {
 
                     {/* Upsells */}
                     <div className="rounded-2xl bg-[#13131a] border border-[#2a2a3a] p-6">
-                      <h3 className="text-lg font-bold text-white mb-4">Îmbunătățiri Disponibile</h3>
-                      <p className="text-gray-400 text-sm mb-4">Selectează serviciile suplimentare care se potrivesc</p>
+                      <h3 className="text-lg font-bold text-white mb-4">Available Add-ons</h3>
+                      <p className="text-gray-400 text-sm mb-4">Select the add-ons that suit your event</p>
 
                       <div className="space-y-3">
                         {upsells.map((upsell) => (
@@ -658,7 +658,7 @@ export default function BookPage() {
                         onClick={() => setCurrentStep(0)}
                         className="inline-flex items-center gap-2 px-6 py-3 sm:py-2.5 rounded-full border border-[#2a2a3a] text-white font-medium text-sm hover:border-[#f5a623]/40 hover:bg-white/5 transition-all duration-200 min-h-[48px] sm:min-h-[44px]"
                       >
-                        Înapoi
+                        Back
                       </button>
                       <button
                         type="submit"
@@ -673,11 +673,11 @@ export default function BookPage() {
                         {isSubmitting ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin" />
-                            Se trimite...
+                            Submitting...
                           </>
                         ) : (
                           <>
-                            Solicită Ofertă
+                            Request Quote
                             <ChevronRight className="w-4 h-4" />
                           </>
                         )}
@@ -685,15 +685,15 @@ export default function BookPage() {
                     </div>
 
                     <p className="text-gray-500 text-xs leading-relaxed">
-                      Prin trimiterea acestui formular sunteți de acord cu{" "}
+                      By submitting this form you agree to our{" "}
                       <Link href="/privacy-policy" className="text-[#f5a623] hover:underline">
-                        Politica de confidențialitate
+                        Privacy Policy
                       </Link>{" "}
-                      și{" "}
+                      and{" "}
                       <Link href="/terms" className="text-[#f5a623] hover:underline">
-                        Termenii și condițiile
+                        Terms & Conditions
                       </Link>
-                      . Datele dumneavoastră vor fi utilizate doar pentru a procesa cererea de rezervare.
+                      . Your data will only be used to process your booking request.
                     </p>
                   </form>
                 </div>
@@ -710,24 +710,24 @@ export default function BookPage() {
                       className="text-xl font-bold text-white"
                       style={{ fontFamily: "var(--font-playfair)" }}
                     >
-                      Rezumat
+                      Summary
                     </h3>
 
                     {/* Selected Service */}
                     {selectedProductData && selectedTier && (
                       <div className="border-b border-[#2a2a3a] pb-4 space-y-3">
                         <div>
-                          <p className="text-xs text-gray-400 mb-1">Serviciu</p>
+                          <p className="text-xs text-gray-400 mb-1">Service</p>
                           <p className="text-white font-bold">{selectedProductData.name}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-400 mb-1">Pachet</p>
+                          <p className="text-xs text-gray-400 mb-1">Package</p>
                           <p className="text-[#f5a623] font-bold">
                             {selectedProductData.tiers[selectedTier]?.name}
                           </p>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400 text-sm">Preț</span>
+                          <span className="text-gray-400 text-sm">Price</span>
                           <span className="text-white font-bold">
                             {formatPrice(getPriceForTier(selectedProductData, selectedTier))}
                           </span>
@@ -738,7 +738,7 @@ export default function BookPage() {
                     {/* Upsells */}
                     {selectedUpsells.length > 0 && (
                       <div className="border-b border-[#2a2a3a] pb-4 space-y-2">
-                        <p className="text-xs text-gray-400 mb-3">Îmbunătățiri selectate</p>
+                        <p className="text-xs text-gray-400 mb-3">Selected Add-ons</p>
                         {selectedUpsells.map((upsellId) => {
                           const upsell = upsells.find(u => u.id === upsellId);
                           return (
@@ -753,12 +753,12 @@ export default function BookPage() {
 
                     {/* Deposit */}
                     <div className="bg-[#f5a623]/10 border border-[#f5a623]/20 rounded-lg p-4">
-                      <p className="text-xs text-gray-400 mb-2">Depozit necesar (15%)</p>
+                      <p className="text-xs text-gray-400 mb-2">Deposit Required (15%)</p>
                       <p className="text-xl font-bold text-[#f5a623]">
                         {formatPrice(Math.round(getTotalPrice() * 0.15))}
                       </p>
                       <p className="text-xs text-gray-500 mt-2">
-                        Restul se plătește înainte de eveniment
+                        Balance due before event
                       </p>
                     </div>
 

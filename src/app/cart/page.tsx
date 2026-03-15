@@ -2,23 +2,23 @@ import { Metadata } from "next";
 import CartContent from "./CartContent";
 
 export const metadata: Metadata = {
-  title: "Coșul tău — FunLoading360",
+  title: "Your Cart — FunLoading360",
   description:
-    "Revizuiți articolele din coșul dvs., personalizați cantități și pachete, apoi continuați la checkout.",
+    "Review your cart items, customize quantities and packages, then proceed to checkout.",
   robots: {
     index: false, // Cart pages shouldn't be indexed
     follow: true,
   },
   openGraph: {
-    title: "Coșul tău — FunLoading360",
-    description: "Revizuiți și gestionați articolele din coșul dvs.",
+    title: "Your Cart — FunLoading360",
+    description: "Review and manage your cart items.",
     type: "website",
     url: "https://www.funloading360.co.uk/cart",
   },
   twitter: {
     card: "summary",
-    title: "Coșul tău — FunLoading360",
-    description: "Revizuiți articolele din coșul dvs.",
+    title: "Your Cart — FunLoading360",
+    description: "Review your cart items.",
   },
   alternates: {
     canonical: "https://www.funloading360.co.uk/cart",

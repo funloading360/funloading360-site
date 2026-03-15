@@ -131,7 +131,7 @@ export default function Navbar() {
               href="/book"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#f5a623] text-[#0a0a0e] font-semibold text-sm hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-[#f5a623]/20 hover:shadow-[#f5a623]/40 hover:-translate-y-0.5 min-h-[44px]"
             >
-              Rezervă
+              Book
             </Link>
           </div>
 

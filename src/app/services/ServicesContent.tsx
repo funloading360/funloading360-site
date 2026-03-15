@@ -53,7 +53,7 @@ export default function ServicesContent() {
     if (!modalState.productId || !modalState.selectedTier) return;
 
     addToCart(modalState.productId, modalState.selectedTier, modalState.quantity);
-    setSuccessMessage(`Adăugat în coș! (${modalState.quantity} articol)`);
+    setSuccessMessage(`Added to cart! (${modalState.quantity} item)`);
     closeModal();
 
     setTimeout(() => setSuccessMessage(null), 3000);
@@ -73,17 +73,17 @@ export default function ServicesContent() {
             transition={{ duration: 0.6 }}
           >
             <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">
-              Serviciile Noastre
+              Our Services
             </p>
             <h1
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Photo Booths Profesionale
+              Professional Photo Booths
             </h1>
             <p className="text-gray-400 text-lg leading-relaxed">
-              Trei experiențe unice pentru orice ocazie. De la video 360° cinematografic la poze
-              vintage clasice — alegem cui potrivit.
+              Three unique experiences for any occasion. From cinematic 360° video to classic
+              vintage photos — find your perfect match.
             </p>
           </motion.div>
         </div>
@@ -194,7 +194,7 @@ export default function ServicesContent() {
                           onClick={() => openModal(product.id)}
                           className="w-full py-2 rounded-lg bg-[#f5a623] text-[#0a0a0e] font-semibold text-sm hover:bg-[#fbbf4a] transition-colors"
                         >
-                          Adaugă în Coș
+                          Add to Cart
                         </button>
                       </div>
                     )
@@ -211,9 +211,9 @@ export default function ServicesContent() {
                   ))}
                 </div>
 
-                {/* Perfect Pentru */}
+                {/* Perfect For */}
                 <div className="flex flex-wrap gap-2 mb-8">
-                  <span className="text-gray-500 text-sm self-center">Perfect pentru:</span>
+                  <span className="text-gray-500 text-sm self-center">Perfect for:</span>
                   {product.perfectFor.split(",").map((item) => (
                     <span
                       key={item.trim()}
@@ -228,7 +228,7 @@ export default function ServicesContent() {
                   href="/cart"
                   className="inline-flex items-center gap-2 px-7 py-3 sm:py-2.5 rounded-full bg-[#f5a623] text-[#0a0a0e] font-bold text-sm hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-[#f5a623]/20 hover:-translate-y-0.5 min-h-[48px] sm:min-h-[44px]"
                 >
-                  Mergi la Coș
+                  Go to Cart
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </motion.div>
@@ -250,25 +250,24 @@ export default function ServicesContent() {
               className="text-3xl sm:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Nu ești sigur care să alegi?
+              Not sure which to choose?
             </h2>
             <p className="text-gray-400 mb-8 max-w-xl mx-auto leading-relaxed">
-              Echipa noastră este gata să te ajute să alegi photo booth perfect pentru evenimentul
-              tău. Apelează-ne sau apasă butonul mai jos.
+              Our team is ready to help you choose the perfect photo booth for your event. Call us or press the button below.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/pricing"
                 className="inline-flex items-center gap-2 px-7 py-3 sm:py-2.5 rounded-full bg-[#f5a623] text-[#0a0a0e] font-bold text-sm hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-[#f5a623]/20 hover:-translate-y-0.5 w-full sm:w-auto justify-center min-h-[48px] sm:min-h-[44px]"
               >
-                Vezi Pachete
+                View Packages
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <a
                 href="tel:+447482112110"
                 className="inline-flex items-center gap-2 px-7 py-3 sm:py-2.5 rounded-full border border-[#2a2a3a] text-white font-semibold text-sm hover:border-[#f5a623]/40 hover:bg-white/5 transition-all duration-200 w-full sm:w-auto justify-center min-h-[48px] sm:min-h-[44px]"
               >
-                Apelează-ne
+                Call Us
               </a>
             </div>
           </motion.div>
@@ -297,7 +296,7 @@ export default function ServicesContent() {
                   className="text-2xl font-bold text-white"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
-                  Alege Tier
+                  Choose Package
                 </h3>
                 <button
                   onClick={closeModal}
@@ -338,7 +337,7 @@ export default function ServicesContent() {
               {/* Quantity */}
               <div className="mb-8">
                 <label className="block text-sm font-medium text-gray-300 mb-3">
-                  Cantitate
+                  Quantity
                 </label>
                 <div className="flex items-center gap-3">
                   <button
@@ -375,7 +374,7 @@ export default function ServicesContent() {
                   onClick={closeModal}
                   className="flex-1 px-4 py-3 rounded-lg border border-[#2a2a3a] text-white font-semibold hover:bg-white/5 transition-colors"
                 >
-                  Anulează
+                  Cancel
                 </button>
                 <button
                   onClick={handleAddToCart}
@@ -387,7 +386,7 @@ export default function ServicesContent() {
                       : "bg-[#2a2a3a] text-gray-500 cursor-not-allowed"
                   )}
                 >
-                  Adaugă în Coș
+                  Add to Cart
                 </button>
               </div>
             </motion.div>
