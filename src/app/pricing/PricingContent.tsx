@@ -70,7 +70,7 @@ const faqs = [
   {
     question: "Do I need to pay a deposit?",
     answer:
-      "Yes, we require a 30% deposit to secure your booking, with the remaining balance due 14 days before your event. All payments are processed securely online.",
+      "Yes, we require a 15% deposit to secure your booking, with the remaining balance due before your event. All payments are processed securely online.",
   },
   {
     question: "What happens if I need to cancel?",
