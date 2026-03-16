@@ -17,6 +17,7 @@ import {
 } from "@/lib/email";
 import { sendConfirmationSMSWithRetry, type BookingSMSData } from "@/lib/sms";
 import { getProductById } from "@/lib/services";
+import { alertBookingSubmissionFailed, alertNewBooking, alertRateLimitExceeded } from "@/lib/monitoring";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO_EMAIL = process.env.CONTACT_EMAIL ?? "hello@funloading360.co.uk";
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
       "unknown";
     const rateLimit = await checkRateLimit(ip);
     if (!rateLimit.success) {
+      alertRateLimitExceeded(ip, "/api/book").catch(() => {});
       return rateLimitResponse();
     }
 
@@ -155,9 +157,18 @@ export async function POST(req: NextRequest) {
         .join("\n"),
     });
 
+    // Alert on new booking (async, non-blocking)
+    if (product && totalPrice > 0) {
+      alertNewBooking({ name, email, eventDate, productId: product.id, totalPrice }).catch(() => {});
+    }
+
     return successResponse({ bookingId: "pending", email });
   } catch (err) {
     console.error("[/api/book]", err);
+    alertBookingSubmissionFailed(
+      err instanceof Error ? err.message : "Unknown error",
+      {}
+    ).catch(() => {});
     return serverErrorResponse("Failed to send booking request");
   }
 }

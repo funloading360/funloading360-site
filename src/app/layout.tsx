@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import WebVitals from "@/components/WebVitals";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -117,6 +118,7 @@ export default function RootLayout({
         <Footer />
         <CookieBanner />
         <GoogleAnalytics />
+        <WebVitals />
       </body>
     </html>
   );
