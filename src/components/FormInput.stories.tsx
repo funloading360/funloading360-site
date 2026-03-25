@@ -1,13 +1,29 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
+import FormInput, { FormTextarea, FormSelect } from "./FormInput";
 
 const meta = {
   title: "Components/FormInput",
+  component: FormInput,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
   },
-} satisfies Meta;
+  argTypes: {
+    label: { control: "text" },
+    placeholder: { control: "text" },
+    error: { control: "text" },
+    hint: { control: "text" },
+    disabled: { control: "boolean" },
+    type: {
+      control: "select",
+      options: ["text", "email", "tel", "date", "password"],
+    },
+  },
+  args: {
+    placeholder: "Enter your name",
+    className: "w-64",
+  },
+} satisfies Meta<typeof FormInput>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -15,88 +31,90 @@ type Story = StoryObj<typeof meta>;
 /**
  * Default text input in resting state.
  */
-export const Default: Story = {
-  render: () => (
-    <input
-      type="text"
-      placeholder="Enter your name"
-      className="w-64 px-4 py-3 rounded-xl bg-[#13131a] border border-[#2a2a3a] text-white placeholder:text-gray-500 focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 outline-none transition-all duration-200"
-    />
-  ),
+export const Default: Story = {};
+
+/**
+ * Input with a label above.
+ */
+export const WithLabel: Story = {
+  args: { label: "Full Name", placeholder: "John Smith" },
 };
 
 /**
- * Input with filled value.
+ * Input pre-filled with a value.
  */
 export const Filled: Story = {
-  render: () => (
-    <input
-      type="text"
-      placeholder="Enter your name"
-      defaultValue="John Smith"
-      className="w-64 px-4 py-3 rounded-xl bg-[#13131a] border border-[#2a2a3a] text-white placeholder:text-gray-500 focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 outline-none transition-all duration-200"
-    />
-  ),
+  args: { label: "Full Name", defaultValue: "John Smith" },
 };
 
 /**
- * Input with error state. Show alongside error text.
+ * Input with an error message. ARIA attributes wired automatically.
  */
 export const WithError: Story = {
-  render: () => (
-    <div>
-      <input
-        type="text"
-        placeholder="Enter your name"
-        className="w-64 px-4 py-3 rounded-xl bg-[#13131a] border border-red-500/50 text-white placeholder:text-gray-500 focus:border-red-500/70 focus:ring-1 focus:ring-red-500/20 outline-none transition-all duration-200"
-        aria-describedby="name-error"
-      />
-      <div
-        id="name-error"
-        className="mt-2 flex items-start gap-2 text-red-400 text-xs"
-      >
-        <span className="text-lg leading-none">⚠️</span>
-        <span>Name must be at least 2 characters</span>
-      </div>
-    </div>
-  ),
+  args: {
+    label: "Full Name",
+    placeholder: "Enter your name",
+    error: "Name must be at least 2 characters",
+  },
 };
 
 /**
- * Disabled input state.
+ * Input with a hint below.
+ */
+export const WithHint: Story = {
+  args: {
+    label: "Email",
+    type: "email",
+    placeholder: "you@example.com",
+    hint: "We'll send your booking confirmation here.",
+  },
+};
+
+/**
+ * Disabled state.
  */
 export const Disabled: Story = {
-  render: () => (
-    <input
-      type="text"
-      placeholder="Disabled input"
-      disabled
-      className="w-64 px-4 py-3 rounded-xl bg-[#13131a] border border-[#2a2a3a] text-gray-400 placeholder:text-gray-600 cursor-not-allowed opacity-50 outline-none"
-    />
-  ),
+  args: { placeholder: "Disabled input", disabled: true },
 };
 
 /**
- * Email input type with validation styling.
+ * Email input type.
  */
 export const Email: Story = {
-  render: () => (
-    <input
-      type="email"
-      placeholder="your.email@example.com"
-      className="w-64 px-4 py-3 rounded-xl bg-[#13131a] border border-[#2a2a3a] text-white placeholder:text-gray-500 focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 outline-none transition-all duration-200"
-    />
-  ),
+  args: { type: "email", placeholder: "your.email@example.com", label: "Email" },
 };
 
 /**
  * Date input for booking dates.
  */
-export const Date: Story = {
+export const DateInput: Story = {
+  args: { type: "date", label: "Event Date" },
+};
+
+/**
+ * Textarea for longer content.
+ */
+export const Textarea: Story = {
   render: () => (
-    <input
-      type="date"
-      className="w-64 px-4 py-3 rounded-xl bg-[#13131a] border border-[#2a2a3a] text-white focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 outline-none transition-all duration-200"
+    <FormTextarea
+      label="Special Requests"
+      placeholder="Any special requirements?"
+      rows={4}
+      className="w-64"
+    />
+  ),
+};
+
+/**
+ * Textarea with error state.
+ */
+export const TextareaWithError: Story = {
+  render: () => (
+    <FormTextarea
+      label="Message"
+      placeholder="Enter your message"
+      error="Message must be at least 10 characters"
+      className="w-64"
     />
   ),
 };
@@ -106,41 +124,23 @@ export const Date: Story = {
  */
 export const Select: Story = {
   render: () => (
-    <select className="w-64 px-4 py-3 rounded-xl bg-[#13131a] border border-[#2a2a3a] text-white focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 outline-none transition-all duration-200 cursor-pointer">
-      <option value="">Select an option</option>
-      <option value="option1">Option 1</option>
-      <option value="option2">Option 2</option>
-      <option value="option3">Option 3</option>
-    </select>
+    <FormSelect label="Event Type" className="w-64">
+      <option value="">Select an event type</option>
+      <option value="wedding">Wedding</option>
+      <option value="birthday">Birthday Party</option>
+      <option value="corporate">Corporate Event</option>
+      <option value="prom">School Prom</option>
+    </FormSelect>
   ),
 };
 
 /**
- * Textarea for longer form content.
- */
-export const Textarea: Story = {
-  render: () => (
-    <textarea
-      placeholder="Enter your message here"
-      className="w-64 px-4 py-3 rounded-xl bg-[#13131a] border border-[#2a2a3a] text-white placeholder:text-gray-500 focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 outline-none transition-all duration-200 resize-none min-h-[120px]"
-    />
-  ),
-};
-
-/**
- * Mobile-optimized input with proper sizing.
+ * Mobile-optimized input — minimum 48px height for touch targets.
  */
 export const Mobile: Story = {
-  render: () => (
-    <input
-      type="text"
-      placeholder="Enter your name"
-      className="w-full px-4 py-4 rounded-xl bg-[#13131a] border border-[#2a2a3a] text-white placeholder:text-gray-500 focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20 outline-none transition-all duration-200 min-h-[48px]"
-    />
-  ),
+  args: { placeholder: "Enter your name", className: "w-full" },
   parameters: {
-    viewport: {
-      defaultViewport: "mobile1",
-    },
+    viewport: { defaultViewport: "mobile1" },
+    layout: "padded",
   },
 };

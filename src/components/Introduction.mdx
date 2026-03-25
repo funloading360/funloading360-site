@@ -1,0 +1,93 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Design System/Introduction" />
+
+# FunLoading360 Design System
+
+Welcome to the component library for **FunLoading360** — premium photo booth hire in Essex, Kent & London.
+
+---
+
+## Brand Identity
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| Brand Gold | `#f5a623` | Primary CTAs, highlights, icons |
+| Gold Hover | `#fbbf4a` | Button/link hover states |
+| Background | `#0a0a0e` | Page background |
+| Surface | `#13131a` | Cards, modals, inputs |
+| Border | `#2a2a3a` | Card/input borders |
+| Text Primary | `#ffffff` | Headings, body |
+| Text Secondary | `#9ca3af` | Subtext, placeholders |
+
+All tokens are defined in `src/lib/tokens.ts`.
+
+---
+
+## Components
+
+### Button
+Rounded pill-shaped button in 4 variants (`primary`, `secondary`, `ghost`, `danger`) and 3 sizes (`sm`, `md`, `lg`). Includes loading spinner and full-width modes.
+
+**Accessibility:** min touch target `44px` (WCAG 2.5.5 AA), `aria-busy` on loading, `disabled` state.
+
+### Card
+Dark surface container in 4 variants (`default`, `accent`, `interactive`, `minimal`) with 3 padding sizes.
+
+**Accessibility:** `group` class supports keyboard-driven focus styles in interactive variant.
+
+### FormInput
+Three sub-components: `FormInput`, `FormTextarea`, `FormSelect`. All share consistent dark styling, focus ring, error/hint states with ARIA wiring (`aria-invalid`, `aria-describedby`, `role="alert"`). IDs are auto-generated with `useId()` to avoid collisions.
+
+### Modal
+Accessible dialog with focus trap (Tab/Shift+Tab cycles inside), Escape to close, backdrop click to close, and `aria-modal`. Restores focus to the trigger element on close. Three sizes (`sm`, `md`, `lg`) and three variants (`default`, `accent`, `error`). Compose with `ModalFooter` for action rows.
+
+---
+
+## Accessibility Standards
+
+All components target **WCAG 2.1 AA** with key AA/AAA criteria:
+
+- Minimum touch targets: `44px` (AA) — `48px` on mobile (AAA)
+- Color contrast: ≥4.5:1 text, ≥3:1 UI components
+- Keyboard navigable (Tab, Shift+Tab, Escape, Enter/Space)
+- Screen reader support via ARIA labels, roles, and live regions
+- `prefers-reduced-motion` respected (no spin animations when disabled)
+
+---
+
+## Usage
+
+```tsx
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import FormInput, { FormTextarea, FormSelect } from "@/components/FormInput";
+import Modal, { ModalFooter } from "@/components/Modal";
+
+// Button
+<Button variant="primary" size="md" onClick={handleBook}>
+  Book Now
+</Button>
+
+// Card
+<Card variant="accent" padding="lg">
+  <h3 className="text-[#f5a623]">Featured Package</h3>
+</Card>
+
+// FormInput with error
+<FormInput
+  label="Email"
+  type="email"
+  error={errors.email}
+  placeholder="you@example.com"
+/>
+
+// Modal
+<Modal open={isOpen} onClose={() => setOpen(false)} title="Confirm Booking">
+  <p className="text-gray-400">Are you sure?</p>
+  <ModalFooter>
+    <Button variant="secondary" fullWidth>Cancel</Button>
+    <Button fullWidth>Confirm</Button>
+  </ModalFooter>
+</Modal>
+```

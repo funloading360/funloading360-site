@@ -8,28 +8,28 @@ import Link from 'next/link';
 interface ComparisonModalProps {
   isOpen: boolean;
   onClose: () => void;
+  slug?: string;
 }
 
-export default function PricingComparisonModal({ isOpen, onClose }: ComparisonModalProps) {
-  // Collect all unique features across all packages
-  const allFeatures = Array.from(
-    new Set(
-      boothPricing.flatMap((booth) =>
-        Object.values(booth.tiers).flatMap((tier) => tier.features)
-      )
-    )
-  ).sort();
+export default function PricingComparisonModal({ isOpen, onClose, slug }: ComparisonModalProps) {
+  const booth = boothPricing.find((b) => b.slug === slug) ?? boothPricing[0];
 
-  // Create column headers (booth + tier combinations)
-  const columns = boothPricing.flatMap((booth) =>
-    Object.entries(booth.tiers).map(([tierKey, tier]) => ({
-      boothName: booth.booth,
-      tierKey,
-      tierName: tier.name,
-      tier,
-      maxPrice: Math.max(...tier.prices.map((p) => p.price)),
-    }))
-  );
+  // Collect all unique features across the tiers of this booth only
+  const allFeatures = booth
+    ? Array.from(
+        new Set(Object.values(booth.tiers).flatMap((tier) => tier.features))
+      ).sort()
+    : [];
+
+  // Create column headers for the 3 tiers of this booth only
+  const columns = booth
+    ? Object.entries(booth.tiers).map(([tierKey, tier]) => ({
+        tierKey,
+        tierName: tier.name,
+        tier,
+        maxPrice: Math.max(...tier.prices.map((p) => p.price)),
+      }))
+    : [];
 
   return (
     <AnimatePresence>
@@ -54,7 +54,7 @@ export default function PricingComparisonModal({ isOpen, onClose }: ComparisonMo
                 className="text-2xl font-bold text-white"
                 style={{ fontFamily: "var(--font-playfair)" }}
               >
-                Compare All Packages
+                Compare {booth?.booth} Packages
               </h2>
               <button
                 onClick={onClose}
@@ -75,13 +75,10 @@ export default function PricingComparisonModal({ isOpen, onClose }: ComparisonMo
                     </th>
                     {columns.map((col) => (
                       <th
-                        key={`${col.boothName}-${col.tierKey}`}
+                        key={col.tierKey}
                         className="text-center p-4 text-white font-bold min-w-[180px] bg-[#0a0a0e]"
                       >
-                        <div className="text-sm text-gray-400 font-normal">
-                          {col.boothName}
-                        </div>
-                        <div className="text-base font-bold text-white mt-1">
+                        <div className="text-base font-bold text-white">
                           {col.tierName}
                         </div>
                         <div className="text-lg font-bold text-[#f5a623] mt-2">
@@ -108,7 +105,7 @@ export default function PricingComparisonModal({ isOpen, onClose }: ComparisonMo
                       </td>
                       {columns.map((col) => (
                         <td
-                          key={`${col.boothName}-${col.tierKey}-${feature}`}
+                          key={`${col.tierKey}-${feature}`}
                           className="text-center p-4"
                         >
                           {col.tier.features.includes(feature) ? (
