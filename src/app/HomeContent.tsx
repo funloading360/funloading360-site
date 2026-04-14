@@ -136,9 +136,6 @@ const eventTypes = [
   },
 ];
 
-// Create motion-enabled Link component for booth cards
-const MotionLink = motion(Link);
-
 export default function HomePage() {
   const prefersReducedMotion = useReducedMotion();
 
@@ -331,13 +328,12 @@ export default function HomePage() {
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
           >
             {booths.map((booth, i) => (
-              <MotionLink
-                key={booth.name}
-                href={booth.href}
-                variants={fadeUp}
-                custom={i}
-                className="group relative rounded-3xl overflow-hidden border border-border bg-surface hover:border-gold/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer block"
-              >
+              <Link key={booth.name} href={booth.href} className="block">
+                <motion.div
+                  variants={fadeUp}
+                  custom={i}
+                  className="group relative rounded-3xl overflow-hidden border border-border bg-surface hover:border-gold/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full"
+                >
                 {/* Booth image */}
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
@@ -388,7 +384,8 @@ export default function HomePage() {
                     <ChevronRight className="w-4 h-4" />
                   </span>
                 </div>
-              </MotionLink>
+                </motion.div>
+              </Link>
             ))}
           </motion.div>
 

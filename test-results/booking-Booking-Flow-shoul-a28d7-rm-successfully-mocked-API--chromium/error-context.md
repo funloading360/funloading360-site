@@ -1,0 +1,303 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e5]:
+        - link "FunLoading360 — Home" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img [ref=e8]
+          - generic [ref=e11]: FunLoading360
+        - generic [ref=e12]:
+          - link "Home" [ref=e13] [cursor=pointer]:
+            - /url: /
+          - link "Services" [ref=e14] [cursor=pointer]:
+            - /url: /services
+          - link "Pricing" [ref=e15] [cursor=pointer]:
+            - /url: /pricing
+          - link "Gallery" [ref=e16] [cursor=pointer]:
+            - /url: /gallery
+          - link "Corporate" [ref=e17] [cursor=pointer]:
+            - /url: /corporate
+          - link "Locations" [ref=e18] [cursor=pointer]:
+            - /url: /locations
+          - link "About" [ref=e19] [cursor=pointer]:
+            - /url: /about
+        - generic [ref=e20]:
+          - link "Shopping cart" [ref=e21] [cursor=pointer]:
+            - /url: /cart
+            - img [ref=e22]
+            - generic [ref=e26]: "1"
+          - link "Book" [ref=e27] [cursor=pointer]:
+            - /url: /book
+  - main [ref=e28]:
+    - generic [ref=e29]:
+      - generic [ref=e34]:
+        - paragraph [ref=e35]: Complete Your Booking
+        - heading "Book Your Photo Booth" [level=1] [ref=e36]
+        - paragraph [ref=e37]: Complete your booking below. We'll confirm availability within 2 hours.
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]:
+            - generic [ref=e43]:
+              - generic [ref=e44]: "1"
+              - generic [ref=e45]: Select Package
+            - generic [ref=e47]:
+              - generic [ref=e48]: "2"
+              - generic [ref=e49]: Your Details
+          - generic [ref=e50]:
+            - heading "Your Cart (1 item)" [level=2] [ref=e51]
+            - paragraph [ref=e52]: Modify your packages below, or add more from our services page.
+            - generic [ref=e53]:
+              - generic [ref=e55]:
+                - img "360 Slow Motion Booth" [ref=e57]
+                - generic [ref=e58]:
+                  - generic [ref=e59]:
+                    - heading "360 Slow Motion Booth" [level=3] [ref=e60]
+                    - paragraph [ref=e61]: £300
+                  - generic [ref=e62]:
+                    - generic [ref=e63]:
+                      - generic [ref=e64]: Package
+                      - combobox [ref=e65]:
+                        - option "The Essential"
+                        - option "The Signature" [selected]
+                        - option "The Luxury"
+                    - generic [ref=e66]:
+                      - generic [ref=e67]: Duration
+                      - combobox [ref=e68]:
+                        - option "2 Hours — £300" [selected]
+                        - option "3 Hours — £350"
+                        - option "4 Hours — £400"
+                - button "Remove item" [ref=e69]:
+                  - img [ref=e70]
+              - link "+ Add another package" [ref=e73] [cursor=pointer]:
+                - /url: /services
+          - heading "Booking Details & Add-ons" [level=2] [ref=e74]
+          - generic [ref=e75]:
+            - generic [ref=e76]:
+              - heading "Event Date" [level=3] [ref=e77]
+              - generic [ref=e78]:
+                - generic [ref=e79]:
+                  - generic [ref=e80]: Preferred Date *
+                  - generic [ref=e81]:
+                    - generic [ref=e82]:
+                      - button "Previous month" [ref=e83]:
+                        - img [ref=e84]
+                      - heading "April 2026" [level=3] [ref=e86]
+                      - button "Next month" [ref=e87]:
+                        - img [ref=e88]
+                    - generic [ref=e90]:
+                      - generic [ref=e91]: Sun
+                      - generic [ref=e92]: Mon
+                      - generic [ref=e93]: Tue
+                      - generic [ref=e94]: Wed
+                      - generic [ref=e95]: Thu
+                      - generic [ref=e96]: Fri
+                      - generic [ref=e97]: Sat
+                    - generic [ref=e98]:
+                      - button "1" [disabled] [ref=e102]
+                      - button "2" [disabled] [ref=e103]
+                      - button "3" [disabled] [ref=e104]
+                      - button "4" [disabled] [ref=e105]
+                      - button "5" [disabled] [ref=e106]
+                      - button "6" [disabled] [ref=e107]
+                      - button "7" [disabled] [ref=e108]
+                      - button "8" [disabled] [ref=e109]
+                      - button "9" [disabled] [ref=e110]
+                      - button "10" [disabled] [ref=e111]
+                      - button "11" [disabled] [ref=e112]
+                      - button "12" [disabled] [ref=e113]
+                      - button "13" [disabled] [ref=e114]
+                      - button "14" [disabled] [ref=e115]
+                      - button "15" [ref=e116]
+                      - button "16" [ref=e117] [cursor=pointer]
+                      - button "17" [ref=e118] [cursor=pointer]
+                      - button "18" [ref=e119] [cursor=pointer]
+                      - button "19" [ref=e120] [cursor=pointer]
+                      - button "20" [ref=e121] [cursor=pointer]
+                      - button "21" [ref=e122] [cursor=pointer]
+                      - button "22" [ref=e123] [cursor=pointer]
+                      - button "23" [ref=e124] [cursor=pointer]
+                      - button "24" [ref=e125] [cursor=pointer]
+                      - button "25" [ref=e126] [cursor=pointer]
+                      - button "26" [ref=e127] [cursor=pointer]
+                      - button "27" [ref=e128] [cursor=pointer]
+                      - button "28" [ref=e129] [cursor=pointer]
+                      - button "29" [ref=e130] [cursor=pointer]
+                      - button "30" [ref=e131] [cursor=pointer]
+                    - paragraph [ref=e132]: Gray dates are unavailable
+                - generic [ref=e133]:
+                  - generic [ref=e134]: Alternative Date (optional)
+                  - textbox "Alternative Date (optional)" [ref=e135]
+            - generic [ref=e136]:
+              - heading "Personal Details" [level=3] [ref=e137]
+              - generic [ref=e138]:
+                - generic [ref=e139]:
+                  - generic [ref=e140]: Full Name *
+                  - textbox "Full Name *" [ref=e141]:
+                    - /placeholder: e.g. John Smith
+                    - text: Test User
+                - generic [ref=e142]:
+                  - generic [ref=e143]: Email *
+                  - textbox "Email *" [ref=e144]:
+                    - /placeholder: john@example.com
+                    - text: test@example.com
+                - generic [ref=e145]:
+                  - generic [ref=e146]: Phone *
+                  - textbox "Phone *" [ref=e147]:
+                    - /placeholder: +44 7482 112110
+                    - text: "+447482112110"
+                - generic [ref=e148]:
+                  - generic [ref=e149]: Event Type *
+                  - combobox "Event Type *" [ref=e150]:
+                    - option "Select event type" [disabled]
+                    - option "Wedding" [selected]
+                    - option "Birthday"
+                    - option "Corporate Event"
+                    - option "School Prom"
+                    - option "Anniversary"
+                    - option "Christening"
+                    - option "Engagement Party"
+                    - option "Other"
+                  - generic [ref=e151]:
+                    - generic [ref=e152]: ⚠️
+                    - generic [ref=e153]: Event type is required
+              - generic [ref=e154]:
+                - generic [ref=e155]: Event Venue *
+                - textbox "Event Venue *" [ref=e156]:
+                  - /placeholder: e.g. Grand Hotel, 123 Main Street, London, SW1A 1AA
+                  - text: The Grand Hotel, London
+              - generic [ref=e157]:
+                - generic [ref=e158]: Special Requests (optional)
+                - textbox "Special Requests (optional)" [ref=e159]:
+                  - /placeholder: Themes, allergies, accessibility needs...
+            - generic [ref=e160]:
+              - heading "Available Add-ons" [level=3] [ref=e161]
+              - paragraph [ref=e162]: Select the add-ons that suit your event
+              - generic [ref=e163]:
+                - button "Guest Book Guests sign memories +£40" [ref=e164]:
+                  - generic [ref=e165]:
+                    - generic [ref=e166]:
+                      - heading "Guest Book" [level=4] [ref=e167]
+                      - paragraph [ref=e168]: Guests sign memories
+                    - paragraph [ref=e170]: +£40
+                - button "Extra Hour More time for fun +£75" [ref=e172]:
+                  - generic [ref=e173]:
+                    - generic [ref=e174]:
+                      - heading "Extra Hour" [level=4] [ref=e175]
+                      - paragraph [ref=e176]: More time for fun
+                    - paragraph [ref=e178]: +£75
+                - button "Highlight Reel Professional edit next day +£79" [ref=e180]:
+                  - generic [ref=e181]:
+                    - generic [ref=e182]:
+                      - heading "Highlight Reel" [level=4] [ref=e183]
+                      - paragraph [ref=e184]: Professional edit next day
+                    - paragraph [ref=e186]: +£79
+            - button "Proceed to Payment" [active] [ref=e189]:
+              - img [ref=e190]
+              - text: Proceed to Payment
+            - paragraph [ref=e193]:
+              - text: By proceeding to payment you agree to our
+              - link "Privacy Policy" [ref=e194] [cursor=pointer]:
+                - /url: /privacy-policy
+              - text: and
+              - link "Terms & Conditions" [ref=e195] [cursor=pointer]:
+                - /url: /terms
+              - text: .
+        - generic [ref=e197]:
+          - heading "Summary" [level=3] [ref=e198]
+          - generic [ref=e200]:
+            - paragraph [ref=e201]: 360 Slow Motion Booth
+            - paragraph [ref=e202]: The Signature
+            - generic [ref=e203]:
+              - generic [ref=e204]: 2 Hours
+              - generic [ref=e205]: £300
+          - generic [ref=e206]:
+            - paragraph [ref=e207]: Payment Option
+            - button "Pay 15% Deposit £45 Remaining balance (£255) due before event" [ref=e208]:
+              - generic [ref=e209]:
+                - generic [ref=e210]: Pay 15% Deposit
+                - generic [ref=e211]: £45
+              - paragraph [ref=e212]: Remaining balance (£255) due before event
+            - button "Pay in Full £300" [ref=e213]:
+              - generic [ref=e214]:
+                - generic [ref=e215]: Pay in Full
+                - generic [ref=e216]: £300
+          - generic [ref=e218]:
+            - generic [ref=e219]: Total
+            - generic [ref=e220]: £300
+  - contentinfo [ref=e221]:
+    - generic [ref=e222]:
+      - generic [ref=e223]:
+        - generic [ref=e224]:
+          - link "FunLoading360" [ref=e225] [cursor=pointer]:
+            - /url: /
+            - img [ref=e227]
+            - generic [ref=e230]: FunLoading360
+          - paragraph [ref=e231]: Premium photo booth hire across Essex, Kent & London. Making your celebration unforgettable, one photo at a time.
+          - generic [ref=e232]:
+            - link "Instagram" [ref=e233] [cursor=pointer]:
+              - /url: https://www.instagram.com/funloading360
+              - img [ref=e234]
+            - link "TikTok" [ref=e237] [cursor=pointer]:
+              - /url: https://www.tiktok.com/@funloading360
+              - img [ref=e238]
+            - link "Facebook" [ref=e240] [cursor=pointer]:
+              - /url: https://www.facebook.com/funloading360
+              - img [ref=e241]
+        - generic [ref=e243]:
+          - heading "Quick Links" [level=3] [ref=e244]
+          - list [ref=e245]:
+            - listitem [ref=e246]:
+              - link "Home" [ref=e247] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e248]:
+              - link "Our Services" [ref=e249] [cursor=pointer]:
+                - /url: /services
+            - listitem [ref=e250]:
+              - link "Pricing & Packages" [ref=e251] [cursor=pointer]:
+                - /url: /pricing
+            - listitem [ref=e252]:
+              - link "Gallery" [ref=e253] [cursor=pointer]:
+                - /url: /gallery
+            - listitem [ref=e254]:
+              - link "Corporate Events" [ref=e255] [cursor=pointer]:
+                - /url: /corporate
+            - listitem [ref=e256]:
+              - link "Locations" [ref=e257] [cursor=pointer]:
+                - /url: /locations
+            - listitem [ref=e258]:
+              - link "Book Now" [ref=e259] [cursor=pointer]:
+                - /url: /book
+        - generic [ref=e260]:
+          - heading "Get In Touch" [level=3] [ref=e261]
+          - list [ref=e262]:
+            - listitem [ref=e263]:
+              - link "+44 7482 112110" [ref=e264] [cursor=pointer]:
+                - /url: tel:+447482112110
+                - img [ref=e265]
+                - generic [ref=e267]: +44 7482 112110
+            - listitem [ref=e268]:
+              - link "FunLoading360@gmail.com" [ref=e269] [cursor=pointer]:
+                - /url: mailto:FunLoading360@gmail.com
+                - img [ref=e270]
+                - generic [ref=e273]: FunLoading360@gmail.com
+            - listitem [ref=e274]:
+              - generic [ref=e275]:
+                - img [ref=e276]
+                - generic [ref=e279]: Essex, Kent & London
+          - paragraph [ref=e281]:
+            - text: Enquiries welcome 7 days a week
+            - text: We typically respond within 2 hours.
+      - generic [ref=e282]:
+        - paragraph [ref=e283]: © 2026 FunLoading360. All rights reserved.
+        - generic [ref=e284]:
+          - link "Privacy Policy" [ref=e285] [cursor=pointer]:
+            - /url: /privacy-policy
+          - link "Terms & Conditions" [ref=e286] [cursor=pointer]:
+            - /url: /terms
+  - alert [ref=e287]
+```
