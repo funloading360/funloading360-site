@@ -47,10 +47,33 @@ export async function POST(request: NextRequest) {
         console.log(`Checkout session completed: ${session.id}`);
 
         // Update booking status to completed
-        await updateBookingStatus(session.id, "completed");
+        await updateBookingStatus(session.id, "completed").catch((err) => {
+          console.warn("[WEBHOOK] updateBookingStatus failed:", err);
+        });
 
-        // Fetch booking and send emails
-        const booking = await getBooking(session.id);
+        // Fetch booking from Redis, OR fall back to Stripe metadata if Redis unavailable
+        let booking = await getBooking(session.id).catch((err) => {
+          console.warn("[WEBHOOK] getBooking failed:", err);
+          return null;
+        });
+
+        // Fall back to Stripe metadata if Redis retrieval failed
+        if (!booking && session.metadata?.bookingData) {
+          try {
+            const bookingData = JSON.parse(session.metadata.bookingData);
+            booking = {
+              id: session.id,
+              checkoutSessionId: session.id,
+              status: "completed",
+              createdAt: new Date().toISOString(),
+              ...bookingData,
+            };
+            console.log("[WEBHOOK] Using booking data from Stripe metadata (Redis unavailable)");
+          } catch (parseError) {
+            console.error("[WEBHOOK] Failed to parse booking from Stripe metadata:", parseError);
+          }
+        }
+
         if (booking) {
           const product = getProductById(booking.productId);
           const upsellMap: Record<string, { name: string; price: number }> = {

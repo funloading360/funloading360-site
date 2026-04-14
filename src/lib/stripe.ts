@@ -80,6 +80,23 @@ export async function createCheckoutSession(
     ],
     metadata: {
       bookingId: booking.email + ":" + booking.eventDate,
+      // Store full booking as JSON so webhook can send emails even if Redis unavailable
+      bookingData: JSON.stringify({
+        name: booking.name,
+        email: booking.email,
+        phone: booking.phone,
+        productId: booking.productId,
+        tier: booking.tier,
+        upsells: booking.upsells,
+        totalPrice: booking.totalPrice,
+        amountPaid: booking.amountPaid,
+        paymentType: booking.paymentType,
+        eventDate: booking.eventDate,
+        altDate: booking.altDate,
+        eventType: booking.eventType,
+        venue: booking.venue,
+        specialRequests: booking.specialRequests,
+      }),
     },
     success_url: `${baseUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${baseUrl}/book?cancelled=true`,
