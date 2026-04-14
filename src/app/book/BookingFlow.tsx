@@ -34,6 +34,9 @@ export default function BookPage() {
   // Track whether we've just added an item from URL params to prevent premature redirect
   const addedFromParamsRef = useRef(false);
 
+  // CRM: track whether booking was initiated (to suppress abandonment event)
+  const bookingInitiatedRef = useRef(false);
+
   // If URL has productId + tier params (e.g. from /pricing CTA), add to cart before rendering
   useEffect(() => {
     if (isLoading) return;
@@ -92,6 +95,28 @@ export default function BookPage() {
     }
   }, [searchParams]);
 
+  // ─── CRM: session ID helper ─────────────────────────────────────────────
+  function getCrmSessionId(): string {
+    if (typeof window === 'undefined') return 'ssr';
+    return sessionStorage.getItem('funloading360_session') || 'unknown';
+  }
+
+  async function emitCrmEventClient(payload: Record<string, unknown>): Promise<void> {
+    try {
+      await fetch('/api/crm/event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...payload,
+          sessionId: getCrmSessionId(),
+          timestamp: new Date().toISOString(),
+        }),
+      });
+    } catch {
+      // Fire-and-forget — never block UX
+    }
+  }
+
   const [selectedUpsells, setSelectedUpsells] = useState<string[]>([]);
   const [paymentType, setPaymentType] = useState<"deposit" | "full">("deposit");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -141,6 +166,36 @@ export default function BookPage() {
     return getCartItemsTotal() + calculateUpsellTotal();
   };
 
+  // ─── CRM: abandonment detection ─────────────────────────────────────────
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (
+        document.visibilityState === 'hidden' &&
+        formData.email &&
+        !bookingInitiatedRef.current
+      ) {
+        const cartTotal = getCartItemsTotal();
+        const firstItem = cartItems[0];
+        emitCrmEventClient({
+          type: 'booking.abandoned',
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          eventDate: formData.eventDate,
+          eventType: formData.eventType,
+          venue: formData.venue,
+          tier: firstItem?.selectedTier || '',
+          altDate: formData.altDate || undefined,
+          cartTotal,
+          upsells: selectedUpsells,
+        });
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [formData, cartItems, selectedUpsells]);
+
   const validateField = (name: string, value: string): string => {
     switch (name) {
       case 'name':
@@ -182,6 +237,11 @@ export default function BookPage() {
       ...prev,
       [name]: error
     }));
+
+    // CRM: capture partial lead when a valid email is blurred
+    if (name === 'email' && !error) {
+      emitCrmEventClient({ type: 'lead.partial', email: value });
+    }
   };
 
   const handlePhoneBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -222,8 +282,22 @@ export default function BookPage() {
     setSubmitError(null);
     setCancelled(false);
     setIsSubmitting(true);
+
+    // CRM: capture full lead details at form submission
+    const firstItem = cartItems[0];
+    emitCrmEventClient({
+      type: 'lead.captured',
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      eventDate: formData.eventDate,
+      eventType: formData.eventType,
+      venue: formData.venue,
+      tier: firstItem?.selectedTier || '',
+      altDate: formData.altDate || undefined,
+    });
+
     try {
-      const firstItem = cartItems[0];
       const res = await fetch("/api/checkout/create-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -243,6 +317,23 @@ export default function BookPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data?.error?.message || "submission failed");
+      // CRM: mark as initiated — abandonment detection should not fire after this
+      bookingInitiatedRef.current = true;
+      emitCrmEventClient({
+        type: 'booking.initiated',
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        eventDate: formData.eventDate,
+        eventType: formData.eventType,
+        venue: formData.venue,
+        tier: firstItem?.selectedTier || '',
+        altDate: formData.altDate || undefined,
+        totalPrice: getTotalPrice(),
+        depositAmount: Math.round(getTotalPrice() * 0.15),
+        paymentType,
+        upsells: selectedUpsells,
+      });
       window.location.href = data.data.checkoutUrl;
     } catch {
       setIsSubmitting(false);
