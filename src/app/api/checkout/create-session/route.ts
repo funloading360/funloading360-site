@@ -27,24 +27,29 @@ const ratelimit = new Ratelimit({
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting
+    // Rate limiting (fail-open — if Redis unavailable, allow the request)
     const ip =
       request.headers.get("x-forwarded-for") ||
       request.headers.get("x-real-ip") ||
       "anonymous";
 
-    const { success } = await ratelimit.limit(ip);
-    if (!success) {
-      return Response.json(
-        {
-          ok: false,
-          error: {
-            message: "Rate limit exceeded. Please try again later.",
-            code: "RATE_LIMITED",
+    try {
+      const { success } = await ratelimit.limit(ip);
+      if (!success) {
+        return Response.json(
+          {
+            ok: false,
+            error: {
+              message: "Rate limit exceeded. Please try again later.",
+              code: "RATE_LIMITED",
+            },
           },
-        },
-        { status: 429 }
-      );
+          { status: 429 }
+        );
+      }
+    } catch (rateLimitError) {
+      // Redis unavailable — log but allow the request (fail-open)
+      console.warn("Rate limiting unavailable:", rateLimitError);
     }
 
     // Parse and validate request
