@@ -121,19 +121,19 @@ export default function ServiceGridContent() {
               );
 
               return (
-                <motion.div
-                  key={booth.slug}
-                  initial={anim({ opacity: 0, y: 40 })}
-                  whileInView={anim({ opacity: 1, y: 0 })}
-                  viewport={{ once: true }}
-                  transition={
-                    prefersReducedMotion
-                      ? { duration: 0 }
-                      : { duration: 0.6, delay: idx * 0.12 }
-                  }
-                  whileHover={anim({ y: -4 })}
-                  className="rounded-3xl bg-surface border border-border overflow-hidden flex flex-col group hover:border-gold/40 hover:shadow-xl hover:shadow-gold/10 transition-all duration-300"
-                >
+                <Link key={booth.slug} href={`/pricing/${booth.slug}`} className="block">
+                  <motion.div
+                    initial={anim({ opacity: 0, y: 40 })}
+                    whileInView={anim({ opacity: 1, y: 0 })}
+                    viewport={{ once: true }}
+                    transition={
+                      prefersReducedMotion
+                        ? { duration: 0 }
+                        : { duration: 0.6, delay: idx * 0.12 }
+                    }
+                    whileHover={anim({ y: -4 })}
+                    className="rounded-3xl bg-surface border border-border overflow-hidden flex flex-col group hover:border-gold/40 hover:shadow-xl hover:shadow-gold/10 transition-all duration-300 h-full cursor-pointer"
+                  >
                   {/* Visual area */}
                   <div className="relative h-52 overflow-hidden">
                     {booth.slug === "360-slow-motion" && (
@@ -208,15 +208,13 @@ export default function ServiceGridContent() {
                       <span className="text-gray-500 text-xs">3 packages available</span>
                     </div>
 
-                    <Link
-                      href={`/pricing/${booth.slug}`}
-                      className="flex items-center justify-center gap-2 w-full py-3 rounded-full border border-gold/40 text-gold font-semibold text-sm hover:bg-gold hover:text-background transition-all duration-200 group-hover:border-gold"
-                    >
+                    <span className="flex items-center justify-center gap-2 w-full py-3 rounded-full border border-gold/40 text-gold font-semibold text-sm hover:bg-gold hover:text-background transition-all duration-200 group-hover:border-gold">
                       View Packages
                       <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    </span>
                   </div>
-                </motion.div>
+                  </motion.div>
+                </Link>
               );
             })}
           </div>
