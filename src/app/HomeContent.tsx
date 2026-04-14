@@ -41,7 +41,7 @@ const booths = [
     price: "from £499 / 2 hrs",
     gradient: "from-purple-900/60 to-blue-900/60",
     accentColor: "bg-purple-400",
-    href: "/services",
+    href: "/pricing/360-slow-motion",
     image: "/images/360-slow-motion/360-couple-dancing.jpeg",
   },
   {
@@ -58,7 +58,7 @@ const booths = [
     price: "from £379 / 2 hrs",
     gradient: "from-amber-900/60 to-rose-900/60",
     accentColor: "bg-amber-400",
-    href: "/services",
+    href: "/pricing/glam-vintage",
     image: "/images/glam-vintage-booth.jpg",
   },
   {
@@ -75,7 +75,7 @@ const booths = [
     price: "from £229 / 2 hrs",
     gradient: "from-emerald-900/60 to-teal-900/60",
     accentColor: "bg-emerald-400",
-    href: "/services",
+    href: "/pricing/selfie-pod",
     image: "/images/selfie-pod/selfie-pod-venue.jpeg",
   },
 ];
@@ -135,6 +135,9 @@ const eventTypes = [
     border: "border-emerald-400/20",
   },
 ];
+
+// Create motion-enabled Link component for booth cards
+const MotionLink = motion(Link);
 
 export default function HomePage() {
   const prefersReducedMotion = useReducedMotion();
@@ -328,11 +331,12 @@ export default function HomePage() {
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
           >
             {booths.map((booth, i) => (
-              <motion.div
+              <MotionLink
                 key={booth.name}
+                href={booth.href}
                 variants={fadeUp}
                 custom={i}
-                className="group relative rounded-3xl overflow-hidden border border-border bg-surface hover:border-gold/30 transition-all duration-300 hover:-translate-y-1"
+                className="group relative rounded-3xl overflow-hidden border border-border bg-surface hover:border-gold/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer block"
               >
                 {/* Booth image */}
                 <div className="relative aspect-[4/3] overflow-hidden">
@@ -379,15 +383,12 @@ export default function HomePage() {
                     ))}
                   </ul>
                   <span className="inline-block text-yellow-400 font-semibold text-sm mb-4">{booth.price}</span>
-                  <Link
-                    href={booth.href}
-                    className="inline-flex items-center gap-1.5 text-gold text-sm font-semibold hover:gap-2.5 transition-all duration-200"
-                  >
-                    Learn more
+                  <span className="inline-flex items-center gap-1.5 text-gold text-sm font-semibold">
+                    View packages
                     <ChevronRight className="w-4 h-4" />
-                  </Link>
+                  </span>
                 </div>
-              </motion.div>
+              </MotionLink>
             ))}
           </motion.div>
 
