@@ -12,7 +12,10 @@ import { verifyWebhookSignature, updateBookingStatus, getBooking } from "@/lib/s
 import { sendConfirmationEmail, sendAdminBookingEmail, generateBookingRef, type BookingEmailData } from "@/lib/email";
 import { getProductById } from "@/lib/services";
 import { notifyN8nPaymentCompleted } from "@/lib/n8n";
+import { emitCrmEvent } from "@/lib/crmEvents";
 import { Redis } from "@upstash/redis";
+import { createBookingEvent } from "@/lib/googleCalendar";
+import { alertCalendarSyncFailed } from "@/lib/monitoring";
 
 const redis = Redis.fromEnv();
 
@@ -101,6 +104,20 @@ export async function POST(request: NextRequest) {
             upsells: booking.upsells.map((id) => upsellMap[id] || { name: id, price: 0 }),
           };
 
+          // Write booking to Google Calendar — blocks the date for future customers
+          const bookingRef = generateBookingRef(booking.name, booking.eventDate);
+          createBookingEvent({
+            date: booking.eventDate,
+            clientName: booking.name,
+            productName: emailData.productName,
+            venue: booking.venue,
+            bookingRef,
+            productIds: booking.productId ? [booking.productId] : undefined,
+          }).catch((err) => {
+            console.error("[WEBHOOK][CALENDAR] Write-back failed:", err);
+            alertCalendarSyncFailed(booking.eventDate, err instanceof Error ? err.message : String(err)).catch(() => {});
+          });
+
           // Send customer confirmation email (async, don't block webhook)
           sendConfirmationEmail(emailData).catch((err) => {
             console.error("[WEBHOOK] Customer email failed:", err);
@@ -132,6 +149,29 @@ export async function POST(request: NextRequest) {
             checkoutSessionId: session.id,
           }).catch((err) => {
             console.error("[WEBHOOK] n8n payment webhook failed:", err);
+          });
+
+          // CRM: emit booking.completed for HubSpot + Google Sheets sync
+          emitCrmEvent({
+            type: 'booking.completed',
+            sessionId: booking.id,
+            timestamp: new Date().toISOString(),
+            name: booking.name,
+            email: booking.email,
+            phone: booking.phone,
+            eventDate: booking.eventDate,
+            eventType: booking.eventType,
+            venue: booking.venue,
+            tier: booking.tier,
+            altDate: booking.altDate,
+            totalPrice: booking.totalPrice,
+            amountPaid: booking.amountPaid,
+            paymentType: booking.paymentType as 'deposit' | 'full',
+            upsells: booking.upsells,
+            bookingRef: generateBookingRef(booking.name, booking.eventDate),
+            checkoutSessionId: session.id,
+          }).catch((err) => {
+            console.error('[WEBHOOK] CRM event emit failed:', err);
           });
         }
 
