@@ -34,18 +34,22 @@ function getStripeInstance(): Stripe {
 
 export async function GET(request: NextRequest) {
   try {
-    // Rate limiting
+    // Rate limiting (fail-open — if Redis unavailable, allow the request)
     const ip =
       request.headers.get("x-forwarded-for") ||
       request.headers.get("x-real-ip") ||
       "anonymous";
 
-    const { success } = await ratelimit.limit(ip);
-    if (!success) {
-      return Response.json(
-        { ok: false, error: "Rate limit exceeded" },
-        { status: 429 }
-      );
+    try {
+      const { success } = await ratelimit.limit(ip);
+      if (!success) {
+        return Response.json(
+          { ok: false, error: "Rate limit exceeded" },
+          { status: 429 }
+        );
+      }
+    } catch {
+      // Redis unavailable — allow request to proceed
     }
 
     const sessionId = request.nextUrl.searchParams.get("session_id");
@@ -67,8 +71,24 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Check booking in Redis
-    const booking = await getBooking(sessionId);
+    // Check booking in Redis, OR fall back to Stripe metadata
+    let booking = await getBooking(sessionId).catch(() => null);
+
+    if (!booking && session.metadata?.bookingData) {
+      try {
+        const bookingData = JSON.parse(session.metadata.bookingData);
+        booking = {
+          id: sessionId,
+          checkoutSessionId: sessionId,
+          status: "completed",
+          createdAt: new Date().toISOString(),
+          ...bookingData,
+        };
+      } catch {
+        console.error("[VERIFY] Failed to parse booking from Stripe metadata");
+      }
+    }
+
     if (!booking) {
       return Response.json(
         { ok: true, status: "not_found" },
@@ -76,15 +96,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Idempotency guard — prevent duplicate processing if webhook already handled this
-    const idempotencyKey = `processed:${sessionId}`;
-    const isNew = await redis.set(idempotencyKey, 1, { nx: true, ex: 300 });
-    if (isNew === null) {
-      return Response.json({ ok: true, status: "already_completed" }, { status: 200 });
+    // Idempotency guard — prevent duplicate emails (fail-open if Redis unavailable)
+    try {
+      const idempotencyKey = `processed:${sessionId}`;
+      const isNew = await redis.set(idempotencyKey, 1, { nx: true, ex: 300 });
+      if (isNew === null) {
+        return Response.json({ ok: true, status: "already_completed" }, { status: 200 });
+      }
+    } catch {
+      // Redis unavailable — proceed without idempotency check
     }
 
     // Update status and send emails (webhook hasn't fired yet)
-    await updateBookingStatus(sessionId, "completed");
+    await updateBookingStatus(sessionId, "completed").catch(() => {});
 
     const product = getProductById(booking.productId);
     const upsellMap: Record<string, { name: string; price: number }> = {
