@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <div className="bg-[#0a0a0e] text-white min-h-screen flex items-center justify-center px-4 pt-20">
+    <div className="bg-background text-white min-h-screen flex items-center justify-center px-4 pt-20">
       <div className="max-w-md w-full text-center">
-        <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-4">
+        <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-4">
           404
         </p>
         <h1
@@ -26,13 +26,13 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/"
-            className="px-6 py-3 rounded-full bg-[#f5a623] text-[#0a0a0e] font-semibold text-sm hover:bg-[#fbbf4a] transition-colors"
+            className="px-6 py-3 rounded-full bg-gold text-background font-semibold text-sm hover:bg-gold-light transition-colors"
           >
             Back to homepage
           </Link>
           <Link
             href="/book"
-            className="px-6 py-3 rounded-full border border-[#2a2a3a] text-white font-medium text-sm hover:border-[#f5a623]/40 hover:bg-white/5 transition-colors"
+            className="px-6 py-3 rounded-full border border-border text-white font-medium text-sm hover:border-gold/40 hover:bg-white/5 transition-colors"
           >
             Book a booth
           </Link>

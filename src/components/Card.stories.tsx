@@ -49,7 +49,7 @@ export const Default: Story = {
 export const WithAccent: Story = {
   render: (args) => (
     <Card {...args} variant="accent">
-      <h3 className="text-[#f5a623] font-bold text-lg mb-2">Featured Card</h3>
+      <h3 className="text-gold font-bold text-lg mb-2">Featured Card</h3>
       <p className="text-gray-400 text-sm">
         Gold accent border draws attention to featured content.
       </p>
@@ -63,7 +63,7 @@ export const WithAccent: Story = {
 export const Interactive: Story = {
   render: (args) => (
     <Card {...args} variant="interactive">
-      <h3 className="text-white font-bold text-lg mb-2 group-hover:text-[#f5a623] transition-colors">
+      <h3 className="text-white font-bold text-lg mb-2 group-hover:text-gold transition-colors">
         Interactive Card
       </h3>
       <p className="text-gray-400 text-sm">Hover to see the border and background change.</p>
@@ -106,12 +106,12 @@ export const PricingCard: Story = {
     <Card variant="default" padding="lg" className="w-80">
       <div className="mb-4">
         <h3 className="text-white font-bold text-xl mb-1">Premium Package</h3>
-        <p className="text-[#f5a623] font-semibold text-lg">£599</p>
+        <p className="text-gold font-semibold text-lg">£599</p>
       </div>
       <ul className="space-y-2 mb-6 text-gray-400 text-sm">
         {["Professional Camera", "4 Hours Duration", "Unlimited Prints"].map((f) => (
           <li key={f} className="flex items-start gap-2">
-            <span className="text-[#f5a623]">✓</span>
+            <span className="text-gold">✓</span>
             <span>{f}</span>
           </li>
         ))}
@@ -126,8 +126,8 @@ export const PricingCard: Story = {
  */
 export const WithImage: Story = {
   render: () => (
-    <div className="w-80 overflow-hidden rounded-2xl bg-[#13131a] border border-[#2a2a3a]">
-      <div className="w-full h-40 bg-gradient-to-br from-[#f5a623]/20 to-[#f5a623]/5" />
+    <div className="w-80 overflow-hidden rounded-2xl bg-surface border border-border">
+      <div className="w-full h-40 bg-gradient-to-br from-gold/20 to-gold/5" />
       <Card variant="minimal" padding="md">
         <h3 className="text-white font-bold text-lg mb-2">Image Card</h3>
         <p className="text-gray-400 text-sm">Cards can include imagery for visual impact.</p>

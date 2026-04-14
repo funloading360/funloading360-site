@@ -12,15 +12,41 @@ import {
 } from "@/lib/apiResponse";
 import {
   sendConfirmationEmail,
+  sendAdminAlert,
   triggerQuoteGeneration,
   type BookingEmailData,
 } from "@/lib/email";
 import { sendConfirmationSMSWithRetry, type BookingSMSData } from "@/lib/sms";
 import { getProductById } from "@/lib/services";
 import { alertBookingSubmissionFailed, alertNewBooking, alertRateLimitExceeded } from "@/lib/monitoring";
+import { notifyN8nBookingSubmitted } from "@/lib/n8n";
+import { generateBookingRef } from "@/lib/email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const TO_EMAIL = process.env.CONTACT_EMAIL ?? "hello@funloading360.co.uk";
+const TO_EMAIL = process.env.CONTACT_EMAIL ?? "FunLoading360@gmail.com";
+
+// Retry confirmation email up to 3 times
+async function sendEmailWithRetry(booking: BookingEmailData, bookingRef: string, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await sendConfirmationEmail(booking);
+      return; // success
+    } catch (err) {
+      if (attempt === maxRetries) {
+        // All retries failed — send admin alert
+        try {
+          await sendAdminAlert(booking, bookingRef, err);
+        } catch {
+          // ignore alert failure — don't block the booking response
+        }
+        console.error(`Email failed after ${maxRetries} attempts:`, err);
+        return; // don't throw — booking was successful, email is secondary
+      }
+      // Exponential backoff: 1s, 2s, 4s
+      await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt - 1)));
+    }
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -86,6 +112,7 @@ export async function POST(req: NextRequest) {
 
     // Prepare email data (only for new format with product details)
     if (product && tier) {
+      const depositPrice = Math.round(totalPrice * 0.15);
       const emailData: BookingEmailData = {
         name,
         email,
@@ -95,8 +122,11 @@ export async function POST(req: NextRequest) {
         date: eventDate,
         altDate,
         venue,
+        eventType,
         totalPrice,
-        depositPrice: Math.round(totalPrice * 0.15),
+        depositPrice,
+        paymentType: "deposit",
+        amountPaid: depositPrice,
         upsells: upsells.map((id) => {
           const upsellMap: Record<string, { name: string; price: number }> = {
             "guest-book": { name: "Guest Book", price: 40 },
@@ -117,9 +147,9 @@ export async function POST(req: NextRequest) {
         totalPrice,
       };
 
-      // Send confirmation email to customer (async, non-blocking)
-      sendConfirmationEmail(emailData).catch((err) => {
-        console.error("[EMAIL] Customer confirmation failed:", err);
+      // Send confirmation email to customer with retry (async, non-blocking)
+      sendEmailWithRetry(emailData, generateBookingRef(name, eventDate)).catch((err) => {
+        console.error("[EMAIL] Customer confirmation failed after all retries:", err);
       });
 
       // Send SMS confirmation with retry logic (async, non-blocking)
@@ -130,6 +160,25 @@ export async function POST(req: NextRequest) {
       // Trigger quote generation via Zapier (async, non-blocking)
       triggerQuoteGeneration(emailData).catch((err) => {
         console.error("[ZAPIER] Quote trigger failed:", err);
+      });
+
+      // Notify n8n for unpaid recovery pipeline (async, non-blocking)
+      notifyN8nBookingSubmitted({
+        name,
+        email,
+        phone,
+        eventType,
+        eventDate,
+        altDate,
+        venue,
+        productName: product.name,
+        tier: emailData.tier,
+        upsells: upsells,
+        totalPrice,
+        createdAt: new Date().toISOString(),
+        bookingRef: generateBookingRef(name, eventDate),
+      }).catch((err) => {
+        console.error("[N8N] Booking webhook failed:", err);
       });
     }
 

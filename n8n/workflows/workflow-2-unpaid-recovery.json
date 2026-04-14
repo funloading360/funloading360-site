@@ -1,0 +1,358 @@
+{
+  "name": "FunLoading360 — Unpaid Recovery Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "booking-submitted",
+        "responseMode": "onReceived",
+        "responseCode": 200,
+        "options": {}
+      },
+      "id": "webhook-booking",
+      "name": "Webhook: Booking Submitted",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "hours"
+      },
+      "id": "wait-2h",
+      "name": "Wait 2 Hours",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=http://host.docker.internal:3000/api/booking-status?email={{ encodeURIComponent($('Webhook: Booking Submitted').item.json.email) }}&date={{ encodeURIComponent($('Webhook: Booking Submitted').item.json.eventDate) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "check-paid-1",
+      "name": "Check if Paid (1st)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-paid-1",
+              "leftValue": "={{ $json.paid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-paid-1",
+      "name": "IF Paid? (1st check)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {},
+      "id": "stop-paid-1",
+      "name": "Stop (Already Paid)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1140, 180]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1godebBcMBhtCwRvoQeYg9qoF2jfoxrkNScP9TwYdpdM"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Unpaid Bookings"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date Submitted": "={{ $('Webhook: Booking Submitted').item.json.createdAt }}",
+            "Name": "={{ $('Webhook: Booking Submitted').item.json.name }}",
+            "Email": "={{ $('Webhook: Booking Submitted').item.json.email }}",
+            "Phone": "={{ $('Webhook: Booking Submitted').item.json.phone }}",
+            "Event Type": "={{ $('Webhook: Booking Submitted').item.json.eventType }}",
+            "Event Date": "={{ $('Webhook: Booking Submitted').item.json.eventDate }}",
+            "Alt Date": "={{ $('Webhook: Booking Submitted').item.json.altDate }}",
+            "Venue": "={{ $('Webhook: Booking Submitted').item.json.venue }}",
+            "Service": "={{ $('Webhook: Booking Submitted').item.json.productName }}",
+            "Package": "={{ $('Webhook: Booking Submitted').item.json.tier }}",
+            "Add-ons": "={{ $('Webhook: Booking Submitted').item.json.upsells.join(', ') }}",
+            "Total Price": "={{ $('Webhook: Booking Submitted').item.json.totalPrice }}",
+            "Booking Ref": "={{ $('Webhook: Booking Submitted').item.json.bookingRef }}",
+            "Recovery Status": "Email 1 Sent"
+          }
+        },
+        "options": {}
+      },
+      "id": "gsheets-unpaid",
+      "name": "Google Sheets: Unpaid Bookings",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [1140, 420]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.RESEND_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"FunLoading360 <noreply@funloading360.co.uk>\",\n  \"to\": \"{{ $('Webhook: Booking Submitted').item.json.email }}\",\n  \"subject\": \"Your photo booth booking is reserved — complete your payment\",\n  \"html\": \"<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='margin:0;padding:0;background:#f0f0f0;'><table width='100%' cellpadding='0' cellspacing='0' style='background:#f0f0f0;'><tr><td align='center' style='padding:24px 16px;'><table width='600' cellpadding='0' cellspacing='0' style='max-width:600px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);'><tr><td style='background:linear-gradient(135deg,#0a0a0e 0%,#1a1a24 60%,#0a0a0e 100%);padding:40px 30px 32px;text-align:center;'><table cellpadding='0' cellspacing='0' align='center'><tr><td style='width:64px;height:64px;border-radius:50%;border:3px solid #f5a623;text-align:center;vertical-align:middle;font-family:-apple-system,Arial,sans-serif;font-size:22px;font-weight:bold;color:#f5a623;line-height:64px;'>360</td></tr></table><p style='margin:14px 0 0;font-family:-apple-system,Arial,sans-serif;font-size:26px;font-weight:700;color:#fff;'>FunLoading360</p></td></tr><tr><td style='background:#fff;padding:32px 36px;'><p style='font-family:-apple-system,Arial,sans-serif;font-size:16px;color:#333;line-height:1.6;margin:0 0 16px;'>Hi {{ $('Webhook: Booking Submitted').item.json.name }},</p><p style='font-family:-apple-system,Arial,sans-serif;font-size:16px;color:#333;line-height:1.6;margin:0 0 16px;'>Thank you for enquiring about our <strong>{{ $('Webhook: Booking Submitted').item.json.productName }}</strong> for your <strong>{{ $('Webhook: Booking Submitted').item.json.eventType }}</strong>!</p><p style='font-family:-apple-system,Arial,sans-serif;font-size:16px;color:#333;line-height:1.6;margin:0 0 24px;'>Your date is currently reserved but <strong>not yet secured</strong>. To lock in your date and guarantee availability, please complete your payment.</p><table cellpadding='0' cellspacing='0' align='center'><tr><td style='background:#f5a623;border-radius:8px;padding:14px 32px;'><a href='https://funloading360.co.uk/book' style='font-family:-apple-system,Arial,sans-serif;font-size:16px;font-weight:700;color:#0a0a0e;text-decoration:none;'>Complete Your Booking</a></td></tr></table><table width='100%' cellpadding='0' cellspacing='0' style='margin-top:24px;background:#faf8f5;border-radius:8px;'><tr><td style='padding:16px 20px;'><p style='font-family:-apple-system,Arial,sans-serif;font-size:14px;color:#666;margin:0;'><strong style='color:#333;'>Your Enquiry Details:</strong><br>Service: {{ $('Webhook: Booking Submitted').item.json.productName }} ({{ $('Webhook: Booking Submitted').item.json.tier }})<br>Date: {{ $('Webhook: Booking Submitted').item.json.eventDate }}<br>Total: &pound;{{ $('Webhook: Booking Submitted').item.json.totalPrice }}</p></td></tr></table></td></tr><tr><td style='background:#f9f9f9;padding:20px 36px;text-align:center;border-top:1px solid #eee;'><p style='font-family:-apple-system,Arial,sans-serif;font-size:14px;color:#666;margin:0;'>Questions? <a href='tel:+447482112110' style='color:#f5a623;text-decoration:none;'>+44 7482 112110</a> &bull; <a href='mailto:FunLoading360@gmail.com' style='color:#f5a623;text-decoration:none;'>FunLoading360@gmail.com</a></p></td></tr><tr><td style='background:#0a0a0e;padding:20px 36px;text-align:center;'><p style='font-family:-apple-system,Arial,sans-serif;font-size:12px;color:#777;margin:0;'>&copy; 2026 FunLoading360. All rights reserved.</p></td></tr></table></td></tr></table></body></html>\"\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "send-email-1",
+      "name": "Send Recovery Email 1 (Friendly)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1380, 420]
+    },
+    {
+      "parameters": {
+        "amount": 22,
+        "unit": "hours"
+      },
+      "id": "wait-22h",
+      "name": "Wait 22 Hours",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1600, 420]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=http://host.docker.internal:3000/api/booking-status?email={{ encodeURIComponent($('Webhook: Booking Submitted').item.json.email) }}&date={{ encodeURIComponent($('Webhook: Booking Submitted').item.json.eventDate) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "check-paid-2",
+      "name": "Check if Paid (2nd)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1820, 420]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-paid-2",
+              "leftValue": "={{ $json.paid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-paid-2",
+      "name": "IF Paid? (2nd check)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2040, 420]
+    },
+    {
+      "parameters": {},
+      "id": "stop-paid-2",
+      "name": "Stop (Paid After Email 1)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [2280, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.RESEND_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"FunLoading360 <noreply@funloading360.co.uk>\",\n  \"to\": \"{{ $('Webhook: Booking Submitted').item.json.email }}\",\n  \"subject\": \"Your date is still available — but not for long\",\n  \"html\": \"<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='margin:0;padding:0;background:#f0f0f0;'><table width='100%' cellpadding='0' cellspacing='0' style='background:#f0f0f0;'><tr><td align='center' style='padding:24px 16px;'><table width='600' cellpadding='0' cellspacing='0' style='max-width:600px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);'><tr><td style='background:linear-gradient(135deg,#0a0a0e 0%,#1a1a24 60%,#0a0a0e 100%);padding:40px 30px 32px;text-align:center;'><table cellpadding='0' cellspacing='0' align='center'><tr><td style='width:64px;height:64px;border-radius:50%;border:3px solid #f5a623;text-align:center;vertical-align:middle;font-family:-apple-system,Arial,sans-serif;font-size:22px;font-weight:bold;color:#f5a623;line-height:64px;'>360</td></tr></table><p style='margin:14px 0 0;font-family:-apple-system,Arial,sans-serif;font-size:26px;font-weight:700;color:#fff;'>FunLoading360</p></td></tr><tr><td style='background:#fff;padding:32px 36px;'><p style='font-family:-apple-system,Arial,sans-serif;font-size:16px;color:#333;line-height:1.6;margin:0 0 16px;'>Hi {{ $('Webhook: Booking Submitted').item.json.name }},</p><p style='font-family:-apple-system,Arial,sans-serif;font-size:16px;color:#333;line-height:1.6;margin:0 0 16px;'>Just a quick heads-up — your date for <strong>{{ $('Webhook: Booking Submitted').item.json.eventDate }}</strong> is still available, but we've had other enquiries for the same period.</p><p style='font-family:-apple-system,Arial,sans-serif;font-size:16px;color:#333;line-height:1.6;margin:0 0 8px;'>We'd hate for you to miss out! Secure your <strong>{{ $('Webhook: Booking Submitted').item.json.productName }}</strong> with just a <strong>15% deposit</strong> and lock in your date today.</p><table width='100%' cellpadding='0' cellspacing='0' style='margin:24px 0;background:#fff8e1;border:1px solid #f5a623;border-radius:8px;'><tr><td style='padding:16px 20px;'><p style='font-family:-apple-system,Arial,sans-serif;font-size:14px;color:#333;margin:0;text-align:center;'>&#9200; <strong>Only a 15% deposit needed</strong> to secure your date<br><span style='font-size:13px;color:#666;'>Remaining balance due 14 days before your event</span></p></td></tr></table><table cellpadding='0' cellspacing='0' align='center'><tr><td style='background:#f5a623;border-radius:8px;padding:14px 32px;'><a href='https://funloading360.co.uk/book' style='font-family:-apple-system,Arial,sans-serif;font-size:16px;font-weight:700;color:#0a0a0e;text-decoration:none;'>Secure Your Date Now</a></td></tr></table></td></tr><tr><td style='background:#f9f9f9;padding:20px 36px;text-align:center;border-top:1px solid #eee;'><p style='font-family:-apple-system,Arial,sans-serif;font-size:14px;color:#666;margin:0;'>Need help? <a href='tel:+447482112110' style='color:#f5a623;text-decoration:none;'>+44 7482 112110</a> &bull; <a href='mailto:FunLoading360@gmail.com' style='color:#f5a623;text-decoration:none;'>FunLoading360@gmail.com</a></p></td></tr><tr><td style='background:#0a0a0e;padding:20px 36px;text-align:center;'><p style='font-family:-apple-system,Arial,sans-serif;font-size:12px;color:#777;margin:0;'>&copy; 2026 FunLoading360. All rights reserved.</p></td></tr></table></td></tr></table></body></html>\"\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "send-email-2",
+      "name": "Send Recovery Email 2 (Urgency)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2280, 540]
+    }
+  ],
+  "connections": {
+    "Webhook: Booking Submitted": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 Hours",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 Hours": {
+      "main": [
+        [
+          {
+            "node": "Check if Paid (1st)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Paid (1st)": {
+      "main": [
+        [
+          {
+            "node": "IF Paid? (1st check)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Paid? (1st check)": {
+      "main": [
+        [
+          {
+            "node": "Stop (Already Paid)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets: Unpaid Bookings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Unpaid Bookings": {
+      "main": [
+        [
+          {
+            "node": "Send Recovery Email 1 (Friendly)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Recovery Email 1 (Friendly)": {
+      "main": [
+        [
+          {
+            "node": "Wait 22 Hours",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 22 Hours": {
+      "main": [
+        [
+          {
+            "node": "Check if Paid (2nd)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Paid (2nd)": {
+      "main": [
+        [
+          {
+            "node": "IF Paid? (2nd check)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Paid? (2nd check)": {
+      "main": [
+        [
+          {
+            "node": "Stop (Paid After Email 1)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Recovery Email 2 (Urgency)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "FunLoading360"
+    }
+  ]
+}

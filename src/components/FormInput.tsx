@@ -11,14 +11,14 @@ import {
 // ── Shared styles ──────────────────────────────────────────────────────────────
 
 const baseInputClass =
-  "w-full px-4 py-3 rounded-xl bg-[#13131a] border text-white placeholder:text-gray-500 outline-none transition-all duration-200 min-h-[44px]";
+  "w-full px-4 py-3 rounded-xl bg-surface border text-white placeholder:text-gray-500 outline-none transition-all duration-200 min-h-[44px]";
 
 const stateClasses = {
   normal:
-    "border-[#2a2a3a] focus:border-[#f5a623]/50 focus:ring-1 focus:ring-[#f5a623]/20",
+    "border-border focus:border-gold/50 focus:ring-1 focus:ring-gold/20",
   error:
     "border-red-500/50 focus:border-red-500/70 focus:ring-1 focus:ring-red-500/20",
-  disabled: "border-[#2a2a3a] text-gray-400 placeholder:text-gray-600 cursor-not-allowed opacity-50",
+  disabled: "border-border text-gray-400 placeholder:text-gray-600 cursor-not-allowed opacity-50",
 };
 
 // ── Input ──────────────────────────────────────────────────────────────────────
@@ -68,7 +68,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           </p>
         )}
         {error && (
-          <p id={errorId} role="alert" className="flex items-start gap-1.5 text-red-400 text-xs">
+          <p id={errorId} role="alert" aria-live="polite" className="flex items-start gap-1.5 text-red-400 text-xs">
             <span aria-hidden="true" className="text-base leading-none">⚠</span>
             <span>{error}</span>
           </p>
@@ -124,7 +124,7 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
           <p className="text-xs text-gray-500">{hint}</p>
         )}
         {error && (
-          <p id={errorId} role="alert" className="flex items-start gap-1.5 text-red-400 text-xs">
+          <p id={errorId} role="alert" aria-live="polite" className="flex items-start gap-1.5 text-red-400 text-xs">
             <span aria-hidden="true" className="text-base leading-none">⚠</span>
             <span>{error}</span>
           </p>
@@ -179,7 +179,7 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
           <p className="text-xs text-gray-500">{hint}</p>
         )}
         {error && (
-          <p id={errorId} role="alert" className="flex items-start gap-1.5 text-red-400 text-xs">
+          <p id={errorId} role="alert" aria-live="polite" className="flex items-start gap-1.5 text-red-400 text-xs">
             <span aria-hidden="true" className="text-base leading-none">⚠</span>
             <span>{error}</span>
           </p>

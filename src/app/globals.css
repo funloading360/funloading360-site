@@ -12,7 +12,7 @@
   /* Surface & border tokens */
   --surface: #13131a;
   --surface-hover: #1c1c28;
-  --border: #2a2a3a;
+  --border: #3a3a4a;
   --muted: #8888a0;
 
   /* Legacy aliases kept for backwards compat */
@@ -56,7 +56,6 @@ img {
 /* Critical image loading optimization */
 img[loading="lazy"] {
   content-visibility: auto;
-  contain: strict;
 }
 
 /* ── Box model ── */
@@ -73,7 +72,7 @@ html {
 
 /* ── Always-dark body ── */
 body {
-  background: #0a0a0e;
+  background: var(--bg);
   color: #f0ede8;
   font-family: var(--font-inter), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -130,11 +129,59 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--gold-light);
 }
 
+/* ── Placeholder contrast — WCAG AA on dark backgrounds ── */
+::placeholder {
+  color: #9ca3af; /* gray-400 — passes WCAG AA on dark backgrounds */
+  opacity: 1; /* Firefox */
+}
+
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+/* External review links — WCAG AA compliant */
+a[href*="bark.com"],
+a[href*="poptop.uk"],
+.review-link {
+  color: #1d4ed8; /* blue-700 — 7:1 contrast on white */
+}
+a[href*="bark.com"]:hover,
+a[href*="poptop.uk"]:hover,
+.review-link:hover {
+  color: #1e40af; /* blue-800 */
+}
+
+/* Cookie banner — prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  [class*="cookie"] {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /* ── Keyboard focus indicator ── */
 :focus-visible {
-  outline: 2px solid #f5a623;
+  outline: 2px solid var(--gold);
   outline-offset: 3px;
   border-radius: 4px;
+}
+
+/* ── Floating cart button — iPhone SE safe area ── */
+.floating-cart-btn {
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ── Tablet 2-column layout (640px–1023px) ── */
+/* Prevents cards from jumping directly from 1 to 3 columns */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .services-grid,
+  .packages-grid,
+  .booths-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
 }
 
 /* ── Utility classes ── */
@@ -143,11 +190,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .text-gold {
-  color: #f5a623;
+  color: var(--gold);
 }
 
 .bg-gold {
-  background-color: #f5a623;
+  background-color: var(--gold);
 }
 
 /* ── Button sizing for WCAG touch targets ── */
@@ -168,5 +215,14 @@ h1, h2, h3, h4, h5, h6 {
   .btn-primary,
   .btn-secondary {
     @apply min-h-[44px];
+  }
+}
+
+/* ── iOS input zoom prevention ── */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
   }
 }

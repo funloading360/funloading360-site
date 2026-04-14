@@ -1,10 +1,11 @@
 /**
  * Stripe Payment Integration
- * Handles payment intents, webhook verification, and booking storage
+ * Handles Checkout Sessions, webhook verification, and booking storage
  */
 
 import Stripe from "stripe";
 import { Redis } from "@upstash/redis";
+import { DEPOSIT_PERCENT, DEPOSIT_LABEL } from "./constants";
 
 // Initialize Stripe (lazy initialization to handle missing keys in build)
 let stripe: Stripe | null = null;
@@ -25,11 +26,13 @@ const redis = Redis.fromEnv();
 
 export interface BookingRecord {
   id: string;
-  paymentIntentId: string;
+  checkoutSessionId: string;
   productId: string;
   tier: string;
   upsells: string[];
   totalPrice: number;
+  paymentType: "deposit" | "full";
+  amountPaid: number;
   email: string;
   name: string;
   phone: string;
@@ -38,66 +41,79 @@ export interface BookingRecord {
   venue: string;
   specialRequests?: string;
   altDate?: string;
+  cartItems: Array<{ productId: string; tier: string; hours: number }>;
   status: "pending" | "completed" | "failed";
   createdAt: string;
 }
 
 /**
- * Create a payment intent for a booking
+ * Create a Stripe Checkout Session for a booking
  */
-export async function createPaymentIntent(
-  booking: Omit<BookingRecord, "id" | "paymentIntentId" | "status" | "createdAt">,
-  idempotencyKey?: string
-): Promise<{ clientSecret: string; paymentIntentId: string }> {
-  // Amount in pence (15% deposit)
-  const depositAmount = Math.round(booking.totalPrice * 0.15 * 100);
-
+export async function createCheckoutSession(
+  booking: Omit<BookingRecord, "id" | "checkoutSessionId" | "status" | "createdAt">,
+): Promise<{ checkoutUrl: string; sessionId: string }> {
   const stripeInstance = getStripeInstance();
-  const intent = await stripeInstance.paymentIntents.create(
-    {
-      amount: depositAmount,
-      currency: "gbp",
-      description: `Photo Booth Booking - ${booking.name}`,
-      metadata: {
-        bookingId: booking.email,
-        productId: booking.productId,
-        eventDate: booking.eventDate,
+
+  const amountInPence = formatPriceForStripe(booking.amountPaid);
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.funloading360.co.uk";
+
+  const paymentLabel = booking.paymentType === "deposit"
+    ? `Photo Booth Booking - ${DEPOSIT_LABEL} Deposit`
+    : `Photo Booth Booking - Full Payment`;
+
+  const session = await stripeInstance.checkout.sessions.create({
+    mode: "payment",
+    customer_email: booking.email,
+    line_items: [
+      {
+        price_data: {
+          currency: "gbp",
+          product_data: {
+            name: paymentLabel,
+            description: `${booking.name} — ${booking.eventDate} at ${booking.venue}`,
+          },
+          unit_amount: amountInPence,
+        },
+        quantity: 1,
       },
-      receipt_email: booking.email,
+    ],
+    metadata: {
+      bookingId: booking.email + ":" + booking.eventDate,
     },
-    idempotencyKey ? { idempotencyKey } : undefined
-  );
+    success_url: `${baseUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${baseUrl}/book?cancelled=true`,
+  });
+
+  if (!session.url) {
+    throw new Error("Stripe did not return a checkout URL");
+  }
 
   return {
-    clientSecret: intent.client_secret || "",
-    paymentIntentId: intent.id,
+    checkoutUrl: session.url,
+    sessionId: session.id,
   };
 }
 
 /**
  * Store booking data in Redis
- * Key format: booking:{paymentIntentId}
- * TTL: 30 days (to keep history)
+ * Key format: booking:{checkoutSessionId}
+ * TTL: 30 days
  */
 export async function storeBooking(booking: BookingRecord): Promise<void> {
-  const key = `booking:${booking.paymentIntentId}`;
-  // 30 days in seconds
+  const key = `booking:${booking.checkoutSessionId}`;
   const ttl = 30 * 24 * 60 * 60;
 
-  await redis.setex(
-    key,
-    ttl,
-    JSON.stringify(booking)
-  );
+  await redis.setex(key, ttl, JSON.stringify(booking));
 }
 
 /**
- * Retrieve booking by payment intent ID
+ * Retrieve booking by checkout session ID
  */
 export async function getBooking(
-  paymentIntentId: string
+  checkoutSessionId: string
 ): Promise<BookingRecord | null> {
-  const key = `booking:${paymentIntentId}`;
+  const key = `booking:${checkoutSessionId}`;
   const data = await redis.get(key);
 
   if (!data) return null;
@@ -113,10 +129,10 @@ export async function getBooking(
  * Update booking status
  */
 export async function updateBookingStatus(
-  paymentIntentId: string,
+  checkoutSessionId: string,
   status: "pending" | "completed" | "failed"
 ): Promise<void> {
-  const booking = await getBooking(paymentIntentId);
+  const booking = await getBooking(checkoutSessionId);
 
   if (booking) {
     booking.status = status;
@@ -160,7 +176,7 @@ export function verifyWebhookSignature(
  * Calculate 15% deposit from total price
  */
 export function calculateDeposit(totalPrice: number): number {
-  return Math.round(totalPrice * 0.15 * 100) / 100; // Convert back to pounds
+  return Math.round(totalPrice * DEPOSIT_PERCENT * 100) / 100;
 }
 
 /**

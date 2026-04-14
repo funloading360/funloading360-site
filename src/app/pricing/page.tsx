@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
-import PricingContent from "./PricingContent";
+import ServiceGridContent from "./ServiceGridContent";
 
 export const metadata: Metadata = {
-  title: "Photo Booth Hire Prices — From £299 | FunLoading360",
+  title: "Photo Booth Hire | Choose Your Experience | FunLoading360",
   description:
-    "Transparent photo booth hire pricing with no hidden fees. Essential from £299, Signature £549, Luxury £899. All packages include free setup, delivery and a friendly booth attendant.",
+    "Explore our 360° Slow Motion, Glam Vintage, and Selfie Pod photo booth experiences. Transparent pricing, no hidden fees. Covering Essex, Kent & London.",
   openGraph: {
-    title: "Photo Booth Hire Prices — From £299 | FunLoading360",
+    title: "Photo Booth Hire | Choose Your Experience | FunLoading360",
     description:
-      "No hidden fees. Essential £299, Signature £549, Luxury £899. Free setup included across Essex, Kent & London.",
+      "360° slow-motion, glam vintage prints, and selfie pod — find the perfect photo booth experience for your event. From £200.",
     url: "https://www.funloading360.co.uk/pricing",
     images: [{ url: "https://www.funloading360.co.uk/og-image.jpg", width: 1200, height: 630, alt: "FunLoading360 photo booth hire — 360, glam vintage & selfie pod booths" }],
   },
-
   twitter: {
     card: "summary_large_image",
     images: ["https://www.funloading360.co.uk/og-image.jpg"],
@@ -45,7 +44,7 @@ const faqSchema = {
       name: "Do I need to pay a deposit?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes, we require a 30% deposit to secure your booking, with the remaining balance due 14 days before your event. All payments are processed securely online.",
+        text: "Yes, we require a 20% deposit to secure your booking, with the remaining balance due 14 days before your event. All payments are processed securely online.",
       },
     },
     {
@@ -63,7 +62,7 @@ export default function PricingPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      <PricingContent />
+      <ServiceGridContent />
     </>
   );
 }

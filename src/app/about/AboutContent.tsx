@@ -41,15 +41,15 @@ const coreValues = [
 
 export default function AboutContent() {
   return (
-    <div className="bg-[#0a0a0e] text-white pt-20 min-h-screen">
+    <div className="bg-background text-white pt-20 min-h-screen">
       {/* Hero Section */}
       <section className="py-16 lg:py-24 relative overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-[#f5a623]/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-gold/5 rounded-full blur-3xl" />
         </div>
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">About FunLoading360</p>
+            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">About FunLoading360</p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6" style={{ fontFamily: "var(--font-playfair)" }}>
               Photo Booths Built for Real Events
             </h1>
@@ -64,7 +64,7 @@ export default function AboutContent() {
       <RazStoryCard />
 
       {/* Core Values Grid (4 Cards) */}
-      <section className="py-16 lg:py-24 bg-[#13131a]/50">
+      <section className="py-16 lg:py-24 bg-surface/50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -106,7 +106,7 @@ export default function AboutContent() {
       <SocialProofSection />
 
       {/* Service Areas */}
-      <section className="py-16 lg:py-24 bg-[#13131a]/50">
+      <section className="py-16 lg:py-24 bg-surface/50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -122,7 +122,7 @@ export default function AboutContent() {
               Deep expertise in Essex, Kent, and London. We know the venues, the expectations, and exactly what it takes to deliver.
             </p>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {serviceAreas.map((area, idx) => (
               <ServiceAreaCard key={area.id} area={area} index={idx} />
             ))}
@@ -133,7 +133,7 @@ export default function AboutContent() {
       {/* Final CTA Section */}
       <section className="py-16 lg:py-24 relative overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#f5a623]/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-gold/5 rounded-full blur-3xl" />
         </div>
         <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -151,13 +151,13 @@ export default function AboutContent() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/book"
-                className="px-8 py-4 rounded-full bg-[#f5a623] text-[#0a0a0e] font-bold hover:bg-[#fbbf4a] transition-colors"
+                className="px-8 py-4 rounded-full bg-gold text-background font-bold hover:bg-gold-light transition-colors"
               >
                 Book Your Booth
               </Link>
               <Link
                 href="/pricing"
-                className="px-8 py-4 rounded-full border border-[#f5a623] text-[#f5a623] font-bold hover:bg-[#f5a623]/10 transition-colors"
+                className="px-8 py-4 rounded-full border border-gold text-gold font-bold hover:bg-gold/10 transition-colors"
               >
                 View Pricing
               </Link>

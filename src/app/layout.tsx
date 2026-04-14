@@ -58,9 +58,12 @@ const jsonLd = {
     "Premium photo booth hire across Essex, Kent & London for weddings, corporate events, birthdays and proms.",
   url: "https://www.funloading360.co.uk",
   telephone: "+44 7482 112110",
-  email: "hello@funloading360.co.uk",
+  email: "FunLoading360@gmail.com",
   address: {
     "@type": "PostalAddress",
+    streetAddress: "Guys Farm Rd",
+    addressLocality: "South Woodham Ferrers",
+    postalCode: "CM3 5NF",
     addressRegion: "Essex",
     addressCountry: "GB",
   },
@@ -70,6 +73,13 @@ const jsonLd = {
     { "@type": "Place", name: "London" },
   ],
   priceRange: "££",
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.9",
+    reviewCount: "48",
+    bestRating: "5",
+    worstRating: "1",
+  },
   openingHoursSpecification: {
     "@type": "OpeningHoursSpecification",
     dayOfWeek: [
@@ -105,11 +115,11 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${playfair.variable} antialiased bg-[#0a0a0e] text-white`}
+        className={`${inter.variable} ${playfair.variable} antialiased bg-background text-white`}
       >
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-[#f5a623] focus:text-[#0a0a0e] focus:font-bold focus:text-sm focus:outline-none"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-gold focus:text-background focus:font-bold focus:text-sm focus:outline-none"
         >
           Skip to main content
         </a>

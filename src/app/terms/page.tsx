@@ -26,19 +26,19 @@ const sections = [
         <p>
           A booking is confirmed once we have received your completed booking
           form and a non-refundable deposit of{" "}
-          <strong className="text-white">30% of the total booking value</strong>
+          <strong className="text-white">15% of the total booking value</strong>
           . Until the deposit is received and a confirmation email has been
           issued by us, no date is held or guaranteed.
         </p>
         <ul className="mt-3 space-y-2 list-none">
           {[
-            "The remaining balance (70%) is due no later than 14 days before your event date.",
+            "The remaining balance (85%) is due no later than 14 days before your event date.",
             "Payment reminders will be sent automatically. Failure to pay the balance by the due date may result in cancellation of your booking without refund of the deposit.",
             "All prices are stated in GBP and include VAT where applicable.",
             "Bookings are personal to the client and cannot be transferred to a third party without our written consent.",
           ].map((item) => (
             <li key={item} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>{item}</span>
             </li>
           ))}
@@ -101,10 +101,10 @@ const sections = [
         <p className="mt-4">
           Cancellations must be submitted in writing by email to{" "}
           <a
-            href="mailto:hello@funloading360.co.uk"
-            className="text-[#f5a623] hover:underline"
+            href="mailto:FunLoading360@gmail.com"
+            className="text-gold hover:underline"
           >
-            hello@funloading360.co.uk
+            FunLoading360@gmail.com
           </a>
           . The cancellation date is the date on which we receive your written
           notice. Verbal cancellations are not accepted.
@@ -137,7 +137,7 @@ const sections = [
             "All equipment required to operate the booth (camera, lighting, printer where applicable)",
           ].map((item) => (
             <li key={item} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>{item}</span>
             </li>
           ))}
@@ -167,7 +167,7 @@ const sections = [
             "Events in Greater London: a flat London supplement of £50 applies, in addition to any applicable mileage.",
           ].map((item) => (
             <li key={item} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>{item}</span>
             </li>
           ))}
@@ -199,13 +199,13 @@ const sections = [
             "We accept no responsibility for delays or inability to operate caused by venue restrictions, lack of power, insufficient space, or failure of the client to provide agreed access.",
           ].map((item) => (
             <li key={item} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>{item}</span>
             </li>
           ))}
         </ul>
-        <p className="mt-4 p-4 rounded-xl bg-[#f5a623]/5 border border-[#f5a623]/15">
-          <strong className="text-[#f5a623]">Force Majeure:</strong>{" "}
+        <p className="mt-4 p-4 rounded-xl bg-gold/5 border border-gold/15">
+          <strong className="text-gold">Force Majeure:</strong>{" "}
           <span>
             Neither party shall be liable for failure to perform their
             obligations under these terms where such failure results from
@@ -238,7 +238,7 @@ const sections = [
             "You grant us a non-exclusive, royalty-free licence to use content for marketing purposes unless an opt-out is received.",
           ].map((item) => (
             <li key={item} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>{item}</span>
             </li>
           ))}
@@ -263,7 +263,7 @@ const sections = [
             "You are responsible for the conduct of your guests in relation to our equipment. Damage to equipment caused by guests will be charged at the cost of repair or replacement.",
           ].map((item) => (
             <li key={item} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>{item}</span>
             </li>
           ))}
@@ -293,10 +293,10 @@ const sections = [
         <p className="mt-3">
           If you have a complaint, please contact us in the first instance at{" "}
           <a
-            href="mailto:hello@funloading360.co.uk"
-            className="text-[#f5a623] hover:underline"
+            href="mailto:FunLoading360@gmail.com"
+            className="text-gold hover:underline"
           >
-            hello@funloading360.co.uk
+            FunLoading360@gmail.com
           </a>
           . We aim to resolve all complaints within 5 working days.
         </p>
@@ -307,11 +307,11 @@ const sections = [
 
 export default function TermsPage() {
   return (
-    <div className="bg-[#0a0a0e] text-white pt-20">
+    <div className="bg-background text-white pt-20">
       {/* Header */}
       <section className="py-16 lg:py-20 text-center border-b border-[#1a1a28]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-[#f5a623] text-xs font-semibold uppercase tracking-widest mb-4">
+          <p className="text-gold text-xs font-semibold uppercase tracking-widest mb-4">
             Legal
           </p>
           <h1
@@ -334,7 +334,7 @@ export default function TermsPage() {
       {/* Table of contents */}
       <section className="pt-12 pb-2">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="p-5 rounded-2xl bg-[#13131a] border border-[#2a2a3a]">
+          <div className="p-5 rounded-2xl bg-surface border border-border">
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">
               Contents
             </p>
@@ -343,7 +343,7 @@ export default function TermsPage() {
                 <a
                   key={section.id}
                   href={`#${section.id}`}
-                  className="text-gray-400 text-sm hover:text-[#f5a623] transition-colors duration-200 py-1"
+                  className="text-gray-400 text-sm hover:text-gold transition-colors duration-200 py-1"
                 >
                   {section.title}
                 </a>

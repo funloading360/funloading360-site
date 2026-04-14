@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { getProductById, getPriceForTier, PricingTier, Product } from "@/lib/services";
+import { getProductById, getPriceForTierAndHours, getMinHoursForTier, PricingTier, Product } from "@/lib/services";
 
 /**
  * Cart Item: Product + tier selection + quantity
@@ -9,7 +9,8 @@ import { getProductById, getPriceForTier, PricingTier, Product } from "@/lib/ser
 export interface CartItem {
   productId: string;
   selectedTier: PricingTier;
-  quantity: number;
+  selectedHours: number;
+  quantity: 1; // always 1 — you book one booth
   addedAt: number; // timestamp for debugging
 }
 
@@ -31,9 +32,9 @@ export interface UseCartReturn {
   isLoading: boolean;
   error: string | null;
   // Operations
-  addToCart: (productId: string, tier: PricingTier, quantity?: number) => void;
+  addToCart: (productId: string, tier: PricingTier, hours?: number) => void;
   removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  updateHours: (productId: string, hours: number) => void;
   updateTier: (productId: string, tier: PricingTier) => void;
   clearCart: () => void;
   // Getters
@@ -45,6 +46,7 @@ export interface UseCartReturn {
 
 const CART_STORAGE_KEY = "funloading360_cart";
 const SESSION_ID_KEY = "funloading360_session";
+const CART_CHANGED_EVENT = "cart-changed";
 
 /**
  * generateSessionId - Create unique ID for this tab/window
@@ -129,6 +131,7 @@ export function useCart(): UseCartReturn {
         sessionId: sessionIdRef.current,
       };
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+      window.dispatchEvent(new Event(CART_CHANGED_EVENT));
       setError(null);
     } catch (err) {
       console.error("[useCart] Failed to persist cart:", err);
@@ -136,45 +139,65 @@ export function useCart(): UseCartReturn {
     }
   }, [items, isLoading]);
 
+  // Re-sync when another useCart instance updates localStorage
+  useEffect(() => {
+    const syncFromStorage = () => {
+      try {
+        const stored = localStorage.getItem(CART_STORAGE_KEY);
+        if (stored) {
+          const cart: Cart = JSON.parse(stored);
+          setItems((prev) => {
+            const next = cart.items || [];
+            // Avoid unnecessary re-render if items are identical
+            if (JSON.stringify(prev) === JSON.stringify(next)) return prev;
+            return next;
+          });
+        } else {
+          setItems([]);
+        }
+      } catch {}
+    };
+
+    window.addEventListener(CART_CHANGED_EVENT, syncFromStorage);
+    return () => window.removeEventListener(CART_CHANGED_EVENT, syncFromStorage);
+  }, []);
+
   /**
    * Add product to cart
-   * If product already exists, increment quantity instead of adding duplicate
+   * If product already exists, update tier/hours instead of adding duplicate
    */
   const addToCart = useCallback(
-    (productId: string, tier: PricingTier, quantity: number = 1) => {
-      if (!getProductById(productId)) {
+    (productId: string, tier: PricingTier, hours?: number) => {
+      const product = getProductById(productId);
+      if (!product) {
         setError(`Product not found: ${productId}`);
         return;
       }
 
-      if (quantity < 1) {
-        setError("Quantity must be at least 1");
-        return;
-      }
+      const defaultHours = hours ?? getMinHoursForTier(product, tier);
 
       setItems((prev) => {
-        // Check if product already in cart
         const existingIndex = prev.findIndex((item) => item.productId === productId);
 
         if (existingIndex !== -1) {
-          // Update existing item
           const updated = [...prev];
           updated[existingIndex] = {
             ...updated[existingIndex],
-            quantity: updated[existingIndex].quantity + quantity,
             selectedTier: tier,
+            selectedHours: defaultHours,
+            quantity: 1,
             addedAt: Date.now(),
           };
           return updated;
         }
 
-        // Add new item
         return [
           ...prev,
           {
             productId,
             selectedTier: tier,
-            quantity,
+            selectedHours: defaultHours,
+            quantity: 1 as const,
             addedAt: Date.now(),
           },
         ];
@@ -191,20 +214,15 @@ export function useCart(): UseCartReturn {
   }, []);
 
   /**
-   * Update quantity for product
+   * Update selected hours for product
    */
-  const updateQuantity = useCallback((productId: string, quantity: number) => {
-    if (quantity < 1) {
-      removeFromCart(productId);
-      return;
-    }
-
+  const updateHours = useCallback((productId: string, hours: number) => {
     setItems((prev) =>
       prev.map((item) =>
-        item.productId === productId ? { ...item, quantity } : item
+        item.productId === productId ? { ...item, selectedHours: hours } : item
       )
     );
-  }, [removeFromCart]);
+  }, []);
 
   /**
    * Change tier for product (e.g., Essential → Signature)
@@ -226,14 +244,13 @@ export function useCart(): UseCartReturn {
 
   /**
    * Calculate total price for cart
-   * Sums (price × quantity) for all items
+   * Uses hours-based pricing for each item
    */
   const getCartTotal = useCallback((): number => {
     return items.reduce((sum, item) => {
       const product = getProductById(item.productId);
       if (!product) return sum;
-      const price = getPriceForTier(product, item.selectedTier);
-      return sum + price * item.quantity;
+      return sum + getPriceForTierAndHours(product, item.selectedTier, item.selectedHours);
     }, 0);
   }, [items]);
 
@@ -241,7 +258,7 @@ export function useCart(): UseCartReturn {
    * Get total number of items in cart
    */
   const getItemCount = useCallback((): number => {
-    return items.reduce((sum, item) => sum + item.quantity, 0);
+    return items.length;
   }, [items]);
 
   /**
@@ -252,12 +269,12 @@ export function useCart(): UseCartReturn {
   }, []);
 
   /**
-   * Get price for specific cart item
+   * Get price for specific cart item (hours-aware)
    */
   const getItemPrice = useCallback((item: CartItem): number => {
     const product = getProductById(item.productId);
     if (!product) return 0;
-    return getPriceForTier(product, item.selectedTier);
+    return getPriceForTierAndHours(product, item.selectedTier, item.selectedHours);
   }, []);
 
   return {
@@ -266,7 +283,7 @@ export function useCart(): UseCartReturn {
     error,
     addToCart,
     removeFromCart,
-    updateQuantity,
+    updateHours,
     updateTier,
     clearCart,
     getCartTotal,

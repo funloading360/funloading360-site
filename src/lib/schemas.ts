@@ -13,12 +13,11 @@ export const BookingSchema = z.object({
 
   name: z.string().min(2, "Name must be at least 2 characters").max(200),
   email: z.string().email("Invalid email address").max(254),
-  phone: z
-    .string()
+  phone: z.string()
     .min(1, "Phone number is required")
-    .refine(
-      (val) => validatePhone(val).valid,
-      (val) => ({ message: validatePhone(val).error || "Invalid phone number" })
+    .regex(
+      /^(\+44[\s\-]?|0044[\s\-]?|0)(7\d{9}|[1-9]\d{8,9}|\d{2}[\s\-]?\d{4}[\s\-]?\d{4})$/,
+      "Please enter a valid UK phone number (e.g. 07700 123456 or +44 7700 123456)"
     ),
   eventType: z.string().min(1).max(100),
   eventDate: z
@@ -63,5 +62,42 @@ export const EnquirySchema = z.object({
   _hp: z.literal("").optional(), // honeypot — must be empty
 });
 
+export const CheckoutSessionSchema = z.object({
+  productId: z.string().min(1).max(50),
+  tier: z.enum(["essential", "signature", "luxury"]),
+  upsells: z.array(z.string()).optional().default([]),
+  totalPrice: z.number().positive(),
+  paymentType: z.enum(["deposit", "full"]),
+  cartItems: z.array(
+    z.object({
+      productId: z.string().min(1),
+      tier: z.string().min(1),
+      hours: z.number().positive(),
+    })
+  ).min(1),
+  name: z.string().min(2, "Name must be at least 2 characters").max(200),
+  email: z.string().email("Invalid email address").max(254),
+  phone: z.string()
+    .min(1, "Phone number is required")
+    .regex(
+      /^(\+44[\s\-]?|0044[\s\-]?|0)(7\d{9}|[1-9]\d{8,9}|\d{2}[\s\-]?\d{4}[\s\-]?\d{4})$/,
+      "Please enter a valid UK phone number (e.g. 07700 123456 or +44 7700 123456)"
+    ),
+  eventType: z.string().min(1).max(100),
+  eventDate: z
+    .string()
+    .regex(ukDateRegex, "Invalid date format")
+    .refine((d) => new Date(d) > new Date(), "Event date must be in the future"),
+  altDate: z
+    .string()
+    .regex(ukDateRegex, "Invalid date format")
+    .refine((d) => new Date(d) > new Date(), "Alt date must be in the future")
+    .optional()
+    .or(z.literal("")),
+  venue: z.string().min(2, "Venue must be at least 2 characters").max(500),
+  specialRequests: z.string().max(3000).optional().or(z.literal("")),
+});
+
 export type BookingInput = z.infer<typeof BookingSchema>;
 export type EnquiryInput = z.infer<typeof EnquirySchema>;
+export type CheckoutSessionInput = z.infer<typeof CheckoutSessionSchema>;

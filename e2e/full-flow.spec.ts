@@ -1,309 +1,189 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * E2E Comprehensive Test: Services → Cart → Booking → Thank You
- *
- * Validates the complete user journey:
- * 1. Browse services page
- * 2. Add item to cart
- * 3. Review cart
- * 4. Complete 2-step booking flow with upsells
- * 5. Confirmation page
+ * E2E Comprehensive Test: Services → Booking → Confirmation
  */
 
-test.describe("Full Booking Flow: Services → Cart → Booking", () => {
-  // Helper: Dismiss cookie consent banner
+const CART_STORAGE_KEY = "funloading360_cart";
+
+const buildCart = (productId = "360-slow-motion", tier = "signature") =>
+  JSON.stringify({
+    items: [
+      { productId, selectedTier: tier, selectedHours: 2, quantity: 1, addedAt: Date.now() },
+    ],
+    version: 1,
+    lastModified: Date.now(),
+    sessionId: "test-session",
+  });
+
+const mockCalendar = async (page: any) => {
+  await page.route("**/api/calendar/availability**", (route: any) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ data: { unavailableDates: [], perProduct: {} } }),
+    })
+  );
+};
+
+test.describe("Full Booking Flow: Services → Booking", () => {
   const dismissCookieBanner = async (page: any) => {
     try {
-      const acceptButton = page.locator('button:has-text("Accept")').first();
-      const isVisible = await acceptButton.isVisible({ timeout: 2000 }).catch(() => false);
-      if (isVisible) {
-        await acceptButton.click();
-      }
-    } catch (e) {
-      // Cookie banner might not be present, that's ok
-    }
+      // "Accept & Continue" is disabled until the checkbox is checked — click "Decline Analytics" instead
+      const btn = page.locator('button:has-text("Decline Analytics")').first();
+      if (await btn.isVisible({ timeout: 2000 }).catch(() => false)) await btn.click();
+    } catch {}
   };
 
-  test("should complete full journey from services to thank-you page", async ({
-    page,
-  }) => {
-    // ──────────────────────────────────────────────────────────
-    // STEP 1: Navigate to Services Page
-    // ──────────────────────────────────────────────────────────
+  const goToBookWithCart = async (
+    page: any,
+    productId = "360-slow-motion",
+    tier = "signature"
+  ) => {
+    await mockCalendar(page);
+    // Pre-populate localStorage before page load so useCart reads the cart immediately
+    // on mount, preventing the "empty cart → /services" redirect.
+    // Also pre-set cookie consent so the banner never shows and blocks clicks.
+    await page.addInitScript(
+      ({ cartKey, cartValue }: { cartKey: string; cartValue: string }) => {
+        localStorage.setItem(cartKey, cartValue);
+        localStorage.setItem("fl360_cookie_consent", "declined");
+      },
+      { cartKey: CART_STORAGE_KEY, cartValue: buildCart(productId, tier) }
+    );
+    await page.goto("/book");
+  };
+
+  const pickCalendarDate = async (page: any) => {
+    const dayButton = page
+      .locator(".grid.grid-cols-7 button:not([disabled])")
+      .first();
+    await expect(dayButton).toBeVisible({ timeout: 5000 });
+    await dayButton.click();
+  };
+
+  test("should complete full journey from services to thank-you page", async ({ page }) => {
+    await page.route("**/api/checkout/create-session", (route: any) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ ok: true, data: { checkoutUrl: "/thank-you?session_id=test_mock" } }),
+      })
+    );
+
+    // ── STEP 1: Services page ──────────────────────────────
+    // Pre-dismiss cookie consent so the banner never blocks clicks throughout the journey
+    await page.addInitScript(() => {
+      localStorage.setItem("fl360_cookie_consent", "declined");
+    });
     await page.goto("/services");
-    await expect(page).toHaveTitle(/Photo Booth & Party Rentals/i);
+    await expect(page).toHaveTitle(/Services|Photo Booth/i);
+    await expect(page.locator("text=360 Slow Motion Booth")).toBeVisible();
+    await expect(page.locator('a:has-text("View Packages")').first()).toBeVisible();
 
-    // Dismiss cookie banner
-    await dismissCookieBanner(page);
-
-    // Verify services are displayed
-    const boothCards = page.locator('text=360 Slow Motion');
-    await expect(boothCards).toBeVisible();
-
-    // ──────────────────────────────────────────────────────────
-    // STEP 2: Add Item to Cart
-    // ──────────────────────────────────────────────────────────
-    // Click "Add to Cart" for first booth
-    const addToCartButtons = page.locator(
-      'button:has-text("Adaugă în Coș")'
+    // ── STEP 2: Booking page ──────────────────────────────
+    await mockCalendar(page);
+    await page.addInitScript(
+      ({ key, value }: { key: string; value: string }) => {
+        localStorage.setItem(key, value);
+      },
+      { key: CART_STORAGE_KEY, value: buildCart() }
     );
-    await expect(addToCartButtons.first()).toBeVisible();
-    await addToCartButtons.first().click();
+    await page.goto("/book");
+    await expect(page).toHaveTitle(/Book Your Photo Booth/i);
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
+    await expect(page.locator("text=Summary")).toBeVisible();
 
-    // Modal should appear with tier selection
-    const modalTitle = page.locator('text=Alege Tier');
-    await expect(modalTitle).toBeVisible();
+    // ── STEP 3: Select add-on ──────────────────────────────
+    await page.locator('button:has-text("Guest Book")').click();
+    await expect(page.locator("text=Selected Add-ons")).toBeVisible({ timeout: 3000 });
 
-    // Select tier (Signature)
-    const tierOption = page.locator(
-      'button:has-text("Signature")'
-    );
-    await expect(tierOption).toBeVisible();
-    await tierOption.click();
+    // ── STEP 4: Fill booking details ──────────────────────
+    // Use pressSequentially to fire per-key React synthetic events (matches booking.spec.ts pattern)
+    await pickCalendarDate(page);
+    await page.locator('input[id="book-name"]').pressSequentially("Jane Smith");
+    await page.locator('input[id="book-email"]').pressSequentially("jane@example.com");
+    await page.locator('input[id="book-phone"]').pressSequentially("+447900123456");
+    // Select event type and force React to recognise the change (React 19 controlled-select quirk)
+    await page.locator('select[id="book-event-type"]').selectOption("Wedding");
+    await page.evaluate(() => {
+      const sel = document.querySelector<HTMLSelectElement>('#book-event-type');
+      if (!sel) return;
+      const nativeSet = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value')!.set!;
+      nativeSet.call(sel, 'Wedding');
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    await page.locator('input[id="book-venue"]').pressSequentially("Grand Hotel, London");
 
-    // Adjust quantity
-    const plusButton = page.locator('button:has-text("+")').first();
-    await expect(plusButton).toBeVisible();
-    await plusButton.click(); // Now quantity is 2
+    // ── STEP 5: Submit ────────────────────────────────────
+    await page.locator('button:has-text("Proceed to Payment")').click();
 
-    // Submit modal
-    const addButton = page.locator('button:has-text("Adaugă în Coș")').last();
-    await expect(addButton).toBeEnabled();
-    await addButton.click();
-
-    // Success toast should appear
-    const successMessage = page.locator('text=Adăugat în coș');
-    await expect(successMessage).toBeVisible();
-
-    // Cart badge should show item count
-    const cartBadge = page.locator('button').filter({ has: page.locator('svg') }).last();
-    await expect(cartBadge).toBeVisible();
-
-    // ──────────────────────────────────────────────────────────
-    // STEP 3: Navigate to Cart
-    // ──────────────────────────────────────────────────────────
-    await page.goto("/cart");
-    await expect(page).toHaveTitle(/Coșul tău/i);
-
-    // Verify cart items are displayed
-    const cartItem = page.locator('text=360 Slow Motion');
-    await expect(cartItem).toBeVisible();
-
-    // Verify quantity is 2
-    const quantityDisplay = page.locator('text=2');
-    await expect(quantityDisplay).toBeVisible();
-
-    // Verify total price is displayed
-    const totalText = page.locator('text=/Total|Rezumat/i');
-    await expect(totalText).toBeVisible();
-
-    // ──────────────────────────────────────────────────────────
-    // STEP 4: Navigate to Booking (2-Step Flow)
-    // ──────────────────────────────────────────────────────────
-    const checkoutButton = page.locator(
-      'a:has-text("Continuă Checkout")'
-    );
-    await expect(checkoutButton).toBeVisible();
-    await checkoutButton.click();
-
-    await expect(page).toHaveTitle(/Rezervă Photo Booth/i);
-
-    // ──────────────────────────────────────────────────────────
-    // STEP 5: Booking Step 1 - Select Service & Tier
-    // ──────────────────────────────────────────────────────────
-    const stepTitle = page.locator('text=Alege Photo Booth');
-    await expect(stepTitle).toBeVisible();
-
-    // Select a booth product
-    const productCard = page.locator(
-      'button:has-text("360 Slow Motion")'
-    ).first();
-    await expect(productCard).toBeVisible();
-    await productCard.click();
-
-    // Tier options should appear
-    const essentialTier = page.locator(
-      'button:has-text("Essential")'
-    );
-    await expect(essentialTier).toBeVisible();
-    await essentialTier.click();
-
-    // Continue button should be enabled
-    const continueBtn = page.locator(
-      'button:has-text("Continuă")'
-    ).last();
-    await expect(continueBtn).toBeEnabled();
-    await continueBtn.click();
-
-    // ──────────────────────────────────────────────────────────
-    // STEP 6: Booking Step 2 - Date, Details & Upsells
-    // ──────────────────────────────────────────────────────────
-    const detailsTitle = page.locator('text=Detalii');
-    await expect(detailsTitle).toBeVisible();
-
-    // Fill event date
-    const dateInput = page.locator('input[type="date"]').first();
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 30);
-    const formattedDate = futureDate.toISOString().split("T")[0];
-    await dateInput.fill(formattedDate);
-
-    // Fill contact details
-    await page.locator('input[id="book-name"]').fill("Maria Popescu");
-    await page.locator('input[id="book-email"]').fill("maria@example.com");
-    await page.locator('input[id="book-phone"]').fill("+44 7482 112110");
-    await page
-      .locator('select[id="book-event-type"]')
-      .selectOption("Nuntă");
-    await page
-      .locator('input[id="book-venue"]')
-      .fill("Hotel Grand, Chelmş");
-
-    // Select upsells
-    const guestBookCheckbox = page.locator(
-      'button:has-text("Carte de oaspeți")'
-    );
-    await expect(guestBookCheckbox).toBeVisible();
-    await guestBookCheckbox.click();
-
-    // Verify summary sidebar shows updated total
-    const sidebarTotal = page.locator('text=/£|Total/i');
-    await expect(sidebarTotal).toBeVisible();
-
-    // ──────────────────────────────────────────────────────────
-    // STEP 7: Submit Booking
-    // ──────────────────────────────────────────────────────────
-    const submitButton = page.locator(
-      'button:has-text("Solicită Ofertă")'
-    );
-    await expect(submitButton).toBeEnabled();
-    await submitButton.click();
-
-    // ──────────────────────────────────────────────────────────
-    // STEP 8: Verify Thank You Page
-    // ──────────────────────────────────────────────────────────
-    await page.waitForURL("/thank-you", { timeout: 5000 });
+    // ── STEP 6: Thank You page ────────────────────────────
+    await page.waitForURL(/\/thank-you/, { timeout: 15000 });
     await expect(page).toHaveURL(/\/thank-you/);
-
-    // Verify confirmation message
-    const confirmationText = page.locator(
-      'text=Cererea ta a fost primită'
-    );
-    await expect(confirmationText).toBeVisible();
-
-    // Verify next steps are displayed
-    const nextStepsText = page.locator(
-      'text=Ce se întâmplă acum'
-    );
-    await expect(nextStepsText).toBeVisible();
+    await expect(
+      page.locator("text=Confirmed").or(page.locator("text=Received")).first()
+    ).toBeVisible({ timeout: 5000 });
   });
 
-  test("should validate required fields on step 2", async ({ page }) => {
-    // Quick path to step 2
-    await page.goto("/book");
+  test("should validate required fields on booking page", async ({ page }) => {
+    await goToBookWithCart(page, "360-slow-motion", "essential");
     await dismissCookieBanner(page);
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
 
-    // Skip to step 2 by selecting service
-    const productCard = page.locator(
-      'button:has-text("360 Slow Motion")'
-    ).first();
-    await productCard.click();
+    await page.locator('button:has-text("Proceed to Payment")').click();
 
-    const tierButton = page.locator(
-      'button:has-text("Essential")'
-    );
-    await tierButton.click();
-
-    const continueBtn = page.locator(
-      'button:has-text("Continuă")'
-    ).last();
-    await continueBtn.click();
-
-    // Try to submit without filling details
-    const submitButton = page.locator(
-      'button:has-text("Solicită Ofertă")'
-    );
-    await submitButton.click();
-
-    // Error messages should appear
-    const errorMessages = page.locator('[role="alert"]');
-    await expect(errorMessages.first()).toBeVisible({ timeout: 2000 });
-
-    // Should still be on step 2
-    const detailsTitle = page.locator('text=Detalii');
-    await expect(detailsTitle).toBeVisible();
+    await expect(
+      page.locator("text=is required").or(page.locator("text=required")).first()
+    ).toBeVisible({ timeout: 3000 });
+    await expect(page).toHaveURL(/\/book/);
   });
 
-  test("should update sidebar total when upsells selected", async ({
-    page,
-  }) => {
-    // Navigate to booking and get to step 2
-    await page.goto("/book");
+  test("should update sidebar total when add-on selected", async ({ page }) => {
+    await goToBookWithCart(page, "360-slow-motion", "essential");
     await dismissCookieBanner(page);
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
 
-    const productCard = page.locator(
-      'button:has-text("360 Slow Motion")'
-    ).first();
-    await productCard.click();
+    const totalEl = page.locator(".text-2xl.font-bold.text-gold").first();
+    await expect(totalEl).toBeVisible();
+    const initialTotal = await totalEl.textContent();
 
-    const tierButton = page.locator(
-      'button:has-text("Essential")'
-    );
-    await tierButton.click();
+    await page.locator('button:has-text("Guest Book")').click();
+    await expect(totalEl).not.toHaveText(initialTotal || "", { timeout: 3000 });
+  });
 
-    const continueBtn = page.locator(
-      'button:has-text("Continuă")'
-    ).last();
-    await continueBtn.click();
-
-    // Get initial total from sidebar
-    const sidebar = page.locator('text=Rezumat').first();
-    await expect(sidebar).toBeVisible();
-
-    // Select first upsell
-    const upsellButton = page.locator(
-      'button:has-text("Carte de oaspeți")'
-    );
-    await upsellButton.click();
-
-    // Verify sidebar total increased
-    const updatedTotal = page.locator('text=/£/').last();
-    await expect(updatedTotal).toBeVisible();
+  test("cart page should redirect to /book", async ({ page }) => {
+    await page.goto("/cart");
+    await page.waitForURL(/\/book/, { timeout: 10000 });
+    await expect(page).toHaveURL(/\/book/);
   });
 
   test("cart should persist across page navigation", async ({ page }) => {
-    // Add item to cart
+    await goToBookWithCart(page);
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
+
+    await page.goto("/gallery");
+    await expect(page).toHaveTitle(/Gallery|Photo Booth/i);
+
+    await page.goto("/book");
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
+  });
+
+  test("/services page shows View Packages links pointing to /pricing", async ({ page }) => {
     await page.goto("/services");
     await dismissCookieBanner(page);
-    const addToCartButtons = page.locator(
-      'button:has-text("Adaugă în Coș")'
-    );
-    await addToCartButtons.first().click();
 
-    const tierOption = page.locator(
-      'button:has-text("Signature")'
-    );
-    await tierOption.click();
+    const link = page.locator('a:has-text("View Packages")').first();
+    await expect(link).toBeVisible();
+    const href = await link.getAttribute("href");
+    expect(href).toMatch(/\/pricing/);
+  });
 
-    const addButton = page.locator(
-      'button:has-text("Adaugă în Coș")'
-    ).last();
-    await addButton.click();
+  test("payment deposit option shows 15% of total", async ({ page }) => {
+    await goToBookWithCart(page, "360-slow-motion", "essential");
+    await dismissCookieBanner(page);
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
 
-    // Navigate away
-    await page.goto("/gallery");
-    await expect(page).toHaveTitle(/Galerie/i);
-
-    // Navigate back to cart
-    await page.goto("/cart");
-
-    // Item should still be in cart
-    const cartItem = page.locator('text=360 Slow Motion');
-    await expect(cartItem).toBeVisible();
-
-    // Quantity should be preserved
-    const quantityDisplay = page.locator('text=1');
-    await expect(quantityDisplay).toBeVisible();
+    await expect(page.locator("text=Pay 15% Deposit")).toBeVisible();
   });
 });

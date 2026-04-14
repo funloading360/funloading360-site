@@ -70,7 +70,7 @@ export default function ClientStoryCarousel() {
   const current = clientStories[currentIndex];
 
   return (
-    <section className="py-16 lg:py-24 bg-[#0a0a0e]">
+    <section className="py-16 lg:py-24 bg-background">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
@@ -89,7 +89,7 @@ export default function ClientStoryCarousel() {
 
         {/* Carousel */}
         <motion.div
-          className="relative bg-[#13131a] border border-[#2a2a3a] rounded-3xl overflow-hidden"
+          className="relative bg-surface border border-border rounded-3xl overflow-hidden"
           initial={prefersReducedMotion ? {} : { opacity: 0 }}
           whileInView={prefersReducedMotion ? {} : { opacity: 1 }}
           viewport={{ once: true }}
@@ -126,7 +126,7 @@ export default function ClientStoryCarousel() {
                 animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
                 transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5 }}
               >
-                <p className="text-[#f5a623] text-xs font-semibold uppercase tracking-widest mb-2">{current.eventType}</p>
+                <p className="text-gold text-xs font-semibold uppercase tracking-widest mb-2">{current.eventType}</p>
                 <h3 className="text-2xl sm:text-3xl font-bold text-white">{current.caption}</h3>
               </motion.div>
             </div>
@@ -157,7 +157,7 @@ export default function ClientStoryCarousel() {
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex ? "bg-[#f5a623] w-8" : "bg-gray-600"
+                index === currentIndex ? "bg-gold w-8" : "bg-gray-600"
               }`}
               aria-label={`Go to story ${index + 1}`}
             />

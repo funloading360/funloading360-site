@@ -3,6 +3,6 @@
 // All pages and components reference this file.
 
 export const BRAND_NAME = "FunLoading360";
-export const CONTACT_EMAIL = "hello@funloading360.co.uk";
+export const CONTACT_EMAIL = "FunLoading360@gmail.com";
 export const SITE_URL = "https://www.funloading360.co.uk";
 export const SOCIAL_HANDLE = "@FunLoading360";

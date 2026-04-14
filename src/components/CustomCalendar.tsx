@@ -9,13 +9,24 @@ interface CustomCalendarProps {
   onChange: (date: string) => void;
   disabled?: boolean;
   minDate?: string; // YYYY-MM-DD format
+  productIds?: string[];
+  onPerProductData?: (data: Record<string, string[]>) => void;
 }
+
+/** Human-readable labels for product IDs */
+const PRODUCT_LABELS: Record<string, string> = {
+  "360-slow-motion": "360 Slow Motion",
+  "glam-vintage": "Glam Vintage",
+  "selfie-pod": "Selfie Pod",
+};
 
 export default function CustomCalendar({
   value,
   onChange,
   disabled = false,
   minDate,
+  productIds,
+  onPerProductData,
 }: CustomCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState<Date>(
     value ? new Date(value) : new Date()
@@ -23,9 +34,13 @@ export default function CustomCalendar({
   const [unavailableDates, setUnavailableDates] = useState<Set<string>>(
     new Set()
   );
+  const [perProductDates, setPerProductDates] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(false);
 
-  // Fetch unavailable dates when month changes
+  // Serialize productIds for stable dependency
+  const productIdsKey = productIds?.join(",") || "";
+
+  // Fetch unavailable dates when month or productIds change
   useEffect(() => {
     const fetchUnavailableDates = async () => {
       setLoading(true);
@@ -33,13 +48,26 @@ export default function CustomCalendar({
         const year = currentMonth.getFullYear();
         const month = currentMonth.getMonth() + 1;
 
+        const params = new URLSearchParams({
+          year: String(year),
+          month: String(month),
+        });
+        if (productIdsKey) {
+          params.set("productIds", productIdsKey);
+        }
+
         const response = await fetch(
-          `/api/calendar/availability?year=${year}&month=${month}`
+          `/api/calendar/availability?${params.toString()}`
         );
 
         if (response.ok) {
-          const data = await response.json();
-          setUnavailableDates(new Set(data.data.unavailableDates));
+          const json = await response.json();
+          setUnavailableDates(new Set(json.data.unavailableDates));
+
+          if (json.data.perProduct) {
+            setPerProductDates(json.data.perProduct);
+            onPerProductData?.(json.data.perProduct);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch unavailable dates:", error);
@@ -49,7 +77,7 @@ export default function CustomCalendar({
     };
 
     fetchUnavailableDates();
-  }, [currentMonth]);
+  }, [currentMonth, productIdsKey]);
 
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -60,12 +88,9 @@ export default function CustomCalendar({
   };
 
   const formatDate = (day: number) => {
-    const date = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth(),
-      day
-    );
-    return date.toISOString().split("T")[0];
+    const y = currentMonth.getFullYear();
+    const m = currentMonth.getMonth() + 1;
+    return `${y}-${String(m).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   };
 
   const isDateUnavailable = (day: number): boolean => {
@@ -97,6 +122,22 @@ export default function CustomCalendar({
     );
     const min = new Date(minDate);
     return date >= min;
+  };
+
+  /** Build tooltip showing which services are unavailable on a date */
+  const getUnavailableTooltip = (day: number): string | undefined => {
+    const dateStr = formatDate(day);
+    if (!unavailableDates.has(dateStr)) return undefined;
+
+    // If we have per-product data, show which services are booked
+    const bookedServices = Object.entries(perProductDates)
+      .filter(([, dates]) => dates.includes(dateStr))
+      .map(([pid]) => PRODUCT_LABELS[pid] || pid);
+
+    if (bookedServices.length > 0) {
+      return `Unavailable: ${bookedServices.join(", ")}`;
+    }
+    return "Date unavailable";
   };
 
   const handlePrevMonth = () => {
@@ -132,13 +173,13 @@ export default function CustomCalendar({
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="bg-[#13131a] border border-[#2a2a3a] rounded-lg p-4">
+    <div className="bg-surface border border-border rounded-lg p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={handlePrevMonth}
           disabled={disabled || loading}
-          className="p-1 hover:bg-[#2a2a3a] rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-1 hover:bg-border rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Previous month"
         >
           <ChevronLeft className="w-5 h-5 text-gray-400" />
@@ -147,7 +188,7 @@ export default function CustomCalendar({
         <button
           onClick={handleNextMonth}
           disabled={disabled || loading}
-          className="p-1 hover:bg-[#2a2a3a] rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-1 hover:bg-border rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Next month"
         >
           <ChevronRight className="w-5 h-5 text-gray-400" />
@@ -157,7 +198,7 @@ export default function CustomCalendar({
       {/* Loading state */}
       {loading && (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-5 h-5 text-[#f5a623] animate-spin" />
+          <Loader2 className="w-5 h-5 text-gold animate-spin" />
         </div>
       )}
 
@@ -199,18 +240,18 @@ export default function CustomCalendar({
                   className={cn(
                     "aspect-square rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center",
                     isSelected
-                      ? "bg-[#f5a623] text-[#0a0a0e]"
+                      ? "bg-gold text-background"
                       : isUnavailable
-                        ? "bg-[#2a2a3a]/50 text-gray-600 cursor-not-allowed"
+                        ? "bg-border/50 text-gray-600 cursor-not-allowed"
                         : isPast
-                          ? "bg-[#2a2a3a]/50 text-gray-600 cursor-not-allowed"
+                          ? "bg-border/50 text-gray-600 cursor-not-allowed"
                           : isClickable
-                            ? "bg-[#2a2a3a] text-gray-300 hover:bg-[#f5a623] hover:text-[#0a0a0e] cursor-pointer"
-                            : "bg-[#13131a] text-gray-600 cursor-not-allowed"
+                            ? "bg-border text-gray-300 hover:bg-gold hover:text-background cursor-pointer"
+                            : "bg-surface text-gray-600 cursor-not-allowed"
                   )}
                   title={
                     isUnavailable
-                      ? "Date unavailable"
+                      ? getUnavailableTooltip(day)
                       : isPast
                         ? "Date has passed"
                         : undefined

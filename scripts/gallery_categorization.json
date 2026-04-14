@@ -1,0 +1,231 @@
+{
+  "booth-exterior-1.jpeg": {
+    "action": "deleted",
+    "original": "images/equipment/booth-exterior-1.jpeg"
+  },
+  "booth-exterior-2.jpeg": {
+    "action": "deleted",
+    "original": "images/equipment/booth-exterior-2.jpeg"
+  },
+  "booth-exterior-hero.jpeg": {
+    "action": "moved",
+    "category": "selfie-pod",
+    "label": "Selfie Pod",
+    "original": "images/equipment/booth-exterior-hero.jpeg",
+    "new_path": "/images/selfie-pod/booth-exterior-hero.jpeg"
+  },
+  "360-confetti-pose.jpeg": {
+    "action": "moved",
+    "category": "360-slow-motion",
+    "label": "360° Slow Motion",
+    "original": "images/events/360-confetti-pose.jpeg",
+    "new_path": "/images/360-slow-motion/360-confetti-pose.jpeg"
+  },
+  "360-couple-dancing.jpeg": {
+    "action": "moved",
+    "category": "360-slow-motion",
+    "label": "360° Slow Motion",
+    "original": "images/events/360-couple-dancing.jpeg",
+    "new_path": "/images/360-slow-motion/360-couple-dancing.jpeg"
+  },
+  "360-glamour-group.jpeg": {
+    "action": "moved",
+    "category": "360-slow-motion",
+    "label": "360° Slow Motion",
+    "original": "images/events/360-glamour-group.jpeg",
+    "new_path": "/images/360-slow-motion/360-glamour-group.jpeg"
+  },
+  "360-green-energy.jpeg": {
+    "action": "moved",
+    "category": "360-slow-motion",
+    "label": "360° Slow Motion",
+    "original": "images/events/360-green-energy.jpeg",
+    "new_path": "/images/360-slow-motion/360-green-energy.jpeg"
+  },
+  "360-jazz-costume.jpeg": {
+    "action": "moved",
+    "category": "360-slow-motion",
+    "label": "360° Slow Motion",
+    "original": "images/events/360-jazz-costume.jpeg",
+    "new_path": "/images/360-slow-motion/360-jazz-costume.jpeg"
+  },
+  "360-two-women-blue.jpeg": {
+    "action": "moved",
+    "category": "360-slow-motion",
+    "label": "360° Slow Motion",
+    "original": "images/events/360-two-women-blue.jpeg",
+    "new_path": "/images/360-slow-motion/360-two-women-blue.jpeg"
+  },
+  "glam-print-strip.png": {
+    "action": "deleted",
+    "original": "images/events/glam-print-strip.png"
+  },
+  "360-booth-outdoor.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/360-booth-outdoor.jpeg",
+    "new_path": "/images/glam-vintage/360-booth-outdoor.jpeg"
+  },
+  "360-full-setup.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/360-full-setup.jpeg",
+    "new_path": "/images/glam-vintage/360-full-setup.jpeg"
+  },
+  "360-platform-lit.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/360-platform-lit.jpeg",
+    "new_path": "/images/glam-vintage/360-platform-lit.jpeg"
+  },
+  "360-setup-neon.jpeg": {
+    "action": "moved",
+    "category": "selfie-pod",
+    "label": "Selfie Pod",
+    "original": "images/venues/360-setup-neon.jpeg",
+    "new_path": "/images/selfie-pod/360-setup-neon.jpeg"
+  },
+  "360-setup-venue.jpeg": {
+    "action": "moved",
+    "category": "selfie-pod",
+    "label": "Selfie Pod",
+    "original": "images/venues/360-setup-venue.jpeg",
+    "new_path": "/images/selfie-pod/360-setup-venue.jpeg"
+  },
+  "IMG_3067.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/IMG_3067.jpeg",
+    "new_path": "/images/glam-vintage/IMG_3067.jpeg"
+  },
+  "glam-backdrop-printer.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/glam-backdrop-printer.jpeg",
+    "new_path": "/images/glam-vintage/glam-backdrop-printer.jpeg"
+  },
+  "glam-setup-2.jpeg": {
+    "action": "moved",
+    "category": "360-slow-motion",
+    "label": "360° Slow Motion",
+    "original": "images/venues/glam-setup-2.jpeg",
+    "new_path": "/images/360-slow-motion/glam-setup-2.jpeg"
+  },
+  "glam-setup-3.jpeg": {
+    "action": "moved",
+    "category": "360-slow-motion",
+    "label": "360° Slow Motion",
+    "original": "images/venues/glam-setup-3.jpeg",
+    "new_path": "/images/360-slow-motion/glam-setup-3.jpeg"
+  },
+  "glam-setup-4.jpeg": {
+    "action": "moved",
+    "category": "360-slow-motion",
+    "label": "360° Slow Motion",
+    "original": "images/venues/glam-setup-4.jpeg",
+    "new_path": "/images/360-slow-motion/glam-setup-4.jpeg"
+  },
+  "glam-setup-5.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/glam-setup-5.jpeg",
+    "new_path": "/images/glam-vintage/glam-setup-5.jpeg"
+  },
+  "glam-setup-6.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/glam-setup-6.jpeg",
+    "new_path": "/images/glam-vintage/glam-setup-6.jpeg"
+  },
+  "glam-setup-7.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/glam-setup-7.jpeg",
+    "new_path": "/images/glam-vintage/glam-setup-7.jpeg"
+  },
+  "glam-setup-props.jpeg": {
+    "action": "moved",
+    "category": "360-slow-motion",
+    "label": "360° Slow Motion",
+    "original": "images/venues/glam-setup-props.jpeg",
+    "new_path": "/images/360-slow-motion/glam-setup-props.jpeg"
+  },
+  "glam-venue-2.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/glam-venue-2.jpeg",
+    "new_path": "/images/glam-vintage/glam-venue-2.jpeg"
+  },
+  "glam-venue-christmas.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/glam-venue-christmas.jpeg",
+    "new_path": "/images/glam-vintage/glam-venue-christmas.jpeg"
+  },
+  "glam-venue-grand.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/glam-venue-grand.jpeg",
+    "new_path": "/images/glam-vintage/glam-venue-grand.jpeg"
+  },
+  "selfie-pod-christmas-2.jpeg": {
+    "action": "moved",
+    "category": "selfie-pod",
+    "label": "Selfie Pod",
+    "original": "images/venues/selfie-pod-christmas-2.jpeg",
+    "new_path": "/images/selfie-pod/selfie-pod-christmas-2.jpeg"
+  },
+  "selfie-pod-christmas-3.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/selfie-pod-christmas-3.jpeg",
+    "new_path": "/images/glam-vintage/selfie-pod-christmas-3.jpeg"
+  },
+  "selfie-pod-christmas.jpeg": {
+    "action": "moved",
+    "category": "selfie-pod",
+    "label": "Selfie Pod",
+    "original": "images/venues/selfie-pod-christmas.jpeg",
+    "new_path": "/images/selfie-pod/selfie-pod-christmas.jpeg"
+  },
+  "selfie-pod-setup-2.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/selfie-pod-setup-2.jpeg",
+    "new_path": "/images/glam-vintage/selfie-pod-setup-2.jpeg"
+  },
+  "selfie-pod-venue.jpeg": {
+    "action": "moved",
+    "category": "selfie-pod",
+    "label": "Selfie Pod",
+    "original": "images/venues/selfie-pod-venue.jpeg",
+    "new_path": "/images/selfie-pod/selfie-pod-venue.jpeg"
+  },
+  "venue-setup-1.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/venue-setup-1.jpeg",
+    "new_path": "/images/glam-vintage/venue-setup-1.jpeg"
+  },
+  "venue-setup-2.jpeg": {
+    "action": "moved",
+    "category": "glam-vintage",
+    "label": "Glam Vintage",
+    "original": "images/venues/venue-setup-2.jpeg",
+    "new_path": "/images/glam-vintage/venue-setup-2.jpeg"
+  }
+}

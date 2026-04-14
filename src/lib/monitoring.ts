@@ -7,7 +7,7 @@
  * To add Sentry: npm install @sentry/nextjs and run `npx @sentry/wizard`
  */
 
-const ALERT_EMAIL = process.env.ALERT_EMAIL || "hello@funloading360.co.uk";
+const ALERT_EMAIL = process.env.ALERT_EMAIL || "FunLoading360@gmail.com";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
 export type AlertSeverity = "info" | "warning" | "critical";

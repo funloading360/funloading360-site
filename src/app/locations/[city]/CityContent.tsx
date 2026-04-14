@@ -10,21 +10,42 @@ interface Props {
 }
 
 export default function CityContent({ city }: Props) {
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.funloading360.co.uk" },
+      { "@type": "ListItem", "position": 2, "name": "Locations", "item": "https://www.funloading360.co.uk/locations" },
+      { "@type": "ListItem", "position": 3, "name": city.name, "item": `https://www.funloading360.co.uk/locations/${city.slug}` }
+    ]
+  };
+
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: "FunLoading360",
-    description: `Premium photo booth hire service in ${city.name}, ${city.region}`,
-    url: "https://www.funloading360.co.uk",
+    description: `Premium photo booth hire in ${city.name}, ${city.county}`,
+    url: `https://www.funloading360.co.uk/locations/${city.slug}`,
     telephone: "+44 7482 112110",
-    email: "hello@funloading360.co.uk",
+    email: "FunLoading360@gmail.com",
     areaServed: {
       "@type": "City",
       name: city.name,
     },
+    serviceArea: {
+      "@type": "GeoCircle",
+      geoMidpoint: {
+        "@type": "GeoCoordinates",
+        latitude: city.lat,
+        longitude: city.lng,
+      },
+    },
     address: {
       "@type": "PostalAddress",
-      addressRegion: city.region,
+      streetAddress: "Guys Farm Rd",
+      addressLocality: "South Woodham Ferrers",
+      postalCode: "CM3 5NF",
+      addressRegion: "Essex",
       addressCountry: "GB",
     },
     sameAs: [
@@ -37,17 +58,33 @@ export default function CityContent({ city }: Props) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
-      <div className="bg-[#0a0a0e] text-white pt-20 min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <div className="bg-background text-white pt-20 min-h-screen">
+        {/* Breadcrumb */}
+        <nav aria-label="Breadcrumb" className="max-w-6xl mx-auto px-6 pt-6 pb-0">
+          <ol className="flex items-center gap-2 text-sm text-gray-500">
+            <li>
+              <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            </li>
+            <li className="text-gray-700">/</li>
+            <li>
+              <Link href="/locations" className="hover:text-white transition-colors">Locations</Link>
+            </li>
+            <li className="text-gray-700">/</li>
+            <li className="text-white font-medium" aria-current="page">{city.name}</li>
+          </ol>
+        </nav>
+
         {/* Hero */}
         <section className="py-16 lg:py-24 relative overflow-hidden">
           <div className="absolute inset-0">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-[#f5a623]/5 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-gold/5 rounded-full blur-3xl" />
           </div>
           <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
               <div className="flex items-center justify-center gap-2 mb-4">
-                <MapPin className="w-5 h-5 text-[#f5a623]" />
-                <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest">{city.region}</p>
+                <MapPin className="w-5 h-5 text-gold" />
+                <p className="text-gold text-sm font-semibold uppercase tracking-widest">{city.region}</p>
               </div>
               <h1
                 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
@@ -58,7 +95,7 @@ export default function CityContent({ city }: Props) {
               <p className="text-gray-400 text-lg mb-8 leading-relaxed max-w-2xl mx-auto">{city.description}</p>
               <Link
                 href="/book"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#f5a623] text-[#0a0a0e] font-bold hover:bg-[#fbbf4a] transition-colors"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gold text-background font-bold hover:bg-gold-light transition-colors"
               >
                 Book Now <ArrowRight className="w-5 h-5" />
               </Link>
@@ -67,24 +104,41 @@ export default function CityContent({ city }: Props) {
         </section>
 
         {/* Local Info */}
-        <section className="py-16 bg-[#13131a]/50">
+        <section className="py-16 bg-surface/50">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="bg-[#13131a] border border-[#2a2a3a] rounded-2xl p-8"
+              className="bg-surface border border-border rounded-2xl p-8"
             >
               <h2 className="text-2xl font-bold mb-4">{city.name} Service Area</h2>
               <p className="text-gray-400 mb-6 leading-relaxed">{city.localInfo}</p>
-              <div className="flex items-center gap-2 text-[#f5a623]">
+              <div className="flex items-center gap-2 text-gold">
                 <CheckCircle className="w-5 h-5" />
                 <span className="font-semibold">{city.distance}</span>
               </div>
             </motion.div>
           </div>
         </section>
+
+        {/* SEO Content */}
+        {city.seoContent && (
+          <section className="py-12 bg-background">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="prose prose-invert prose-sm max-w-none text-gray-400 leading-relaxed"
+              >
+                <p>{city.seoContent}</p>
+              </motion.div>
+            </div>
+          </section>
+        )}
 
         {/* Why Choose */}
         <section className="py-16 lg:py-24">
@@ -108,7 +162,7 @@ export default function CityContent({ city }: Props) {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                   viewport={{ once: true }}
-                  className="bg-[#13131a] border border-[#2a2a3a] rounded-xl p-6"
+                  className="bg-surface border border-border rounded-xl p-6"
                 >
                   <h3 className="text-lg font-bold mb-2">{item.title}</h3>
                   <p className="text-gray-400">{item.desc}</p>
@@ -119,7 +173,7 @@ export default function CityContent({ city }: Props) {
         </section>
 
         {/* CTA */}
-        <section className="py-16 lg:py-24 bg-gradient-to-b from-[#13131a] to-[#0a0a0e] border-t border-[#2a2a3a]">
+        <section className="py-16 lg:py-24 bg-gradient-to-b from-surface to-background border-t border-border">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2
               className="text-3xl sm:text-4xl font-bold mb-6"
@@ -132,7 +186,7 @@ export default function CityContent({ city }: Props) {
             </p>
             <Link
               href="/book"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#f5a623] text-[#0a0a0e] font-bold hover:bg-[#fbbf4a] transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gold text-background font-bold hover:bg-gold-light transition-colors"
             >
               Start Your Booking <ArrowRight className="w-5 h-5" />
             </Link>

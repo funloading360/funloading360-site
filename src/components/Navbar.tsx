@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X, Camera, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/hooks/useCart";
+import { colors } from "@/lib/tokens";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -69,7 +70,7 @@ export default function Navbar() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled
-          ? "bg-[#0a0a0e]/95 backdrop-blur-md border-b border-[#2a2a3a] shadow-lg shadow-black/20"
+          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg shadow-black/20"
           : "bg-transparent"
       )}
     >
@@ -81,8 +82,8 @@ export default function Navbar() {
             className="flex items-center gap-2 group"
             aria-label="FunLoading360 — Home"
           >
-            <div className="w-8 h-8 rounded-full bg-[#f5a623] flex items-center justify-center flex-shrink-0 group-hover:bg-[#fbbf4a] transition-colors">
-              <Camera className="w-4 h-4 text-[#0a0a0e]" strokeWidth={2.5} />
+            <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-[#fbbf4a] transition-colors" style={{ backgroundColor: colors.gold }}>
+              <Camera className="w-4 h-4" style={{ color: colors.bg }} strokeWidth={2.5} />
             </div>
             <span
               className="text-xl font-bold text-white tracking-tight"
@@ -98,10 +99,11 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={pathname === link.href ? "page" : undefined}
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200",
                   pathname === link.href
-                    ? "text-[#f5a623]"
+                    ? "text-gold"
                     : "text-gray-300 hover:text-white hover:bg-white/5"
                 )}
               >
@@ -120,7 +122,7 @@ export default function Navbar() {
             >
               <ShoppingCart className="w-5 h-5" />
               {getItemCount() > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#f5a623] text-[#0a0a0e] text-xs font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-5 h-5 text-xs font-bold rounded-full flex items-center justify-center" style={{ backgroundColor: colors.gold, color: colors.bg }}>
                   {getItemCount()}
                 </span>
               )}
@@ -129,7 +131,7 @@ export default function Navbar() {
             {/* Book Button */}
             <Link
               href="/book"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#f5a623] text-[#0a0a0e] font-semibold text-sm hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-[#f5a623]/20 hover:shadow-[#f5a623]/40 hover:-translate-y-0.5 min-h-[44px]"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gold text-background font-semibold text-sm hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:-translate-y-0.5 min-h-[44px]"
             >
               Book
             </Link>
@@ -154,16 +156,17 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         {isOpen && (
-          <div id="mobile-menu" ref={menuRef} className="lg:hidden border-t border-[#2a2a3a] bg-[#0a0a0e]/98 backdrop-blur-md">
+          <div id="mobile-menu" ref={menuRef} className="lg:hidden border-t border-border bg-background/98 backdrop-blur-md">
             <div className="py-4 space-y-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
+                  aria-current={pathname === link.href ? "page" : undefined}
                   className={cn(
                     "block px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200",
                     pathname === link.href
-                      ? "text-[#f5a623] bg-[#f5a623]/10"
+                      ? "text-gold bg-gold/10"
                       : "text-gray-300 hover:text-white hover:bg-white/5"
                   )}
                 >
@@ -173,7 +176,7 @@ export default function Navbar() {
               <div className="pt-3 px-4">
                 <Link
                   href="/book"
-                  className="block w-full text-center px-5 py-3 rounded-full bg-[#f5a623] text-[#0a0a0e] font-semibold text-sm hover:bg-[#fbbf4a] transition-colors min-h-[48px] flex items-center justify-center"
+                  className="block w-full text-center px-5 py-3 rounded-full bg-gold text-background font-semibold text-sm hover:bg-[#fbbf4a] transition-colors min-h-[48px] flex items-center justify-center"
                 >
                   Book Now
                 </Link>

@@ -47,7 +47,7 @@ export default function TestimonialCarousel() {
           transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
           className="text-center mb-12"
         >
-          <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">
+          <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
             What Our Clients Say
           </p>
           <h2
@@ -59,7 +59,7 @@ export default function TestimonialCarousel() {
         </motion.div>
 
         {/* Carousel */}
-        <div className="relative bg-[#13131a] border border-[#2a2a3a] rounded-3xl p-8 sm:p-12">
+        <div className="relative bg-surface border border-border rounded-3xl p-8 sm:p-12">
           <AnimatePresence mode="wait">
             <motion.div
               key={current.id}
@@ -72,7 +72,7 @@ export default function TestimonialCarousel() {
               {/* Stars */}
               <div className="flex justify-center gap-1 mb-6">
                 {Array.from({ length: current.rating }).map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-[#f5a623] fill-[#f5a623]" />
+                  <Star key={i} className="w-5 h-5 text-gold fill-gold" />
                 ))}
               </div>
 
@@ -116,7 +116,7 @@ export default function TestimonialCarousel() {
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex ? 'bg-[#f5a623] w-8' : 'bg-gray-600'
+                index === currentIndex ? 'bg-gold w-8' : 'bg-gray-600'
               }`}
               aria-label={`Go to testimonial ${index + 1}`}
             />

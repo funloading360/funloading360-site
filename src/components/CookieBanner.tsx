@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
 import { X } from 'lucide-react';
 
 const COOKIE_KEY = 'fl360_cookie_consent';
@@ -37,6 +37,7 @@ export default function CookieBanner() {
   if (consent !== null) return null;
 
   return (
+    <MotionConfig reducedMotion="user">
     <AnimatePresence>
       <motion.div
         initial={{ y: 100, opacity: 0 }}
@@ -46,7 +47,7 @@ export default function CookieBanner() {
         role="dialog"
         aria-labelledby="cookie-title"
         aria-modal="true"
-        className="fixed bottom-0 left-0 right-0 z-[100] bg-[#13131a] border-t border-[#2a2a3a] p-4 sm:p-6"
+        className="fixed bottom-0 left-0 right-0 z-[100] bg-surface border-t border-border p-4 sm:p-6"
       >
         <div className="max-w-4xl mx-auto">
           <div className="flex items-start justify-between gap-4 mb-4">
@@ -58,12 +59,12 @@ export default function CookieBanner() {
               {/* DISCLOSURE SECTION */}
               <div className="text-sm text-gray-300 space-y-3 mb-4">
                 <p>
-                  <strong className="text-[#f5a623]">Essential Cookies:</strong> Required for
+                  <strong className="text-gold">Essential Cookies:</strong> Required for
                   site security and basic functionality (e.g., login sessions).
                 </p>
 
                 <p>
-                  <strong className="text-[#f5a623]">Analytics Cookies:</strong> Google
+                  <strong className="text-gold">Analytics Cookies:</strong> Google
                   Analytics 4 (GA4) with IP anonymization enabled. Helps us understand how
                   visitors use our site.
                 </p>
@@ -76,7 +77,7 @@ export default function CookieBanner() {
 
                 <p className="text-xs text-gray-400">
                   Read our{' '}
-                  <Link href="/privacy-policy" className="text-[#f5a623] hover:underline">
+                  <Link href="/privacy-policy" className="text-gold hover:underline">
                     Privacy Policy
                   </Link>{' '}
                   for full details about data collection, processing, and your rights
@@ -85,17 +86,17 @@ export default function CookieBanner() {
               </div>
 
               {/* EXPLICIT CONSENT CHECKBOX */}
-              <label className="flex items-center gap-3 mb-4 p-3 bg-[#0a0a0e]/50 rounded-lg border border-[#2a2a3a]">
+              <label className="flex items-center gap-3 mb-4 p-3 bg-background/50 rounded-lg border border-border">
                 <input
                   type="checkbox"
                   checked={consentCheckbox}
                   onChange={(e) => setConsentCheckbox(e.target.checked)}
                   aria-required="true"
-                  className="w-4 h-4 rounded border-[#2a2a3a] bg-[#13131a] cursor-pointer"
+                  className="w-4 h-4 rounded border-border bg-surface cursor-pointer"
                 />
                 <span className="text-sm text-gray-300 cursor-pointer">
                   I understand and consent to analytics cookies as described above
-                  <span className="text-[#f5a623]">*</span> (required)
+                  <span className="text-gold">*</span> (required)
                 </span>
               </label>
             </div>
@@ -124,7 +125,7 @@ export default function CookieBanner() {
             <button
               onClick={handleAcceptAll}
               disabled={!consentCheckbox}
-              className="flex-1 px-6 py-3 rounded-lg bg-[#f5a623] text-[#0a0a0e] font-bold hover:bg-[#fbbf4a] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm"
+              className="flex-1 px-6 py-3 rounded-lg bg-gold text-background font-bold hover:bg-[#fbbf4a] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm"
             >
               Accept & Continue
             </button>
@@ -133,7 +134,7 @@ export default function CookieBanner() {
           {/* FOOTER NOTE */}
           <p className="text-xs text-gray-500 mt-3 text-center">
             You can change consent preferences anytime in our{' '}
-            <Link href="/privacy-policy" className="text-[#f5a623] hover:underline">
+            <Link href="/privacy-policy" className="text-gold hover:underline">
               Privacy Policy
             </Link>
             .
@@ -141,5 +142,6 @@ export default function CookieBanner() {
         </div>
       </motion.div>
     </AnimatePresence>
+    </MotionConfig>
   );
 }

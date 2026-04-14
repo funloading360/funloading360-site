@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FunLoading360 — Raport Audit Complet 2026</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f5f5f0;
+    color: #1a1a2e;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* Header */
+  .header {
+    background: #1a1a2e;
+    color: white;
+    padding: 48px 24px;
+    text-align: center;
+  }
+  .header .logo-badge {
+    display: inline-block;
+    background: #f5a623;
+    color: #000;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: .08em;
+    padding: 5px 16px;
+    border-radius: 30px;
+    margin-bottom: 20px;
+  }
+  .header h1 { font-size: clamp(24px, 5vw, 42px); font-weight: 900; margin-bottom: 10px; }
+  .header p { color: #a0a0b8; font-size: 17px; }
+  .header .meta {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 28px;
+    margin-top: 28px; font-size: 14px; color: #6060808;
+  }
+  .header .meta span { color: #a0a0b8; }
+  .header .meta strong { color: #fff; }
+
+  /* Score cards strip */
+  .scores-strip {
+    background: #fff;
+    border-bottom: 2px solid #e5e5ea;
+    padding: 28px 24px;
+  }
+  .scores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .score-box {
+    text-align: center;
+    border-radius: 12px;
+    padding: 16px 8px;
+    border: 2px solid #e5e5ea;
+  }
+  .score-box .emoji { font-size: 22px; display: block; margin-bottom: 6px; }
+  .score-box .label { font-size: 12px; color: #666; font-weight: 600; margin-bottom: 6px; display: block; }
+  .score-box .num { font-size: 26px; font-weight: 900; display: block; }
+  .score-box.red .num { color: #dc2626; }
+  .score-box.orange .num { color: #ea580c; }
+  .score-box.yellow .num { color: #d97706; }
+  .score-box.green .num { color: #16a34a; }
+
+  /* Main layout */
+  .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+  main { padding: 48px 20px 80px; }
+
+  /* Section */
+  .section { margin-bottom: 48px; }
+  .section-tag {
+    font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: #888; margin-bottom: 10px;
+  }
+  h2 { font-size: 28px; font-weight: 900; margin-bottom: 12px; color: #1a1a2e; }
+  h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; color: #1a1a2e; }
+  p { color: #444; margin-bottom: 12px; }
+
+  /* Info box */
+  .infobox {
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    border-left: 5px solid;
+  }
+  .infobox.red { background: #fff5f5; border-color: #dc2626; }
+  .infobox.orange { background: #fff7ed; border-color: #ea580c; }
+  .infobox.yellow { background: #fffbeb; border-color: #d97706; }
+  .infobox.green { background: #f0fdf4; border-color: #16a34a; }
+  .infobox.blue { background: #eff6ff; border-color: #2563eb; }
+  .infobox .infobox-title {
+    font-weight: 800; font-size: 15px; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .infobox .infobox-body { color: #555; font-size: 14px; }
+  .infobox .infobox-fix {
+    margin-top: 10px; padding: 10px 14px;
+    background: rgba(0,0,0,.04); border-radius: 8px;
+    font-size: 13px; color: #333;
+  }
+  .infobox .infobox-fix strong { color: #1a1a2e; }
+
+  /* Issue card list */
+  .issue-list { display: grid; gap: 14px; margin: 20px 0; }
+
+  /* Domain card */
+  .domain-card {
+    background: #fff;
+    border: 2px solid #e5e5ea;
+    border-radius: 16px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .domain-card-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 20px 24px;
+    background: #f8f8f5;
+    border-bottom: 1px solid #e5e5ea;
+  }
+  .domain-card-header .dicon { font-size: 28px; }
+  .domain-card-header .dname { font-size: 19px; font-weight: 800; flex: 1; }
+  .domain-card-header .dscore { font-size: 30px; font-weight: 900; }
+  .domain-card-header .dscore.red { color: #dc2626; }
+  .domain-card-header .dscore.orange { color: #ea580c; }
+  .domain-card-header .dscore.yellow { color: #d97706; }
+  .domain-card-header .dscore.green { color: #16a34a; }
+  .domain-card-body { padding: 24px; }
+
+  /* Pill badge */
+  .pill {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px; margin-right: 6px;
+    vertical-align: middle; white-space: nowrap;
+  }
+  .pill.urgent { background: #dc2626; color: #fff; }
+  .pill.important { background: #ea580c; color: #fff; }
+  .pill.minor { background: #d97706; color: #fff; }
+  .pill.good { background: #16a34a; color: #fff; }
+  .pill.neutral { background: #6366f1; color: #fff; }
+
+  /* Simple list */
+  .check-list { list-style: none; padding: 0; }
+  .check-list li {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 0; border-bottom: 1px solid #f0f0e8;
+    font-size: 14px; color: #444;
+  }
+  .check-list li:last-child { border-bottom: none; }
+  .check-list li .icon { flex-shrink: 0; font-size: 16px; margin-top: 2px; }
+
+  /* Priority grid */
+  .priority-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin: 24px 0; }
+  .priority-box {
+    background: #fff;
+    border: 2px solid #e5e5ea;
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .priority-box h4 { font-size: 16px; font-weight: 800; margin-bottom: 14px; }
+  .priority-box ul { list-style: none; padding: 0; }
+  .priority-box ul li {
+    font-size: 14px; padding: 6px 0; border-bottom: 1px solid #f0f0e8; color: #444;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .priority-box ul li:last-child { border-bottom: none; }
+
+  /* Impact strip */
+  .impact-strip {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a4e);
+    color: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    margin: 32px 0;
+  }
+  .impact-strip h3 { color: #f5a623; margin-bottom: 16px; }
+  .impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+  .impact-item { text-align: center; }
+  .impact-item .impact-num { font-size: 32px; font-weight: 900; color: #f5a623; }
+  .impact-item .impact-text { font-size: 13px; color: #a0a0c0; margin-top: 4px; }
+
+  /* Divider */
+  hr { border: none; border-top: 2px solid #e5e5ea; margin: 48px 0; }
+
+  /* TOC */
+  .toc { background: #fff; border: 2px solid #e5e5ea; border-radius: 14px; padding: 24px; margin: 32px 0; }
+  .toc h3 { margin-bottom: 14px; }
+  .toc ol { padding-left: 20px; }
+  .toc ol li { margin-bottom: 6px; }
+  .toc a { color: #2563eb; }
+
+  /* Footer */
+  .site-footer { background: #1a1a2e; color: #6060a0; padding: 32px 24px; text-align: center; font-size: 13px; }
+  .site-footer strong { color: #a0a0c0; }
+
+  /* Scroll up */
+  .btn-top {
+    position: fixed; bottom: 24px; right: 24px;
+    background: #f5a623; color: #000; border: none; border-radius: 50%;
+    width: 44px; height: 44px; font-size: 20px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(245,166,35,.4); font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  @media (max-width: 600px) {
+    .scores-grid { grid-template-columns: repeat(4, 1fr); }
+    h2 { font-size: 22px; }
+    .domain-card-header { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-badge">AUDIT COMPLET 2026</div>
+  <h1>FunLoading360 — Raport Audit Site</h1>
+  <p>8 specialisti · 5 runde de analiza fiecare · Ce merge bine si ce trebuie reparat</p>
+  <div class="meta">
+    <span><strong>Data:</strong> 25 Martie 2026</span>
+    <span><strong>Specialisti:</strong> 8 domenii diferite</span>
+    <span><strong>Probleme gasite:</strong> 30+ aspecte analizate</span>
+    <span><strong>Scor mediu:</strong> 7.2 / 10</span>
+  </div>
+</div>
+
+<!-- SCORES -->
+<div class="scores-strip">
+  <div class="scores-grid">
+    <div class="score-box orange">
+      <span class="emoji">🔒</span>
+      <span class="label">Securitate</span>
+      <span class="num">6.5</span>
+    </div>
+    <div class="score-box yellow">
+      <span class="emoji">🎨</span>
+      <span class="label">Design</span>
+      <span class="num">6.6</span>
+    </div>
+    <div class="score-box yellow">
+      <span class="emoji">⚡</span>
+      <span class="label">Viteza</span>
+      <span class="num">7.6</span>
+    </div>
+    <div class="score-box orange">
+      <span class="emoji">🔍</span>
+      <span class="label">Google SEO</span>
+      <span class="num">6.4</span>
+    </div>
+    <div class="score-box yellow">
+      <span class="emoji">🏗️</span>
+      <span class="label">Structura</span>
+      <span class="num">7.3</span>
+    </div>
+    <div class="score-box yellow">
+      <span class="emoji">♿</span>
+      <span class="label">Accesibilitate</span>
+      <span class="num">7.4</span>
+    </div>
+    <div class="score-box yellow">
+      <span class="emoji">📊</span>
+      <span class="label">Conversii</span>
+      <span class="num">6.8</span>
+    </div>
+    <div class="score-box green">
+      <span class="emoji">📱</span>
+      <span class="label">Mobil</span>
+      <span class="num">8.4</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+<div class="container">
+
+  <!-- TOC -->
+  <div class="toc">
+    <h3>Ce gasesti in acest raport</h3>
+    <ol>
+      <li><a href="#intro">Concluzia generala — ce stare are site-ul</a></li>
+      <li><a href="#urgente">Probleme urgente — rezolva azi</a></li>
+      <li><a href="#securitate">🔒 Securitate</a></li>
+      <li><a href="#design">🎨 Design si experienta utilizatorilor</a></li>
+      <li><a href="#viteza">⚡ Viteza site-ului</a></li>
+      <li><a href="#seo">🔍 Google si SEO</a></li>
+      <li><a href="#structura">🏗️ Structura tehnica a codului</a></li>
+      <li><a href="#accesibilitate">♿ Accesibilitate</a></li>
+      <li><a href="#conversii">📊 Rezervari si conversii</a></li>
+      <li><a href="#mobil">📱 Site pe telefon</a></li>
+      <li><a href="#plan">Plan de actiune — ce faci si cand</a></li>
+    </ol>
+  </div>
+
+  <!-- INTRO -->
+  <section class="section" id="intro">
+    <div class="section-tag">Concluzia generala</div>
+    <h2>Ce stare are site-ul FunLoading360?</h2>
+
+    <p>
+      Vestea buna: site-ul este bine construit din punct de vedere tehnic. Platile cu cardul (Stripe) functioneaza corect,
+      formularul de rezervare valideaza toate datele, designul este consistent si profesionist, iar site-ul arata
+      excelent pe telefon.
+    </p>
+    <p>
+      Vestea mai putin buna: exista cateva probleme <strong>operationale urgente</strong> care pot costa rezervari
+      sau pot expune date sensibile — si care se rezolva rapid, fara a schimba designul site-ului.
+    </p>
+
+    <div class="infobox green">
+      <div class="infobox-title">✅ Ce merge excelent</div>
+      <div class="infobox-body">
+        Site-ul are un design premium, arata perfect pe orice telefon, platile sunt securizate,
+        recenziile reale de pe Bark.com si Poptop sunt afisate elegant, iar Google Analytics
+        urmareste parcursul complet al clientilor de la vizita pana la rezervare.
+      </div>
+    </div>
+
+    <div class="infobox red">
+      <div class="infobox-title">🚨 Ce trebuie rezolvat urgent</div>
+      <div class="infobox-body">
+        6 probleme critice care pot afecta rezervarile, securitatea sau pozitionarea pe Google.
+        Cele mai importante: parole si chei API expuse, o imagine lipsa pentru social media,
+        si o contradictie de pret in site (15% vs 20% depozit).
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- URGENTE -->
+  <section class="section" id="urgente">
+    <div class="section-tag">Prioritate maxima</div>
+    <h2>🚨 Rezolva Azi — 6 Probleme Critice</h2>
+    <p>Acestea sunt singurele probleme care necesita atentie imediata. Restul pot astepta.</p>
+
+    <div class="issue-list">
+
+      <div class="infobox red">
+        <div class="infobox-title">
+          <span class="pill urgent">URGENT</span>
+          Parole si chei API expuse
+        </div>
+        <div class="infobox-body">
+          Fisierul cu parolele site-ului (.env.local) contine cheile pentru email (Resend),
+          plati (Stripe), baza de date (Redis) si Google Calendar. Daca acest fisier a ajuns
+          vreodata in istoricul Git, toate conturile sunt compromise.
+        </div>
+        <div class="infobox-fix">
+          <strong>Ce faci:</strong> Schimba (roteaza) imediat parolele/cheile pentru: Resend, Stripe, Upstash Redis si Google Calendar.
+          Asigura-te ca fisierul .env.local nu este incarcat pe GitHub. Foloseste Vercel Environment Variables pentru productie.
+        </div>
+      </div>
+
+      <div class="infobox red">
+        <div class="infobox-title">
+          <span class="pill urgent">URGENT</span>
+          Imaginea pentru social media este goala (0 bytes)
+        </div>
+        <div class="infobox-body">
+          Cand cineva distribuie site-ul pe Facebook, WhatsApp, LinkedIn sau Instagram, in loc sa apara
+          o poza frumoasa cu photobooth-ul, apare un spatiu gol sau o eroare. Aceasta afecteaza TOATE
+          paginile site-ului. Fiecare distribuire pierduta = potentiali clienti pierduti.
+        </div>
+        <div class="infobox-fix">
+          <strong>Ce faci:</strong> Inlocuieste fisierul og-image.jpg din folderul public cu o fotografie reala
+          de 1200x630 pixeli (format orizontal, ca o poza tipica de Facebook). Marime recomandata: sub 150KB.
+        </div>
+      </div>
+
+      <div class="infobox red">
+        <div class="infobox-title">
+          <span class="pill urgent">URGENT</span>
+          Contradicta de pret: 15% vs 20% depozit
+        </div>
+        <div class="infobox-body">
+          In formularul de rezervare scrie "Platesti 15% depozit". In pagina de preturi si FAQ scrie "20% depozit".
+          Aceasta diferenta creeaza confuzie si neincredere — clientul nu stie cat va plati de fapt.
+          De asemenea, datele din Google Analytics sunt incorecte din cauza acestei diferente.
+        </div>
+        <div class="infobox-fix">
+          <strong>Ce faci:</strong> Decide care este procentul corect (recomandam 15%, mai atragator pentru clienti)
+          si actualizeaza toate textele din site sa spuna acelasi lucru.
+        </div>
+      </div>
+
+      <div class="infobox orange">
+        <div class="infobox-title">
+          <span class="pill important">IMPORTANT</span>
+          Textele din campuri (placeholdere) sunt prea deschise la culoare
+        </div>
+        <div class="infobox-body">
+          In formularul de rezervare, textele ajutatoare din campuri ("ex: numele tau", "adresa email")
+          sunt afisate intr-un gri prea deschis. Persoanele cu probleme de vedere nu le pot citi clar.
+          Aceasta incalca standardele europene de accesibilitate (WCAG 2.1 AA) si poate crea
+          probleme legale in UK (Equality Act 2010).
+        </div>
+        <div class="infobox-fix">
+          <strong>Ce faci:</strong> Cere dezvoltatorului sa schimbe culoarea textelor ajutatoare
+          din campuri in una mai inchisa (gri mai puternic), vizibila clar pe fundal alb.
+        </div>
+      </div>
+
+      <div class="infobox orange">
+        <div class="infobox-title">
+          <span class="pill important">IMPORTANT</span>
+          Pagina "Cos de cumparaturi" apare pe Google
+        </div>
+        <div class="infobox-body">
+          Pagina cosului de cumparaturi (/cart) este indexata de Google. Asta inseamna ca poate aparea
+          in rezultatele de cautare — ceea ce este confuzant si neprofesionist. Niciun client nu trebuie
+          sa ajunga pe pagina cosului prin Google.
+        </div>
+        <div class="infobox-fix">
+          <strong>Ce faci:</strong> Cere dezvoltatorului sa adauge o instructiune care spune Googlebot
+          sa nu indexeze pagina /cart.
+        </div>
+      </div>
+
+      <div class="infobox orange">
+        <div class="infobox-title">
+          <span class="pill important">IMPORTANT</span>
+          Google nu stie adresa completa si nu afiseaza stelele de recenzie
+        </div>
+        <div class="infobox-body">
+          Informatia despre afacere transmisa catre Google (schema LocalBusiness) are doar "Essex" ca adresa,
+          fara strada si cod postal. In plus, Google nu poate afisa stelele de recenzie (rating-ul de 5 stele)
+          in rezultatele de cautare pentru ca aceasta informatie nu este transmisa corect.
+          Stelele vizibile in Google = mai multi clienti care dau click.
+        </div>
+        <div class="infobox-fix">
+          <strong>Ce faci:</strong> Cere dezvoltatorului sa completeze schema LocalBusiness cu adresa completa
+          (Guys Farm Rd, South Woodham Ferrers, CM3 5NF) si sa adauge rating-ul de 5 stele cu numarul de recenzii.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- SECURITATE -->
+  <section class="section" id="securitate">
+    <div class="domain-card">
+      <div class="domain-card-header">
+        <span class="dicon">🔒</span>
+        <span class="dname">Securitate</span>
+        <span class="dscore orange">6.5/10</span>
+      </div>
+      <div class="domain-card-body">
+        <p>
+          Codul este bine scris din punct de vedere al securitatii. Platile cu Stripe sunt verificate corect,
+          datele din formulare sunt validate, iar site-ul nu poate fi incarcat in iframe-uri false.
+          Problema principala este <strong>operationala</strong> — parolele expuse — nu o vulnerabilitate in cod.
+        </p>
+
+        <h3 style="margin-top:20px">Ce merge bine</h3>
+        <ul class="check-list">
+          <li><span class="icon">✅</span> Platile cu cardul sunt verificate criptografic — nimeni nu poate simula o plata falsa</li>
+          <li><span class="icon">✅</span> Site-ul nu poate fi copiat sau incastrat in alt site (clickjacking protection)</li>
+          <li><span class="icon">✅</span> Formularul detecteaza automat spam-ul de la roboti (honeypot)</li>
+          <li><span class="icon">✅</span> Accesul la formulare este limitat la 5 incercari in 10 minute — previne abuzul</li>
+          <li><span class="icon">✅</span> Conexiunea este HTTPS protejata cu certificat valabil 2 ani</li>
+          <li><span class="icon">✅</span> Depozitul (15%) este calculat de server, nu poate fi modificat de client</li>
+        </ul>
+
+        <h3 style="margin-top:24px">Ce trebuie imbunatatit</h3>
+        <ul class="check-list">
+          <li><span class="icon">🚨</span> Parolele/cheile API sunt expuse in fisierul .env.local — <strong>roteste imediat</strong></li>
+          <li><span class="icon">⚠️</span> Lipseste un strat suplimentar de protectie impotriva injectarii de cod in browser (CSP)</li>
+          <li><span class="icon">⚠️</span> Textele din emailuri nu sunt "curatate" — un utilizator rau poate introduce cod HTML in numele sau</li>
+          <li><span class="icon">⚠️</span> Daca baza de date Redis cade, limitarea accesului la formulare se dezactiveaza automat</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESIGN -->
+  <section class="section" id="design">
+    <div class="domain-card">
+      <div class="domain-card-header">
+        <span class="dicon">🎨</span>
+        <span class="dname">Design si Experienta Utilizatorilor</span>
+        <span class="dscore yellow">6.6/10</span>
+      </div>
+      <div class="domain-card-body">
+        <p>
+          Design-ul este profesionist si modern — fundal inchis, accent auriu, fonturi premium.
+          Sistemul de componente (butoane, carduri, formulare) este consistent in tot site-ul.
+          Problemele principale sunt la nivel de <strong>conversie</strong>: drumul de la "vizitator" la "client care rezerva"
+          are cateva obstacole care pot face oamenii sa plece.
+        </p>
+
+        <h3 style="margin-top:20px">Probleme care pierd rezervari</h3>
+        <div class="issue-list">
+          <div class="infobox orange">
+            <div class="infobox-title"><span class="pill important">IMPORTANT</span> Clientul care da click pe "Check Availability" ajunge la formularul complet de rezervare</div>
+            <div class="infobox-body">
+              Cand cineva da click pe "Check Availability" (Verifica disponibilitatea), se asteapta sa vada
+              un calendar simplu. In schimb, ajunge direct la formularul lung de rezervare — confuz si intimidant.
+              Multi utilizatori pleaca in acest punct.
+            </div>
+            <div class="infobox-fix"><strong>Fix simplu:</strong> Redenumeste butonul "Book Now" sau creeaza o pagina simpla cu doar un calendar.</div>
+          </div>
+          <div class="infobox orange">
+            <div class="infobox-title"><span class="pill important">IMPORTANT</span> Preturile nu se vad pe cardurile de servicii de pe homepage</div>
+            <div class="infobox-body">
+              Cardurile celor 3 servicii (360°, Glam Vintage, Selfie Pod) nu arata niciun pret.
+              Clientul trebuie sa dea mai multe click-uri ca sa afle cat costa. Multi oameni pleaca
+              inainte sa afle pretul.
+            </div>
+            <div class="infobox-fix"><strong>Fix:</strong> Adauga "de la £299 / 2 ore" pe fiecare card de serviciu de pe homepage.</div>
+          </div>
+          <div class="infobox orange">
+            <div class="infobox-title"><span class="pill important">IMPORTANT</span> Recenziile sunt prea jos pe pagina</div>
+            <div class="infobox-body">
+              Sectiunea cu recenzii verificate (Bark.com + Poptop) apare abia dupa sectiunea "Cum functioneaza".
+              Pe telefon, multi utilizatori nu ajung niciodata pana acolo. Recenziile sunt cel mai puternic
+              argument de vanzare — ar trebui sa fie vizibile mai devreme.
+            </div>
+            <div class="infobox-fix"><strong>Fix:</strong> Muta recenziile mai sus sau adauga un mic badge in zona hero: "4.9★ din 48 recenzii verificate".</div>
+          </div>
+          <div class="infobox orange">
+            <div class="infobox-title"><span class="pill important">IMPORTANT</span> Nicio garantie de rambursare vizibila</div>
+            <div class="infobox-body">
+              Politica de anulare exista (retur 100% daca anulezi cu 90+ zile inainte) dar nu este afisata
+              nicaieri proeminent. Clientii ezita sa plateasca un depozit daca nu stiu ca pot recupera banii.
+            </div>
+            <div class="infobox-fix"><strong>Fix:</strong> Adauga un mic banner pe pagina de preturi: "Rezervi cu incredere — rambursare completa daca anulezi cu 90+ zile inainte."</div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:24px">Ce merge bine</h3>
+        <ul class="check-list">
+          <li><span class="icon">✅</span> Design premium si consistent — auriu, fundal inchis, fonturi elegante</li>
+          <li><span class="icon">✅</span> Sistemul de butoane, carduri si formulare este uniform in tot site-ul</li>
+          <li><span class="icon">✅</span> Animatiile sunt elegante si se opresc pentru utilizatorii care prefera liniste vizuala</li>
+          <li><span class="icon">✅</span> Sectiunea "Perfect Pentru" (nunti, corporativ, aniversari, baluri) targeteza clar publicul</li>
+          <li><span class="icon">✅</span> Rezumatul cosului de cumparaturi ramane vizibil in lateral pe parcursul rezervarii</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- VITEZA -->
+  <section class="section" id="viteza">
+    <div class="domain-card">
+      <div class="domain-card-header">
+        <span class="dicon">⚡</span>
+        <span class="dname">Viteza Site-ului</span>
+        <span class="dscore yellow">7.6/10</span>
+      </div>
+      <div class="domain-card-body">
+        <p>
+          Site-ul este in general rapid. Imaginile sunt optimizate automat de platforma, fonturile sunt incarcat
+          inteligent, iar Google Analytics se incarca doar dupa acceptul cookie-urilor. Pe telefon si tablete,
+          viteza este buna. Exista totusi cateva imagini supradimensionate care pot incetini pagina galeriei.
+        </p>
+
+        <h3 style="margin-top:20px">Viteze estimate</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin:16px 0">
+          <div style="background:#f0fdf4;border:2px solid #16a34a;border-radius:10px;padding:14px 18px;text-align:center;min-width:130px">
+            <div style="font-size:22px;font-weight:900;color:#16a34a">1.9-2.3s</div>
+            <div style="font-size:12px;color:#555">Incarca prima imagine importanta</div>
+          </div>
+          <div style="background:#f0fdf4;border:2px solid #16a34a;border-radius:10px;padding:14px 18px;text-align:center;min-width:130px">
+            <div style="font-size:22px;font-weight:900;color:#16a34a">Excelent</div>
+            <div style="font-size:12px;color:#555">Stabilitate vizuala la incarcare</div>
+          </div>
+          <div style="background:#fff7ed;border:2px solid #ea580c;border-radius:10px;padding:14px 18px;text-align:center;min-width:130px">
+            <div style="font-size:22px;font-weight:900;color:#ea580c">Risc mobil</div>
+            <div style="font-size:12px;color:#555">Raspuns la click pe telefoane vechi</div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:20px">Ce trebuie reparat</h3>
+        <ul class="check-list">
+          <li><span class="icon">🔴</span> <strong>Imagini galerie prea mari (3-6MB)</strong> — pagina galeriei se incarca greu, mai ales pe 4G</li>
+          <li><span class="icon">🟡</span> Animatiile de scroll pot incetini telefonele mai vechi — reducere durata recomandata</li>
+          <li><span class="icon">🟡</span> Bannerul de cookie-uri nu respecta preferinta "animatii reduse" a utilizatorului</li>
+          <li><span class="icon">🟡</span> Fonturile nu sunt preincarcate — apar cu o mica intarziere la prima vizita</li>
+        </ul>
+
+        <h3 style="margin-top:20px">Ce merge bine</h3>
+        <ul class="check-list">
+          <li><span class="icon">✅</span> Imaginile sunt convertite automat in formate moderne (AVIF, WebP) — mai mici si mai rapide</li>
+          <li><span class="icon">✅</span> Imaginile sunt stocate in cache 1 an — vizitele repetate sunt instantanee</li>
+          <li><span class="icon">✅</span> Google Analytics se incarca numai dupa acceptul cookie-urilor — nu incetineste site-ul</li>
+          <li><span class="icon">✅</span> Fonturile (Inter, Playfair) sunt gazduite pe propriul server, nu depind de Google</li>
+          <li><span class="icon">✅</span> Paginile de eroare si incarcare sunt implementate — experienta fluida la navigare</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEO -->
+  <section class="section" id="seo">
+    <div class="domain-card">
+      <div class="domain-card-header">
+        <span class="dicon">🔍</span>
+        <span class="dname">Google si SEO</span>
+        <span class="dscore orange">6.4/10</span>
+      </div>
+      <div class="domain-card-body">
+        <p>
+          Fundatia SEO este solida: fiecare pagina are titlu, descriere si informatii corecte pentru Google.
+          Exista 10 pagini separate pentru orase (Chelmsford, Southend, Basildon etc.), care ajuta enorm la
+          cautarile locale. Lacunele principale sunt in <strong>SEO local</strong> — informatii incomplete
+          despre afacere in Google, fara harta, fara rating afisat in rezultatele de cautare.
+        </p>
+
+        <h3 style="margin-top:20px">Probleme care te tin mai jos in Google</h3>
+        <div class="issue-list">
+          <div class="infobox red">
+            <div class="infobox-title"><span class="pill urgent">URGENT</span> Imaginea pentru retele sociale este goala</div>
+            <div class="infobox-body">Cand cineva distribuie site-ul, apare un spatiu gol in loc de o poza. Afecteaza toate paginile.</div>
+          </div>
+          <div class="infobox red">
+            <div class="infobox-title"><span class="pill urgent">URGENT</span> Google afiseaza pagina cosului in rezultatele de cautare</div>
+            <div class="infobox-body">Pagina /cart nu trebuie sa apara pe Google — este confuzanta si neprofesionala.</div>
+          </div>
+          <div class="infobox red">
+            <div class="infobox-title"><span class="pill urgent">URGENT</span> Google nu stie adresa exacta si nu afiseaza stelele</div>
+            <div class="infobox-body">
+              Fara adresa completa si rating in informatiile transmise catre Google, afacerea apare mai slab
+              in "Local Pack" (harta de la inceputul rezultatelor de cautare). Concurentii cu aceste informatii
+              complete apar inaintea ta.
+            </div>
+          </div>
+          <div class="infobox orange">
+            <div class="infobox-title"><span class="pill important">IMPORTANT</span> Paginile pentru orase nu au informatii locale specifice</div>
+            <div class="infobox-body">
+              Pagina pentru Chelmsford, Southend etc. exista, dar nu contine informatii structurate specifice
+              pentru fiecare oras. Google nu intelege ca servesti Maidstone sau Canterbury — doar Essex in general.
+            </div>
+            <div class="infobox-fix"><strong>Fix:</strong> Cere dezvoltatorului sa adauge informatii de afacere locala pe fiecare pagina de oras.</div>
+          </div>
+          <div class="infobox orange">
+            <div class="infobox-title"><span class="pill important">IMPORTANT</span> Nu exista o harta Google pe pagina de locatii</div>
+            <div class="infobox-body">Clientii vor sa vada vizual unde operezi. O harta Google integrata pe /locations ar ajuta enorm.</div>
+          </div>
+          <div class="infobox yellow">
+            <div class="infobox-title"><span class="pill minor">MINOR</span> Paginile de oras au prea putin continut (sub 200 cuvinte)</div>
+            <div class="infobox-body">Google prefera paginile cu continut relevant si detaliat. Extinderea descrierilor ar imbunatati ranking-ul.</div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:24px">Ce merge bine</h3>
+        <ul class="check-list">
+          <li><span class="icon">✅</span> Fiecare pagina are titlu, descriere si informatii corecte pentru Google</li>
+          <li><span class="icon">✅</span> 10 pagini de oras generate (Chelmsford, Southend, Basildon, Colchester, Romford etc.)</li>
+          <li><span class="icon">✅</span> Intrebari frecvente (FAQ) structurate pe paginile de preturi si rezervare — Google le poate afisa direct</li>
+          <li><span class="icon">✅</span> Schema de afacere locala (LocalBusiness) existenta — fundatia e buna, necesita completare</li>
+          <li><span class="icon">✅</span> Link-uri catre retele sociale (Instagram, TikTok, Facebook) in footer</li>
+          <li><span class="icon">✅</span> Redirect corect de la /booths la /services — fara pagini rupte</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- STRUCTURA -->
+  <section class="section" id="structura">
+    <div class="domain-card">
+      <div class="domain-card-header">
+        <span class="dicon">🏗️</span>
+        <span class="dname">Structura Tehnica a Codului</span>
+        <span class="dscore yellow">7.3/10</span>
+      </div>
+      <div class="domain-card-body">
+        <p>
+          Codul este organizat curat si modern. Separarea corecta intre parti vizuale si logica de afaceri,
+          componente reutilizabile bine scrise. Problemele principale sunt duplicarea unor informatii importante
+          in mai multe locuri (pretul depozitului, lista de optiuni extra) si lipsa unui sistem de monitorizare
+          cand emailurile de confirmare nu se trimit.
+        </p>
+
+        <h3 style="margin-top:20px">Ce trebuie reparat (explicat simplu)</h3>
+        <div class="issue-list">
+          <div class="infobox red">
+            <div class="infobox-title"><span class="pill urgent">URGENT</span> Emailurile de confirmare pot esua silentios</div>
+            <div class="infobox-body">
+              Cand un client rezerva, se trimit automat emailuri de confirmare. Daca emailul nu ajunge (din cauza
+              unei probleme tehnice), nimeni nu este alertat — nici clientul nu primeste confirmare, nici tu nu stii.
+              Rezervarile pot parea confirmate dar clientul nu are nicio dovada.
+            </div>
+            <div class="infobox-fix"><strong>Fix:</strong> Implementa un sistem de retry automat si o alerta catre tine daca emailul esueaza de 3 ori.</div>
+          </div>
+          <div class="infobox orange">
+            <div class="infobox-title"><span class="pill important">IMPORTANT</span> Optiunile extra (Guest Book, Extra Hour etc.) sunt definite in 2 locuri</div>
+            <div class="infobox-body">
+              Daca vrei sa schimbi pretul sau sa adaugi o noua optiune extra, trebuie sa o faci in 2 fisiere diferite.
+              Daca uiti sa le sincronizezi, apar discrepante intre ce vede clientul si ce plateste de fapt.
+            </div>
+            <div class="infobox-fix"><strong>Fix:</strong> Muta toate optiunile extra intr-un singur fisier centralizat din care se citesc pretutindeni.</div>
+          </div>
+          <div class="infobox orange">
+            <div class="infobox-title"><span class="pill important">IMPORTANT</span> Procentul depozitului (15%) este scris manual in 3+ locuri</div>
+            <div class="infobox-body">
+              Daca vrei sa schimbi procentul depozitului de la 15% la 20% (sau altceva), trebuie sa modifici
+              manual cel putin 3 fisiere diferite. Riscul de a le face inconsistente este mare.
+            </div>
+            <div class="infobox-fix"><strong>Fix:</strong> Defineste procentul intr-un singur loc si citeste-l de acolo in tot codul.</div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:20px">Ce merge bine</h3>
+        <ul class="check-list">
+          <li><span class="icon">✅</span> Structura de cod curata si moderna — Next.js 15, React 19, TypeScript</li>
+          <li><span class="icon">✅</span> Toate datele din formulare sunt validate strict inainte de procesare</li>
+          <li><span class="icon">✅</span> Cosul de cumparaturi functioneaza corect chiar daca ai mai multe tab-uri deschise</li>
+          <li><span class="icon">✅</span> Componente reutilizabile (butoane, carduri, inputuri) construite corect</li>
+          <li><span class="icon">✅</span> Separare corecta: continut static pe server, interactivitate pe client</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACCESIBILITATE -->
+  <section class="section" id="accesibilitate">
+    <div class="domain-card">
+      <div class="domain-card-header">
+        <span class="dicon">♿</span>
+        <span class="dname">Accesibilitate</span>
+        <span class="dscore yellow">7.4/10</span>
+      </div>
+      <div class="domain-card-body">
+        <p>
+          Accesibilitatea se refera la cat de usor pot folosi site-ul persoanele cu dizabilitati (vedere slaba,
+          probleme motorii, epilepsie fotosensibila etc.). Site-ul are o fundatie excelenta — animatiile se opresc
+          pentru utilizatorii sensibili, formularele sunt complet navigabile cu tastatura, meniurile functioneaza
+          corect cu cititoarele de ecran. Exista insa 3 probleme care incalca standardele legale UK.
+        </p>
+
+        <div class="infobox blue" style="margin-top:16px">
+          <div class="infobox-title">ℹ️ De ce conteaza accesibilitatea</div>
+          <div class="infobox-body">
+            In UK, Equality Act 2010 cere ca site-urile sa fie accesibile persoanelor cu dizabilitati.
+            Nerespectarea poate duce la plangeri sau procese legale. Fix-urile necesare sunt simple si rapide.
+          </div>
+        </div>
+
+        <h3 style="margin-top:20px">Probleme care incalca standardele legale</h3>
+        <ul class="check-list">
+          <li><span class="icon">🔴</span> <strong>Textele ajutatoare din campuri sunt prea deschise</strong> — persoanele cu vedere slaba nu le pot citi</li>
+          <li><span class="icon">🔴</span> <strong>Erorile din formular nu sunt anuntate cititoarelor de ecran</strong> — utilizatorii nevazatori nu stiu ca a aparut o eroare</li>
+          <li><span class="icon">🔴</span> <strong>Link-urile catre recenzii externe au contrast insuficient</strong> pe fundal alb</li>
+        </ul>
+
+        <h3 style="margin-top:20px">Ce merge excelent</h3>
+        <ul class="check-list">
+          <li><span class="icon">✅</span> Butonul "Skip to main content" — utilizatorii de tastatura pot sari direct la continut</li>
+          <li><span class="icon">✅</span> Conturul de focus vizibil — stii mereu unde esti cu tastatura</li>
+          <li><span class="icon">✅</span> Meniurile popup (modale) trapeaza corect focusul — nu poti "evada" accidental</li>
+          <li><span class="icon">✅</span> Toate campurile de formular au etichete corect asociate — cititoarele de ecran functioneaza perfect</li>
+          <li><span class="icon">✅</span> Animatiile se opresc automat pentru utilizatorii cu epilepsie sau sensibilitate la miscare</li>
+          <li><span class="icon">✅</span> Butoanele au minim 44-48px inaltime — usor de apasat pe touchscreen sau cu mouse imprecis</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONVERSII -->
+  <section class="section" id="conversii">
+    <div class="domain-card">
+      <div class="domain-card-header">
+        <span class="dicon">📊</span>
+        <span class="dname">Rezervari si Conversii</span>
+        <span class="dscore yellow">6.8/10</span>
+      </div>
+      <div class="domain-card-body">
+        <p>
+          Google Analytics urmareste complet drumul clientului de la prima vizita pana la rezervare — 9 etape
+          distincte masurate. Recenziile de pe Bark.com si Poptop sunt afisate elegant si convingator.
+          Exista totusi cateva obstacole care fac clientii sa renunte inainte de a rezerva.
+        </p>
+
+        <h3 style="margin-top:20px">Ce face clientul sa renunte la rezervare</h3>
+        <div class="issue-list">
+          <div class="infobox red">
+            <div class="infobox-title"><span class="pill urgent">URGENT</span> Contradictia 15% vs 20% depozit pierde increderea clientilor</div>
+            <div class="infobox-body">Un client care vede 2 numere diferite pentru acelasi lucru se gandeste de doua ori inainte sa plateasca.</div>
+          </div>
+          <div class="infobox orange">
+            <div class="infobox-title"><span class="pill important">IMPORTANT</span> Butonul "Check Availability" duce la un formular lung, nu la un calendar</div>
+            <div class="infobox-body">Clientii care vor sa verifice rapid disponibilitatea sunt nevoiti sa completeze un formular intreg. Multa friciti = abandon.</div>
+          </div>
+          <div class="infobox orange">
+            <div class="infobox-title"><span class="pill important">IMPORTANT</span> Campul de telefon este prea strict — poate respinge numere UK valide</div>
+            <div class="infobox-body">Daca un client introduce numarul lui corect si primeste un mesaj de eroare, va pleca frustrat fara sa rezerve.</div>
+            <div class="infobox-fix"><strong>Test rapid:</strong> Incearca 07700 123456 si +44 7700 123456 — ambele ar trebui acceptate.</div>
+          </div>
+          <div class="infobox yellow">
+            <div class="infobox-title"><span class="pill minor">MINOR</span> Formularul de rezervare nu arata progresul ("Pasul 1 din 2")</div>
+            <div class="infobox-body">Clientii nu stiu cat mai au de completat. Un indicator simplu de progres reduce abandonul.</div>
+          </div>
+          <div class="infobox yellow">
+            <div class="infobox-title"><span class="pill minor">MINOR</span> Nu exista niciun element de urgenta pe pagina de preturi</div>
+            <div class="infobox-body">
+              "Doar 2 weekenduri disponibile in mai" sau "Cel mai popular weekend din luna se rezerva rapid" —
+              aceste mesaje reale, bazate pe calendarul tau, pot grabi decizia de rezervare.
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:20px">Ce merge bine</h3>
+        <ul class="check-list">
+          <li><span class="icon">✅</span> Recenzii reale, verificate, de pe Bark.com si Poptop — cu badge-uri de autenticitate</li>
+          <li><span class="icon">✅</span> 9 etape din parcursul clientului sunt urmarite in Google Analytics</li>
+          <li><span class="icon">✅</span> Rezumatul comenzii ramane vizibil in lateral pe toata durata rezervarii</li>
+          <li><span class="icon">✅</span> Calendarul afiseaza datele indisponibile — clientul nu poate rezerva ceva deja ocupat</li>
+          <li><span class="icon">✅</span> Optiunea de depozit (15%) vs plata integrala este clara vizual</li>
+          <li><span class="icon">✅</span> Pagina de multumire diferentiaza "Rezervare confirmata" de "Cerere primita"</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOBIL -->
+  <section class="section" id="mobil">
+    <div class="domain-card">
+      <div class="domain-card-header">
+        <span class="dicon">📱</span>
+        <span class="dname">Site pe Telefon si Tableta</span>
+        <span class="dscore green">8.4/10</span>
+      </div>
+      <div class="domain-card-body">
+        <p>
+          Acesta este <strong>punctul cel mai puternic al site-ului</strong>. Site-ul arata si functioneaza excelent
+          pe orice telefon sau tableta. Meniul hamburger este complet accesibil, gestul de swipe functioneaza
+          pe carousel, butoanele sunt suficient de mari pentru a fi apasate confortabil. Zero probleme critice.
+        </p>
+
+        <h3 style="margin-top:20px">Cateva ajustari mici recomandate</h3>
+        <ul class="check-list">
+          <li><span class="icon">🟡</span> Iconitele retelelor sociale din footer sunt usor prea mici (36px in loc de 44px recomandat) — greu de apasat pe touchscreen mic</li>
+          <li><span class="icon">🟡</span> Pe tableta, cardurile sar direct de la 1 coloana la 3 — ar fi mai bine cu 2 coloane intermediare</li>
+          <li><span class="icon">🟡</span> Pragul de swipe pe carousel este prea sensibil — poate schimba slide-ul accidental cand scrollezi in jos</li>
+          <li><span class="icon">🟡</span> Butonul "Cos de cumparaturi" fixat pe ecran poate acoperi continut pe telefoanele mici (iPhone SE)</li>
+        </ul>
+
+        <h3 style="margin-top:20px">Ce merge excelent</h3>
+        <ul class="check-list">
+          <li><span class="icon">✅</span> Meniu hamburger complet functional cu gestionare corecta a focusului</li>
+          <li><span class="icon">✅</span> Swipe pe carousel de recenzii functioneaza natural</li>
+          <li><span class="icon">✅</span> Butoanele au minim 48px inaltime pe mobil — confortabile de apasat</li>
+          <li><span class="icon">✅</span> Tipurile de input corecte (email, telefon, data) — tastatura potrivita apare automat</li>
+          <li><span class="icon">✅</span> Imaginile se incarca in dimensiunea corecta pentru fiecare ecran — nu imagini uriase pe ecrane mici</li>
+          <li><span class="icon">✅</span> Textul se scaleza corect de la telefon la desktop</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- PLAN -->
+  <section class="section" id="plan">
+    <div class="section-tag">Ce faci si cand</div>
+    <h2>Plan de Actiune — 90 de Zile</h2>
+    <p>Prioritizat de la cel mai urgent la cel mai putin urgent.</p>
+
+    <div class="priority-grid">
+      <div class="priority-box" style="border-color:#dc2626">
+        <h4 style="color:#dc2626">🚨 Aceasta saptamana</h4>
+        <ul>
+          <li>🔴 Schimba TOATE parolele/cheile API</li>
+          <li>🔴 Inlocuieste og-image.jpg cu o poza reala</li>
+          <li>🔴 Unifica depozitul la 15% in tot site-ul</li>
+          <li>🔴 Creste contrastul textelor din campuri</li>
+          <li>🔴 Ascunde pagina /cart de pe Google</li>
+          <li>🔴 Completeaza schema Google (adresa + rating)</li>
+        </ul>
+      </div>
+
+      <div class="priority-box" style="border-color:#ea580c">
+        <h4 style="color:#ea580c">⚠️ Saptamanile 2-3</h4>
+        <ul>
+          <li>🟠 Adauga erori anuntate pentru cititoare de ecran</li>
+          <li>🟠 Rezolva redirect-ul /book cand cosul e gol</li>
+          <li>🟠 Implementa retry pentru emailuri esuate</li>
+          <li>🟠 Centralizeaza optiunile extra si depozitul in cod</li>
+          <li>🟠 Comprima imaginile galeriei sub 1.5MB</li>
+          <li>🟠 Adauga schema locala pe paginile de orase</li>
+        </ul>
+      </div>
+
+      <div class="priority-box" style="border-color:#d97706">
+        <h4 style="color:#d97706">💡 Saptamanile 4-6</h4>
+        <ul>
+          <li>🟡 Adauga "de la £299" pe cardurile de servicii</li>
+          <li>🟡 Redenumeste CTA "Check Availability" → "Book Now"</li>
+          <li>🟡 Muta recenziile mai sus pe homepage</li>
+          <li>🟡 Adauga garantia de rambursare vizibil pe site</li>
+          <li>🟡 Breadcrumbs pe paginile de servicii si orase</li>
+          <li>🟡 Integreaza harta Google pe pagina /locations</li>
+          <li>🟡 Mareste iconitele social din footer la 44px</li>
+          <li>🟡 Indicator progres in formularul de rezervare</li>
+        </ul>
+      </div>
+
+      <div class="priority-box" style="border-color:#16a34a">
+        <h4 style="color:#16a34a">📈 Lunile 2-3 (Crestere)</h4>
+        <ul>
+          <li>🟢 Extinde continutul paginilor de orase (200+ cuvinte)</li>
+          <li>🟢 Creeaza pagina /faq dedicata</li>
+          <li>🟢 Creeaza pagina /availability cu calendar simplu</li>
+          <li>🟢 Afiseaza urgency real ("2 date ramase in mai")</li>
+          <li>🟢 Blog: "Ghidul complet photobooth nunta"</li>
+          <li>🟢 Email automat pentru cosuri abandonate</li>
+          <li>🟢 Test A/B pe textul butonului principal</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Impact -->
+    <div class="impact-strip">
+      <h3>Impact estimat dupa implementare</h3>
+      <div class="impact-grid">
+        <div class="impact-item">
+          <div class="impact-num">+15-25%</div>
+          <div class="impact-text">Vizibilitate pe Google Maps si cautari locale</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-num">+10-15%</div>
+          <div class="impact-text">Click-uri din retele sociale (poza OG reparata)</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-num">+20-40%</div>
+          <div class="impact-text">Rezervari completate (eliminare obstacole CRO)</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-num">✅ Legal</div>
+          <div class="impact-text">Conformitate WCAG 2.1 AA / UK Equality Act</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+</main>
+
+<!-- FOOTER -->
+<div class="site-footer">
+  <p>Raport generat de <strong>8 sub-agenti specializati</strong> · Fiecare cu <strong>5 runde de dezbatere</strong></p>
+  <p style="margin-top:6px">FunLoading360 (funloading360.co.uk) · 25 Martie 2026</p>
+  <p style="margin-top:6px">Securitate · Design/UX · Viteza · SEO · Cod · Accesibilitate · Conversii · Mobil</p>
+</div>
+
+<button class="btn-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Inapoi sus">↑</button>
+
+</body>
+</html>

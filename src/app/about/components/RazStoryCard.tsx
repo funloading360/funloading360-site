@@ -15,7 +15,7 @@ export default function RazStoryCard() {
   ];
 
   return (
-    <section className="py-16 lg:py-24 bg-[#0a0a0e]">
+    <section className="py-16 lg:py-24 bg-background">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
           {/* Image — 60% (3/5 cols) */}
@@ -26,7 +26,7 @@ export default function RazStoryCard() {
             viewport={{ once: true }}
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7 }}
           >
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border-3 border-[#f5a623] shadow-lg shadow-[#f5a623]/20">
+            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border-3 border-gold shadow-lg shadow-gold/20">
               <Image
                 src="/images/raz-portrait.jpeg"
                 alt="Raz, founder of FunLoading360"
@@ -46,7 +46,7 @@ export default function RazStoryCard() {
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7, delay: 0.1 }}
           >
             <motion.h2
-              className="text-3xl sm:text-4xl font-bold text-[#f5a623] mb-4"
+              className="text-3xl sm:text-4xl font-bold text-gold mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}
               initial={prefersReducedMotion ? {} : { opacity: 0 }}
               whileInView={prefersReducedMotion ? {} : { opacity: 1 }}
@@ -86,7 +86,7 @@ export default function RazStoryCard() {
             >
               {highlights.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-[#f5a623] mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="w-5 h-5 text-gold mt-0.5 flex-shrink-0" />
                   <span className="text-gray-300 text-sm sm:text-base">{item}</span>
                 </li>
               ))}

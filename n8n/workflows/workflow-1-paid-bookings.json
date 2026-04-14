@@ -1,0 +1,127 @@
+{
+  "name": "FunLoading360 — Paid Bookings → Google Sheet",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "payment-completed",
+        "responseMode": "onReceived",
+        "responseCode": 200,
+        "options": {}
+      },
+      "id": "webhook-payment",
+      "name": "Webhook: Payment Completed",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-status",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-completed",
+      "name": "IF Status = Completed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1godebBcMBhtCwRvoQeYg9qoF2jfoxrkNScP9TwYdpdM"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Paid Bookings"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date Submitted": "={{ $json.createdAt }}",
+            "Name": "={{ $json.name }}",
+            "Email": "={{ $json.email }}",
+            "Phone": "={{ $json.phone }}",
+            "Event Type": "={{ $json.eventType }}",
+            "Event Date": "={{ $json.eventDate }}",
+            "Alt Date": "={{ $json.altDate }}",
+            "Venue": "={{ $json.venue }}",
+            "Service": "={{ $json.productName }}",
+            "Package": "={{ $json.tier }}",
+            "Add-ons": "={{ $json.upsells.join(', ') }}",
+            "Total Price": "={{ $json.totalPrice }}",
+            "Amount Paid": "={{ $json.amountPaid }}",
+            "Payment Type": "={{ $json.paymentType }}",
+            "Booking Ref": "={{ $json.bookingRef }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "gsheets-paid",
+      "name": "Google Sheets: Paid Bookings",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [720, 280],
+      "credentials": {
+        "googleApi": {
+          "id": "WzX6sEcUvP64Z9wY",
+          "name": "FunLoading360 Google Service Account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Payment Completed": {
+      "main": [
+        [
+          {
+            "node": "IF Status = Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Status = Completed": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Paid Bookings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "FunLoading360"
+    }
+  ]
+}

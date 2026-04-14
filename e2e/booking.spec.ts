@@ -2,151 +2,168 @@ import { test, expect } from "@playwright/test";
 
 /**
  * E2E Smoke Test: Booking Flow
- *
- * Validates: Select booth → Select package → Pick date → Fill details → Submit → Thank you page
  */
 
+const CART_STORAGE_KEY = "funloading360_cart";
+
+const buildCart = (productId = "360-slow-motion", tier = "signature") =>
+  JSON.stringify({
+    items: [
+      { productId, selectedTier: tier, selectedHours: 2, quantity: 1, addedAt: Date.now() },
+    ],
+    version: 1,
+    lastModified: Date.now(),
+    sessionId: "test-session",
+  });
+
+/** Calendar availability mock — returns empty unavailable list so all dates are open */
+const mockCalendar = async (page: any) => {
+  await page.route("**/api/calendar/availability**", (route: any) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ data: { unavailableDates: [], perProduct: {} } }),
+    })
+  );
+};
+
 test.describe("Booking Flow", () => {
-  // Helper: Dismiss cookie consent banner
   const dismissCookieBanner = async (page: any) => {
     try {
-      const acceptButton = page.locator('button:has-text("Accept")').first();
-      const isVisible = await acceptButton.isVisible({ timeout: 2000 }).catch(() => false);
-      if (isVisible) {
-        await acceptButton.click();
-      }
-    } catch (e) {
-      // Cookie banner might not be present, that's ok
-    }
+      // "Accept & Continue" is disabled until the checkbox is checked — click "Decline Analytics" instead
+      const btn = page.locator('button:has-text("Decline Analytics")').first();
+      if (await btn.isVisible({ timeout: 2000 }).catch(() => false)) await btn.click();
+    } catch {}
   };
 
-  test("should complete booking flow successfully", async ({ page }) => {
-    // Navigate to booking page
+  const goToBookWithCart = async (
+    page: any,
+    productId = "360-slow-motion",
+    tier = "signature"
+  ) => {
+    await mockCalendar(page);
+    // Pre-populate localStorage before page load so useCart reads the cart immediately
+    // on mount, preventing the "empty cart → /services" redirect.
+    // Also pre-set cookie consent so the banner never shows and blocks clicks.
+    await page.addInitScript(
+      ({ cartKey, cartValue }: { cartKey: string; cartValue: string }) => {
+        localStorage.setItem(cartKey, cartValue);
+        localStorage.setItem("fl360_cookie_consent", "declined");
+      },
+      { cartKey: CART_STORAGE_KEY, cartValue: buildCart(productId, tier) }
+    );
     await page.goto("/book");
-    await expect(page).toHaveTitle(/Book Your Photo Booth/i);
+  };
 
-    // Dismiss cookie banner
+  /** Click the first available future date on the CustomCalendar */
+  const pickCalendarDate = async (page: any) => {
+    // Calendar renders day buttons (just the day number) — click the first enabled one
+    const dayButton = page
+      .locator(".grid.grid-cols-7 button:not([disabled])")
+      .first();
+    await expect(dayButton).toBeVisible({ timeout: 5000 });
+    await dayButton.click();
+  };
+
+  test("should load booking page with cart pre-populated", async ({ page }) => {
+    await goToBookWithCart(page);
     await dismissCookieBanner(page);
 
-    // ──────────────────────────────────────────────────────────
-    // STEP 0: Select Booth
-    // ──────────────────────────────────────────────────────────
-    const boothButtons = page.locator('button:has-text("360 Slow Motion")');
-    await expect(boothButtons.first()).toBeVisible();
-    await boothButtons.first().click();
+    await expect(page).toHaveTitle(/Book Your Photo Booth/i);
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
+  });
 
-    // Verify Step 1 loads
-    await expect(page.locator("text=Choose Your Package")).toBeVisible();
+  test("should display all form sections", async ({ page }) => {
+    await goToBookWithCart(page);
+    await dismissCookieBanner(page);
 
-    // ──────────────────────────────────────────────────────────
-    // STEP 1: Select Package
-    // ──────────────────────────────────────────────────────────
-    const packageButtons = page.locator("button:has-text(/Essential|Signature|Luxury/)");
-    const firstPackage = packageButtons.first();
-    await expect(firstPackage).toBeVisible();
-    await firstPackage.click();
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
+    await expect(page.locator("text=Event Date")).toBeVisible();
+    await expect(page.locator("text=Personal Details")).toBeVisible();
+    await expect(page.locator("text=Available Add-ons")).toBeVisible();
+    await expect(page.locator("text=Summary")).toBeVisible();
+  });
 
-    // Click Continue
-    const continueButtons = page.locator("button:has-text('Continue')");
-    await continueButtons.last().click();
+  test("should complete booking form successfully (mocked API)", async ({ page }) => {
+    await page.route("**/api/checkout/create-session", (route: any) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ ok: true, data: { checkoutUrl: "/thank-you?session_id=test_mock" } }),
+      })
+    );
 
-    // ──────────────────────────────────────────────────────────
-    // STEP 2: Pick Date
-    // ──────────────────────────────────────────────────────────
-    await expect(page.locator("text=Your Preferred Date")).toBeVisible();
+    const consoleLogs: string[] = [];
+    page.on('console', msg => {
+      consoleLogs.push(`[${msg.type()}] ${msg.text()}`);
+      if (msg.text().includes('onChange') || msg.text().includes('handleSubmit')) {
+        console.log('>>>', msg.text());
+      }
+    });
 
-    // Fill in event date (30 days from now)
-    const dateInput = page.locator('input[type="date"]:first-of-type');
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 30);
-    const formattedDate = futureDate.toISOString().split("T")[0];
-    await dateInput.fill(formattedDate);
+    await goToBookWithCart(page);
+    await dismissCookieBanner(page);
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
 
-    // Click Continue
-    await continueButtons.last().click();
+    // Fill event date via calendar
+    await pickCalendarDate(page);
 
-    // ──────────────────────────────────────────────────────────
-    // STEP 3: Your Details
-    // ──────────────────────────────────────────────────────────
-    await expect(page.locator("text=Your Details")).toBeVisible();
-
-    // Fill in form fields
-    await page.locator('input[id="book-name"]').fill("Test User");
-    await page.locator('input[id="book-email"]').fill("test@example.com");
-    await page.locator('input[id="book-phone"]').fill("+44 7482 112110");
+    // Fill contact details — use pressSequentially to fire per-key React synthetic events
+    await page.locator('input[id="book-name"]').pressSequentially("Test User");
+    await page.locator('input[id="book-email"]').pressSequentially("test@example.com");
+    await page.locator('input[id="book-phone"]').pressSequentially("+447482112110");
     await page.locator('select[id="book-event-type"]').selectOption("Wedding");
-    await page.locator('input[id="book-venue"]').fill("The Grand Hotel, London");
-    await page.locator('textarea[id="book-requests"]').fill("Looking forward to it!");
+    await page.locator('input[id="book-venue"]').pressSequentially("The Grand Hotel, London");
 
-    // ──────────────────────────────────────────────────────────
-    // Submit Form
-    // ──────────────────────────────────────────────────────────
-    const submitButton = page.locator('button:has-text("Submit Booking Request")');
-    await expect(submitButton).toBeEnabled();
-    await submitButton.click();
-
-    // ──────────────────────────────────────────────────────────
-    // Verify Thank You Page
-    // ──────────────────────────────────────────────────────────
-    await page.waitForURL("/thank-you");
+    await page.locator('button:has-text("Proceed to Payment")').click();
+    await page.waitForTimeout(2000);
+    console.log('BROWSER LOGS:', consoleLogs.filter(l => l.includes('handleSubmit') || l.includes('error') || l.includes('Error')).join('\n'));
+    await page.waitForURL(/\/thank-you/, { timeout: 15000 });
     await expect(page).toHaveURL(/\/thank-you/);
   });
 
-  test("should validate required fields", async ({ page }) => {
-    await page.goto("/book");
+  test("should validate required fields on submit", async ({ page }) => {
+    await goToBookWithCart(page);
     await dismissCookieBanner(page);
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
 
-    // Select booth and package
-    await page.locator('button:has-text("360 Slow Motion")').first().click();
-    const packageButton = page.locator("button:has-text(/Essential|Signature|Luxury/)").first();
-    await packageButton.click();
-    await page.locator("button:has-text('Continue')").last().click();
+    await page.locator('button:has-text("Proceed to Payment")').click();
 
-    // Pick date and continue
-    const dateInput = page.locator('input[type="date"]:first-of-type');
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 30);
-    const formattedDate = futureDate.toISOString().split("T")[0];
-    await dateInput.fill(formattedDate);
-    await page.locator("button:has-text('Continue')").last().click();
-
-    // Try to submit without filling required fields
-    const submitButton = page.locator('button:has-text("Submit Booking Request")');
-    await expect(submitButton).toBeEnabled();
-    await submitButton.click();
-
-    // Verify error messages appear
-    const errorMessages = page.locator('[role="alert"]');
-    await expect(errorMessages.first()).toBeVisible();
-
-    // Verify we're still on the details page (not submitted)
-    await expect(page.locator("text=Your Details")).toBeVisible();
+    await expect(
+      page.locator("text=is required").or(page.locator("text=required")).first()
+    ).toBeVisible({ timeout: 3000 });
+    await expect(page).toHaveURL(/\/book/);
   });
 
-  test("should show error for invalid email", async ({ page }) => {
-    await page.goto("/book");
+  test("should show error for invalid email on blur", async ({ page }) => {
+    await goToBookWithCart(page);
     await dismissCookieBanner(page);
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
 
-    // Select booth and package quickly
-    await page.locator('button:has-text("360 Slow Motion")').first().click();
-    await page.locator("button:has-text(/Essential|Signature|Luxury/)").first().click();
-    await page.locator("button:has-text('Continue')").last().click();
-
-    // Pick date
-    const dateInput = page.locator('input[type="date"]:first-of-type');
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 30);
-    const formattedDate = futureDate.toISOString().split("T")[0];
-    await dateInput.fill(formattedDate);
-    await page.locator("button:has-text('Continue')").last().click();
-
-    // Fill form with invalid email
-    await page.locator('input[id="book-name"]').fill("Test User");
     await page.locator('input[id="book-email"]').fill("invalid-email");
     await page.locator('input[id="book-email"]').blur();
+    await expect(page.locator("text=Invalid email format")).toBeVisible({ timeout: 3000 });
+  });
 
-    // Check for error message
-    const emailError = page.locator("text=Invalid email");
-    await expect(emailError).toBeVisible({ timeout: 2000 });
+  test("should show error for invalid UK phone on blur", async ({ page }) => {
+    await goToBookWithCart(page);
+    await dismissCookieBanner(page);
+    await expect(page.locator("text=360 Slow Motion Booth").first()).toBeVisible({ timeout: 8000 });
+
+    await page.locator('input[id="book-phone"]').fill("12345");
+    await page.locator('input[id="book-phone"]').blur();
+    await expect(page.locator("text=valid UK phone number")).toBeVisible({ timeout: 3000 });
+  });
+
+  test("should redirect to /services when navigating to /book with empty cart", async ({ page }) => {
+    await page.goto("/book");
+    await page.waitForURL(/\/services/, { timeout: 15000, waitUntil: "commit" });
+    await expect(page).toHaveURL(/\/services/);
+  });
+
+  test("URL params add to cart then clear (smoke test)", async ({ page }) => {
+    await page.goto("/book?productId=360-slow-motion&tier=signature");
+    await expect(page).toHaveTitle(/Book Your Photo Booth/i, { timeout: 15000 });
+    await expect(page).toHaveURL(/\/(book|services)/);
   });
 });

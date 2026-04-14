@@ -31,10 +31,10 @@ const sections = [
         <p className="mt-3">
           <strong className="text-white">Contact:</strong>{" "}
           <a
-            href="mailto:hello@funloading360.co.uk"
-            className="text-[#f5a623] hover:underline"
+            href="mailto:FunLoading360@gmail.com"
+            className="text-gold hover:underline"
           >
-            hello@funloading360.co.uk
+            FunLoading360@gmail.com
           </a>
         </p>
         <p className="mt-3">
@@ -63,7 +63,7 @@ const sections = [
             "Analytics data collected via Google Analytics (anonymised usage data, browser type, pages visited)",
           ].map((item) => (
             <li key={item} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>{item}</span>
             </li>
           ))}
@@ -112,7 +112,7 @@ const sections = [
             },
           ].map((item) => (
             <li key={item.purpose} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>
                 <strong className="text-white">{item.purpose}:</strong>{" "}
                 {item.detail}
@@ -145,7 +145,7 @@ const sections = [
             "Marketing communications opt-ins are retained until you withdraw consent.",
           ].map((item) => (
             <li key={item} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>{item}</span>
             </li>
           ))}
@@ -200,7 +200,7 @@ const sections = [
             },
           ].map((item) => (
             <li key={item.right} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>
                 <strong className="text-white">{item.right}:</strong>{" "}
                 {item.detail}
@@ -211,10 +211,10 @@ const sections = [
         <p className="mt-4">
           To exercise any of these rights, please contact us at{" "}
           <a
-            href="mailto:hello@funloading360.co.uk"
-            className="text-[#f5a623] hover:underline"
+            href="mailto:FunLoading360@gmail.com"
+            className="text-gold hover:underline"
           >
-            hello@funloading360.co.uk
+            FunLoading360@gmail.com
           </a>
           . We will respond within 30 days. You also have the right to lodge a
           complaint with the Information Commissioner&apos;s Office (ICO) at{" "}
@@ -222,7 +222,7 @@ const sections = [
             href="https://ico.org.uk"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#f5a623] hover:underline"
+            className="text-gold hover:underline"
           >
             ico.org.uk
           </a>
@@ -251,7 +251,7 @@ const sections = [
             },
           ].map((item) => (
             <li key={item.type} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>
                 <strong className="text-white">{item.type}:</strong>{" "}
                 {item.detail}
@@ -284,7 +284,7 @@ const sections = [
             },
           ].map((item) => (
             <li key={item.name} className="flex items-start gap-2.5">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#f5a623] flex-shrink-0" />
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span>
                 <strong className="text-white">{item.name}:</strong> {item.use}
               </span>
@@ -307,14 +307,14 @@ const sections = [
           If you have any questions about this privacy policy or how we handle
           your personal data, please contact us:
         </p>
-        <div className="mt-4 p-5 rounded-2xl bg-[#0d0d16] border border-[#2a2a3a]">
+        <div className="mt-4 p-5 rounded-2xl bg-[#0d0d16] border border-border">
           <p className="text-white font-semibold mb-1">FunLoading360</p>
           <p className="text-gray-400 text-sm">Based in Essex, UK</p>
           <a
-            href="mailto:hello@funloading360.co.uk"
-            className="text-[#f5a623] text-sm hover:underline mt-2 inline-block"
+            href="mailto:FunLoading360@gmail.com"
+            className="text-gold text-sm hover:underline mt-2 inline-block"
           >
-            hello@funloading360.co.uk
+            FunLoading360@gmail.com
           </a>
         </div>
       </>
@@ -324,11 +324,11 @@ const sections = [
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="bg-[#0a0a0e] text-white pt-20">
+    <div className="bg-background text-white pt-20">
       {/* Header */}
       <section className="py-16 lg:py-20 text-center border-b border-[#1a1a28]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-[#f5a623] text-xs font-semibold uppercase tracking-widest mb-4">
+          <p className="text-gold text-xs font-semibold uppercase tracking-widest mb-4">
             Legal
           </p>
           <h1

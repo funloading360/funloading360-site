@@ -46,10 +46,10 @@ export default function PricingComparisonModal({ isOpen, onClose, slug }: Compar
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#13131a] border border-[#2a2a3a] rounded-3xl w-full max-w-7xl max-h-[85vh] overflow-auto"
+            className="bg-surface border border-border rounded-3xl w-full max-w-7xl max-h-[85vh] overflow-auto"
           >
             {/* Header */}
-            <div className="sticky top-0 bg-[#13131a] border-b border-[#2a2a3a] p-6 flex items-center justify-between">
+            <div className="sticky top-0 bg-surface border-b border-border p-6 flex items-center justify-between">
               <h2
                 className="text-2xl font-bold text-white"
                 style={{ fontFamily: "var(--font-playfair)" }}
@@ -69,19 +69,19 @@ export default function PricingComparisonModal({ isOpen, onClose, slug }: Compar
             <div className="overflow-x-auto p-6">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="border-b border-[#2a2a3a]">
-                    <th className="text-left p-4 text-gray-300 font-semibold min-w-[200px] sticky left-0 bg-[#13131a] z-10">
+                  <tr className="border-b border-border">
+                    <th className="text-left p-4 text-gray-300 font-semibold min-w-[200px] sticky left-0 bg-surface z-10">
                       Feature
                     </th>
                     {columns.map((col) => (
                       <th
                         key={col.tierKey}
-                        className="text-center p-4 text-white font-bold min-w-[180px] bg-[#0a0a0e]"
+                        className="text-center p-4 text-white font-bold min-w-[180px] bg-background"
                       >
                         <div className="text-base font-bold text-white">
                           {col.tierName}
                         </div>
-                        <div className="text-lg font-bold text-[#f5a623] mt-2">
+                        <div className="text-lg font-bold text-gold mt-2">
                           £{col.maxPrice}
                         </div>
                         <div className="text-xs text-gray-500 font-normal">
@@ -98,7 +98,7 @@ export default function PricingComparisonModal({ isOpen, onClose, slug }: Compar
                   {allFeatures.map((feature, idx) => (
                     <tr
                       key={feature}
-                      className={idx % 2 === 0 ? 'bg-[#0a0a0e]' : 'bg-[#13131a]'}
+                      className={idx % 2 === 0 ? 'bg-background' : 'bg-surface'}
                     >
                       <td className="p-4 text-gray-300 text-sm font-medium sticky left-0 z-10 bg-inherit">
                         {feature}
@@ -109,7 +109,7 @@ export default function PricingComparisonModal({ isOpen, onClose, slug }: Compar
                           className="text-center p-4"
                         >
                           {col.tier.features.includes(feature) ? (
-                            <Check className="w-5 h-5 text-[#f5a623] mx-auto" />
+                            <Check className="w-5 h-5 text-gold mx-auto" />
                           ) : (
                             <span className="text-gray-600">—</span>
                           )}
@@ -122,13 +122,13 @@ export default function PricingComparisonModal({ isOpen, onClose, slug }: Compar
             </div>
 
             {/* Footer CTA */}
-            <div className="sticky bottom-0 bg-[#13131a] border-t border-[#2a2a3a] p-6 text-center">
+            <div className="sticky bottom-0 bg-surface border-t border-border p-6 text-center">
               <p className="text-gray-400 text-sm mb-4">
                 Ready to book? Let's find the perfect package for your event.
               </p>
               <Link
                 href="/book"
-                className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-[#f5a623] text-[#0a0a0e] font-bold hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-[#f5a623]/25 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-gold text-background font-bold hover:bg-gold-light transition-all duration-200 shadow-lg shadow-gold/25 hover:-translate-y-0.5"
               >
                 Start Booking
               </Link>

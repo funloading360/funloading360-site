@@ -77,7 +77,7 @@ export const photoBothsService: Service = {
         "A cinematic experience your guests will never forget. Full 360° rotating camera arm capturing stunning slow-motion footage.",
       longDescription:
         "Perfect for large events where you want maximum impact. The RGB lighting backdrop adds vibrant colour, while the LED display ring creates the perfect atmosphere. Our professional attendant guides each group through the experience, ensuring everyone gets the perfect shot.",
-      image: "/images/events/360-couple-dancing.jpeg",
+      image: "/images/360-slow-motion/360-couple-dancing.jpeg",
       gradient: "from-violet-900/80 via-purple-900/60 to-blue-900/80",
       accentColor: "bg-violet-500",
       borderColor: "border-violet-500/30",
@@ -178,7 +178,7 @@ export const photoBothsService: Service = {
         "Classic charm with a modern twist. Unlimited high-quality prints, beautifully designed custom overlays and an extensive props collection make this booth an instant hit.",
       longDescription:
         "The Glam Vintage Booth is our most versatile option — equally at home at a black-tie wedding reception or a casual birthday garden party. The warm, flattering ring light is designed to make everyone look their absolute best, and the prints are of such high quality that guests will treasure them for years.",
-      image: "/images/venues/glam-backdrop-printer.jpeg",
+      image: "/images/glam-vintage/glam-backdrop-printer.jpeg",
       gradient: "from-amber-900/80 via-orange-900/60 to-rose-900/80",
       accentColor: "bg-amber-400",
       borderColor: "border-amber-500/30",
@@ -279,7 +279,7 @@ export const photoBothsService: Service = {
         "Compact, connected, completely brilliant. Guests interact with an intuitive touchscreen to take their photos, which are instantly shared to their phones.",
       longDescription:
         "Don't let the size fool you — the Selfie Pod packs in impressive features. The high-resolution camera and professional lighting produce stunning results, and the online gallery ensures every guest can access their photos long after the event ends. It's our most popular choice for corporate events and intimate celebrations.",
-      image: "/images/venues/selfie-pod-venue.jpeg",
+      image: "/images/selfie-pod/selfie-pod-venue.jpeg",
       gradient: "from-emerald-900/80 via-teal-900/60 to-cyan-900/80",
       accentColor: "bg-emerald-400",
       borderColor: "border-emerald-500/30",
@@ -572,6 +572,30 @@ export function getPriceForTier(product: Product, tier: PricingTier): number {
   const tierData = product.tiers[tier];
   if (!tierData || tierData.prices.length === 0) return 0;
   return tierData.prices[tierData.prices.length - 1].price;
+}
+
+/**
+ * Get price for product, tier, and specific hours
+ * Parses duration strings like "2 Hours" to match the requested hours
+ */
+export function getPriceForTierAndHours(product: Product, tier: PricingTier, hours: number): number {
+  const tierData = product.tiers[tier];
+  if (!tierData || tierData.prices.length === 0) return 0;
+  const match = tierData.prices.find((p) => {
+    const parsed = parseInt(p.duration, 10);
+    return !isNaN(parsed) && parsed === hours;
+  });
+  return match?.price ?? tierData.prices[0].price;
+}
+
+/**
+ * Get the minimum hours available for a product tier
+ */
+export function getMinHoursForTier(product: Product, tier: PricingTier): number {
+  const tierData = product.tiers[tier];
+  if (!tierData || tierData.prices.length === 0) return 2;
+  const parsed = parseInt(tierData.prices[0].duration, 10);
+  return isNaN(parsed) ? 2 : parsed;
 }
 
 /**

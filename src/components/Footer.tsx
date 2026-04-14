@@ -29,15 +29,15 @@ const legalLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[#080810] border-t border-[#2a2a3a]">
+    <footer className="bg-[#080810] border-t border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main footer content */}
         <div className="py-12 grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16">
           {/* Column 1: Brand info */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2 group w-fit">
-              <div className="w-8 h-8 rounded-full bg-[#f5a623] flex items-center justify-center flex-shrink-0">
-                <Camera className="w-4 h-4 text-[#0a0a0e]" strokeWidth={2.5} />
+              <div className="w-8 h-8 rounded-full bg-gold flex items-center justify-center flex-shrink-0">
+                <Camera className="w-4 h-4 text-background" strokeWidth={2.5} />
               </div>
               <span
                 className="text-xl font-bold text-white tracking-tight"
@@ -57,7 +57,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="w-9 h-9 rounded-full bg-[#13131a] border border-[#2a2a3a] flex items-center justify-center text-gray-400 hover:text-[#f5a623] hover:border-[#f5a623]/40 transition-all duration-200"
+                className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-surface border border-border flex items-center justify-center text-gray-400 hover:text-gold hover:border-gold/40 transition-all duration-200"
               >
                 <Instagram className="w-4 h-4" />
               </a>
@@ -66,7 +66,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="TikTok"
-                className="w-9 h-9 rounded-full bg-[#13131a] border border-[#2a2a3a] flex items-center justify-center text-gray-400 hover:text-[#f5a623] hover:border-[#f5a623]/40 transition-all duration-200"
+                className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-surface border border-border flex items-center justify-center text-gray-400 hover:text-gold hover:border-gold/40 transition-all duration-200"
               >
                 <TikTokIcon />
               </a>
@@ -75,7 +75,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="w-9 h-9 rounded-full bg-[#13131a] border border-[#2a2a3a] flex items-center justify-center text-gray-400 hover:text-[#f5a623] hover:border-[#f5a623]/40 transition-all duration-200"
+                className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-surface border border-border flex items-center justify-center text-gray-400 hover:text-gold hover:border-gold/40 transition-all duration-200"
               >
                 <Facebook className="w-4 h-4" />
               </a>
@@ -92,7 +92,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 text-sm hover:text-[#f5a623] transition-colors duration-200"
+                    className="text-gray-400 text-sm hover:text-gold transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -110,31 +110,31 @@ export default function Footer() {
               <li>
                 <a
                   href="tel:+447482112110"
-                  className="flex items-start gap-3 text-gray-400 text-sm hover:text-[#f5a623] transition-colors duration-200 group"
+                  className="flex items-start gap-3 text-gray-400 text-sm hover:text-gold transition-colors duration-200 group"
                 >
-                  <Phone className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#f5a623]" />
+                  <Phone className="w-4 h-4 mt-0.5 flex-shrink-0 text-gold" />
                   <span>+44 7482 112110</span>
                 </a>
               </li>
               <li>
                 <a
                   href="mailto:FunLoading360@gmail.com"
-                  className="flex items-start gap-3 text-gray-400 text-sm hover:text-[#f5a623] transition-colors duration-200"
+                  className="flex items-start gap-3 text-gray-400 text-sm hover:text-gold transition-colors duration-200"
                 >
-                  <Mail className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#f5a623]" />
+                  <Mail className="w-4 h-4 mt-0.5 flex-shrink-0 text-gold" />
                   <span>FunLoading360@gmail.com</span>
                 </a>
               </li>
               <li>
                 <div className="flex items-start gap-3 text-gray-400 text-sm">
-                  <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#f5a623]" />
+                  <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-gold" />
                   <span>Essex, Kent & London</span>
                 </div>
               </li>
             </ul>
-            <div className="mt-6 p-4 rounded-xl bg-[#13131a] border border-[#2a2a3a]">
+            <div className="mt-6 p-4 rounded-xl bg-surface border border-border">
               <p className="text-xs text-gray-400 leading-relaxed">
-                <span className="text-[#f5a623] font-medium">
+                <span className="text-gold font-medium">
                   Enquiries welcome 7 days a week
                 </span>
                 <br />
@@ -145,7 +145,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="py-6 border-t border-[#2a2a3a] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="py-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-gray-500 text-xs">
             &copy; 2026 FunLoading360. All rights reserved.
           </p>

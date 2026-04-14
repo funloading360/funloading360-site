@@ -9,6 +9,10 @@ export interface BoothPricing {
   tagline: string;
   gradient: string;
   accentColor: string;
+  slug: string;
+  shortDescription: string;
+  longDescription: string[];
+  highlights: string[];
   tiers: {
     essential: PricingTier & { prices: { duration: string; price: number }[] };
     signature: PricingTier & { prices: { duration: string; price: number }[] };
@@ -22,6 +26,22 @@ export const boothPricing: BoothPricing[] = [
     tagline: "The Show-Stopper",
     gradient: "from-violet-900/80 via-purple-900/60 to-blue-900/80",
     accentColor: "bg-violet-500",
+    slug: "360-slow-motion",
+    shortDescription:
+      "Watch your guests become the star of their own cinematic moment as our 360° rotating arm captures every angle in stunning slow motion. Drenched in RGB light and ready to share instantly via QR, it's the experience everyone's talking about before the night is even over. Don't miss your chance — dates fill up fast.",
+    longDescription: [
+      "Step onto the platform and feel the energy shift. Our 360° Slow Motion booth wraps your guests in a cinematic spectacle — a rotating arm gliding around them while RGB LED lighting paints the air with colour. The result? A slow-motion video so stunning it looks like it was made for a music video.",
+      "Every clip is shareable in seconds via QR code, so the hype spreads from the dance floor to social media before the night ends. A professional attendant manages every moment, ensuring a seamless experience for every single guest.",
+      "Perfect for weddings, proms, birthdays, and corporate events where you want people talking — and posting — for weeks to come.",
+    ],
+    highlights: [
+      "360° rotating arm camera",
+      "Cinematic slow-motion videos",
+      "RGB LED mood lighting",
+      "Instant QR code sharing",
+      "Dedicated professional attendant",
+      "Social-media-ready content, instantly",
+    ],
     tiers: {
       essential: {
         name: "The Essential",
@@ -92,6 +112,22 @@ export const boothPricing: BoothPricing[] = [
     tagline: "Timeless Elegance",
     gradient: "from-amber-900/80 via-orange-900/60 to-rose-900/80",
     accentColor: "bg-amber-400",
+    slug: "glam-vintage",
+    shortDescription:
+      "Transport your guests to a golden era of glamour with our open-air Glam Vintage booth — dreamy filters, elegant props, and beautifully printed keepsakes they'll treasure forever. It's the centrepiece your event deserves, dripping in sophistication and irresistible charm. Book now before your date is gone.",
+    longDescription: [
+      "There's something magical about a print you can hold. Our Glam Vintage booth combines the timeless elegance of classic photography with modern glamour lighting, creating portraits so beautiful your guests will want to frame them. Choose from a curated collection of vintage-style filters and overlays that add that perfect cinematic glow.",
+      "Our carefully chosen props collection turns shy guests into natural performers — laughter guaranteed. Every print is produced instantly, giving your guests a keepsake to take home and a memory to keep forever.",
+      "Ideal for weddings and milestone birthdays where elegance matters, this booth adds a touch of class that elevates the entire event atmosphere.",
+    ],
+    highlights: [
+      "Classic open-air booth design",
+      "Gorgeous vintage-style filters",
+      "Curated elegant props collection",
+      "Instant high-quality prints",
+      "Flattering professional glamour lighting",
+      "Timeless keepsakes guests treasure",
+    ],
     tiers: {
       essential: {
         name: "The Essential",
@@ -163,6 +199,22 @@ export const boothPricing: BoothPricing[] = [
     tagline: "Modern & Sleek",
     gradient: "from-emerald-900/80 via-teal-900/60 to-cyan-900/80",
     accentColor: "bg-emerald-400",
+    slug: "selfie-pod",
+    shortDescription:
+      "Big on fun, smart on space — our Selfie Pod delivers photos and videos your guests will share instantly, straight from a sleek touchscreen. Compact enough to fit any venue, generous enough to create a centrepiece moment for every guest. The most accessible way to wow your crowd without stretching your budget.",
+    longDescription: [
+      "Don't let venue size or budget hold back the fun. Our Selfie Pod packs a serious punch into a compact, modern touchscreen unit that blends seamlessly into any event space — from intimate birthday parties to large corporate gatherings. Guests snap photos and record videos in seconds, no learning curve required.",
+      "Built-in social media sharing means every shot goes straight to Instagram, WhatsApp, or wherever your guests love to post. It's effortless entertainment that keeps the energy alive all night.",
+      "The Selfie Pod is the smart, stylish choice for anyone who wants maximum impact at an accessible price point — proving that great experiences don't have to cost a fortune.",
+    ],
+    highlights: [
+      "Sleek modern touchscreen interface",
+      "Photo and video capture",
+      "Instant social media sharing",
+      "Compact design, any venue",
+      "Effortless guest experience",
+      "Premium fun, budget-friendly price",
+    ],
     tiers: {
       essential: {
         name: "The Essential",
@@ -174,7 +226,6 @@ export const boothPricing: BoothPricing[] = [
           "Touchscreen interface",
           "Instant digital sharing via QR",
           "Online gallery for 30 days",
-          "Friendly attendant",
           "Free setup & collection",
         ],
       },
@@ -190,7 +241,6 @@ export const boothPricing: BoothPricing[] = [
           "Video selfie mode",
           "GIF creation",
           "Online gallery for 60 days",
-          "Dedicated attendant",
           "Free setup & collection",
         ],
       },
@@ -207,7 +257,6 @@ export const boothPricing: BoothPricing[] = [
           "Green screen option",
           "Custom branding",
           "Online gallery for 90 days",
-          "Dedicated event manager",
           "Free setup & collection",
           "Priority booking support",
         ],

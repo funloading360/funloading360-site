@@ -12,7 +12,7 @@ import {
 } from "@/lib/apiResponse";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const TO_EMAIL = process.env.CONTACT_EMAIL ?? "hello@funloading360.co.uk";
+const TO_EMAIL = process.env.CONTACT_EMAIL ?? "FunLoading360@gmail.com";
 
 export async function POST(req: NextRequest) {
   try {

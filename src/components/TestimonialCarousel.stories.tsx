@@ -25,7 +25,7 @@ export const Default: Story = {};
 export const InContext: Story = {
   decorators: [
     (Story) => (
-      <div className="bg-[#0a0a0e] py-12">
+      <div className="bg-background py-12">
         <Story />
       </div>
     ),

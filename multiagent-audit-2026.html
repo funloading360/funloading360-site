@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FunLoading360 — Multi-Agent Website Audit 2026</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0e;--surface:#13131a;--surface2:#1a1a24;--border:#2a2a3a;
+  --gold:#f5a623;--gold-dim:#f5a62333;
+  --text:#f0ede8;--text2:#9ca3af;--text3:#6b7280;
+  --critical:#ef4444;--high:#f97316;--medium:#eab308;--low:#22c55e;
+  --blue:#3b82f6;
+}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;line-height:1.6;font-size:14px}
+a{color:var(--gold);text-decoration:none}
+h1,h2,h3,h4{font-weight:700;line-height:1.2}
+
+/* LAYOUT */
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section{padding:48px 0;border-bottom:1px solid var(--border)}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#0a0a0e 0%,#13131a 50%,#0f0f18 100%);border-bottom:1px solid var(--border);padding:48px 0;text-align:center;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(245,166,35,0.08) 0%,transparent 60%)}
+.header-badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-dim);border:1px solid rgba(245,166,35,0.3);color:var(--gold);padding:6px 16px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:0.05em;margin-bottom:20px}
+.header h1{font-size:clamp(28px,4vw,48px);background:linear-gradient(135deg,#fff 0%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px}
+.header-sub{color:var(--text2);font-size:16px;margin-bottom:8px}
+.header-meta{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-top:24px}
+.header-stat{text-align:center}
+.header-stat .val{font-size:32px;font-weight:800;color:var(--gold)}
+.header-stat .lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em}
+
+/* SCORE GAUGE */
+.gauge-wrap{display:flex;justify-content:center;margin:32px 0 16px}
+.gauge-center{position:relative;width:160px;height:160px}
+.gauge-center svg{transform:rotate(-90deg)}
+.gauge-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge-score{font-size:40px;font-weight:800;color:var(--gold)}
+.gauge-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.card-gold{border-color:rgba(245,166,35,0.3);background:rgba(245,166,35,0.04)}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+@media(max-width:700px){.grid-5{grid-template-columns:repeat(2,1fr)}}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em}
+.badge-critical{background:rgba(239,68,68,0.15);color:var(--critical);border:1px solid rgba(239,68,68,0.3)}
+.badge-high{background:rgba(249,115,22,0.15);color:var(--high);border:1px solid rgba(249,115,22,0.3)}
+.badge-medium{background:rgba(234,179,8,0.15);color:var(--medium);border:1px solid rgba(234,179,8,0.3)}
+.badge-low{background:rgba(34,197,94,0.15);color:var(--low);border:1px solid rgba(34,197,94,0.3)}
+.badge-effort-low{background:rgba(34,197,94,0.1);color:var(--low);border:1px solid rgba(34,197,94,0.2)}
+.badge-effort-med{background:rgba(234,179,8,0.1);color:var(--medium);border:1px solid rgba(234,179,8,0.2)}
+.badge-effort-high{background:rgba(239,68,68,0.1);color:var(--critical);border:1px solid rgba(239,68,68,0.2)}
+
+/* SCORE BADGE */
+.score-badge{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;font-size:15px;font-weight:800;border:2px solid}
+.score-red{background:rgba(239,68,68,0.15);color:var(--critical);border-color:rgba(239,68,68,0.4)}
+.score-orange{background:rgba(249,115,22,0.15);color:var(--high);border-color:rgba(249,115,22,0.4)}
+.score-green{background:rgba(34,197,94,0.15);color:var(--low);border-color:rgba(34,197,94,0.4)}
+
+/* SPECIALIST CARDS */
+.spec-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px}
+.spec-header{display:flex;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;background:var(--surface);transition:background 0.2s;user-select:none}
+.spec-header:hover{background:var(--surface2)}
+.spec-emoji{font-size:28px;flex-shrink:0}
+.spec-info{flex:1}
+.spec-name{font-size:18px;font-weight:700;color:var(--text)}
+.spec-domain{font-size:12px;color:var(--text3);margin-top:2px}
+.spec-body{display:none;padding:0 24px 24px}
+.spec-body.open{display:block}
+.spec-toggle{color:var(--text3);font-size:18px;transition:transform 0.2s}
+.spec-header.open .spec-toggle{transform:rotate(180deg)}
+
+/* DEBATE BOX */
+.debate-box{background:rgba(245,166,35,0.04);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:16px;margin:16px 0;font-style:italic;color:var(--text2);font-size:13px;line-height:1.7}
+
+/* TABLES */
+.table-wrap{overflow-x:auto;margin:16px 0;border-radius:8px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--surface2);color:var(--text2);text-align:left;padding:10px 14px;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;white-space:nowrap}
+td{padding:10px 14px;border-top:1px solid var(--border);vertical-align:top;color:var(--text)}
+tr:nth-child(even) td{background:rgba(255,255,255,0.015)}
+tr:hover td{background:rgba(245,166,35,0.03)}
+.id-cell{font-family:monospace;font-size:11px;color:var(--text3);white-space:nowrap}
+.evidence-cell{font-family:monospace;font-size:11px;color:var(--text3);max-width:300px;word-break:break-word}
+.impl-cell{font-size:12px;color:var(--text2);max-width:400px}
+
+/* TABS */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{padding:10px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-size:13px;font-weight:600;color:var(--text3);border:1px solid transparent;border-bottom:none;transition:all 0.15s;margin-bottom:-1px}
+.tab:hover{color:var(--text);background:var(--surface2)}
+.tab.active{color:var(--gold);background:var(--surface);border-color:var(--border);border-bottom-color:var(--surface)}
+
+/* FILTER */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.filter-btn{padding:6px 14px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:12px;font-weight:600;transition:all 0.15s}
+.filter-btn:hover{border-color:var(--gold);color:var(--gold)}
+.filter-btn.active{background:var(--gold);color:#0a0a0e;border-color:var(--gold)}
+.filter-label{color:var(--text3);font-size:12px;font-weight:600;margin-right:4px}
+.hidden-row{display:none}
+
+/* MATRIX */
+.matrix{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;aspect-ratio:1.5;max-width:700px;margin:0 auto}
+.matrix-cell{border-radius:12px;padding:20px;position:relative}
+.matrix-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px}
+.matrix-items{display:flex;flex-direction:column;gap:6px}
+.matrix-item{font-size:12px;padding:4px 8px;border-radius:4px;background:rgba(255,255,255,0.05)}
+.matrix-axis-x{text-align:center;color:var(--text3);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:8px}
+.matrix-axis-y{writing-mode:vertical-lr;transform:rotate(180deg);color:var(--text3);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;display:flex;align-items:center}
+.matrix-wrap{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+
+/* ACTION PLAN */
+.timeline-col{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.timeline-header{padding:16px 20px;font-weight:700;font-size:15px;border-bottom:1px solid var(--border)}
+.timeline-days{font-size:12px;color:var(--text3);margin-top:2px;font-weight:400}
+.timeline-items{padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+.timeline-item{display:flex;gap:10px;align-items:flex-start}
+.timeline-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.timeline-text{font-size:13px;color:var(--text)}
+.timeline-tag{font-size:10px;color:var(--text3);margin-top:2px;font-weight:600}
+
+/* CROSS CUTTING */
+.cross-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:12px}
+.cross-title{font-weight:700;font-size:14px;margin-bottom:6px;color:var(--text)}
+.cross-refs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.cross-ref{font-size:11px;padding:2px 8px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);color:var(--text3);font-family:monospace}
+
+/* SECTION TITLES */
+.section-title{font-size:24px;font-weight:800;margin-bottom:8px}
+.section-title span{color:var(--gold)}
+.section-sub{color:var(--text2);font-size:14px;margin-bottom:32px}
+
+/* QUICK WIN */
+.quick-wins{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:24px}
+.quick-win{background:linear-gradient(135deg,rgba(34,197,94,0.06),rgba(34,197,94,0.02));border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:20px}
+.quick-win h4{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}
+.quick-win p{font-size:12px;color:var(--text2);line-height:1.6}
+.quick-win .qw-id{font-family:monospace;font-size:11px;color:var(--low);margin-bottom:8px}
+.quick-win .qw-time{font-size:11px;color:var(--low);font-weight:600;margin-top:10px}
+
+/* CRITICAL FINDINGS */
+.critical-list{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.critical-item{background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:16px 20px}
+.critical-item h4{font-size:14px;font-weight:700;color:var(--critical);margin-bottom:6px}
+.critical-item p{font-size:13px;color:var(--text2);line-height:1.6}
+.critical-item .refs{font-size:11px;color:var(--text3);margin-top:6px;font-family:monospace}
+
+/* FOOTER */
+footer{padding:40px 0;text-align:center;color:var(--text3);font-size:12px;border-top:1px solid var(--border)}
+footer strong{color:var(--text2)}
+
+/* SCROLL TOP */
+.scroll-top{position:fixed;bottom:24px;right:24px;width:44px;height:44px;background:var(--gold);color:#0a0a0e;border:none;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;z-index:100;font-weight:700}
+.scroll-top.visible{opacity:1}
+
+/* NAV PILLS */
+.nav-pills{position:sticky;top:0;z-index:50;background:rgba(10,10,14,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 0}
+.nav-pills-inner{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.nav-pills-inner::-webkit-scrollbar{display:none}
+.nav-pill{flex-shrink:0;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;color:var(--text3);background:transparent;border:1px solid var(--border);cursor:pointer;text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.nav-pill:hover{color:var(--gold);border-color:rgba(245,166,35,0.4)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="container">
+    <div class="header-badge">🤖 Multi-Agent AI Audit · 10 Specialists · 5 Debate Rounds Each</div>
+    <h1>FunLoading360 Website Audit 2026</h1>
+    <p class="header-sub">Comprehensive technical, UX, brand &amp; growth analysis powered by specialized AI agents</p>
+    <div class="header-meta">
+      <div class="header-stat"><div class="val">10</div><div class="lbl">Specialists</div></div>
+      <div class="header-stat"><div class="val">50</div><div class="lbl">Debate Rounds</div></div>
+      <div class="header-stat"><div class="val">95</div><div class="lbl">Findings</div></div>
+      <div class="header-stat"><div class="val">88</div><div class="lbl">Improvements</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV PILLS -->
+<nav class="nav-pills">
+  <div class="container">
+    <div class="nav-pills-inner">
+      <a href="#executive" class="nav-pill">Executive Summary</a>
+      <a href="#security" class="nav-pill">🔒 Security</a>
+      <a href="#ux" class="nav-pill">🎨 UI/UX</a>
+      <a href="#performance" class="nav-pill">⚡ Performance</a>
+      <a href="#accessibility" class="nav-pill">♿ Accessibility</a>
+      <a href="#seo" class="nav-pill">🔍 SEO</a>
+      <a href="#frontend" class="nav-pill">🏗️ Frontend Arch</a>
+      <a href="#mobile" class="nav-pill">📱 Mobile</a>
+      <a href="#brand" class="nav-pill">✨ Brand</a>
+      <a href="#api" class="nav-pill">🔧 Backend/API</a>
+      <a href="#cro" class="nav-pill">📈 CRO</a>
+      <a href="#crosscutting" class="nav-pill">🔗 Cross-Cutting</a>
+      <a href="#matrix" class="nav-pill">📊 Matrix</a>
+      <a href="#plan" class="nav-pill">🗓️ Action Plan</a>
+    </div>
+  </div>
+</nav>
+
+<!-- EXECUTIVE SUMMARY -->
+<div class="section" id="executive">
+  <div class="container">
+    <div class="section-title">Executive <span>Summary</span></div>
+    <div class="section-sub">Overall health score and top critical findings across all 10 specialist domains</div>
+
+    <!-- GAUGE + SCORES GRID -->
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:32px;align-items:start;margin-bottom:40px">
+      <div style="text-align:center">
+        <div class="gauge-wrap">
+          <div class="gauge-center">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="64" fill="none" stroke="#2a2a3a" stroke-width="12"/>
+              <circle cx="80" cy="80" r="64" fill="none" stroke="#f5a623" stroke-width="12"
+                stroke-dasharray="402.1" stroke-dashoffset="135.1" stroke-linecap="round"/>
+            </svg>
+            <div class="gauge-text">
+              <div class="gauge-score">6.6</div>
+              <div class="gauge-label">/ 10</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--text2);font-weight:600">Needs Improvement</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">Solid foundation,<br>critical gaps to fix</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px">Scores by Specialist</div>
+        <div class="grid-5">
+          <div class="card" style="text-align:center;padding:14px 10px">
+            <div style="font-size:20px;margin-bottom:6px">🔒</div>
+            <div class="score-badge score-orange" style="margin:0 auto 6px">6.5</div>
+            <div style="font-size:11px;color:var(--text3)">Security</div>
+          </div>
+          <div class="card" style="text-align:center;padding:14px 10px">
+            <div style="font-size:20px;margin-bottom:6px">🎨</div>
+            <div class="score-badge score-orange" style="margin:0 auto 6px">6.8</div>
+            <div style="font-size:11px;color:var(--text3)">UI/UX</div>
+          </div>
+          <div class="card" style="text-align:center;padding:14px 10px">
+            <div style="font-size:20px;margin-bottom:6px">⚡</div>
+            <div class="score-badge score-green" style="margin:0 auto 6px">7.8</div>
+            <div style="font-size:11px;color:var(--text3)">Performance</div>
+          </div>
+          <div class="card" style="text-align:center;padding:14px 10px">
+            <div style="font-size:20px;margin-bottom:6px">♿</div>
+            <div class="score-badge score-orange" style="margin:0 auto 6px">6.8</div>
+            <div style="font-size:11px;color:var(--text3)">A11y</div>
+          </div>
+          <div class="card" style="text-align:center;padding:14px 10px">
+            <div style="font-size:20px;margin-bottom:6px">🔍</div>
+            <div class="score-badge score-orange" style="margin:0 auto 6px">6.5</div>
+            <div style="font-size:11px;color:var(--text3)">SEO</div>
+          </div>
+          <div class="card" style="text-align:center;padding:14px 10px">
+            <div style="font-size:20px;margin-bottom:6px">🏗️</div>
+            <div class="score-badge score-orange" style="margin:0 auto 6px">6.8</div>
+            <div style="font-size:11px;color:var(--text3)">Frontend</div>
+          </div>
+          <div class="card" style="text-align:center;padding:14px 10px">
+            <div style="font-size:20px;margin-bottom:6px">📱</div>
+            <div class="score-badge score-red" style="margin:0 auto 6px">6.2</div>
+            <div style="font-size:11px;color:var(--text3)">Mobile</div>
+          </div>
+          <div class="card" style="text-align:center;padding:14px 10px">
+            <div style="font-size:20px;margin-bottom:6px">✨</div>
+            <div class="score-badge score-red" style="margin:0 auto 6px">6.2</div>
+            <div style="font-size:11px;color:var(--text3)">Brand</div>
+          </div>
+          <div class="card" style="text-align:center;padding:14px 10px">
+            <div style="font-size:20px;margin-bottom:6px">🔧</div>
+            <div class="score-badge score-red" style="margin:0 auto 6px">6.4</div>
+            <div style="font-size:11px;color:var(--text3)">Backend</div>
+          </div>
+          <div class="card" style="text-align:center;padding:14px 10px">
+            <div style="font-size:20px;margin-bottom:6px">📈</div>
+            <div class="score-badge score-red" style="margin:0 auto 6px">6.2</div>
+            <div style="font-size:11px;color:var(--text3)">CRO</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP 5 CRITICAL FINDINGS -->
+    <div style="margin-bottom:40px">
+      <h3 style="font-size:18px;margin-bottom:6px">🚨 Top 5 Critical Findings</h3>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px">Issues confirmed by multiple specialists with direct revenue or security impact</p>
+      <div class="critical-list">
+        <div class="critical-item">
+          <h4>💰 Price Manipulation — Anyone Can Pay £0.30 for a £500 Service</h4>
+          <p><code>totalPrice</code> is sent from the client browser and used directly in Stripe checkout without server-side validation against the product catalog. An attacker sends <code>{totalPrice: 2, paymentType: 'deposit'}</code> and pays 30p instead of ~£150.</p>
+          <div class="refs">Confirmed by: SEC-01 · API-02 · CRO-07</div>
+        </div>
+        <div class="critical-item">
+          <h4>🔄 Deposit Inconsistency: 15% vs 30% on the Same Page</h4>
+          <p><code>PricingContent.tsx:319</code> shows "30% deposit required" but <code>constants.ts</code> defines <code>DEPOSIT_PERCENT = 0.15</code>, the FAQ says 15%, and booking flow calculates 15%. This trust-destroying discrepancy appears at the critical decision moment.</p>
+          <div class="refs">Confirmed by: UX-01 · CRO-01 · API-05</div>
+        </div>
+        <div class="critical-item">
+          <h4>🔁 Complete Funnel Break: Pricing → Book → Redirect Back to Services</h4>
+          <p">"Book This Package" on every pricing card links to <code>/book</code>. BookingFlow auto-redirects to <code>/services</code> if cart is empty. Result: every user from the pricing page is looped back to services without being able to book.</p>
+          <div class="refs">Confirmed by: UX-03 · MOB-02 · CRO-02</div>
+        </div>
+        <div class="critical-item">
+          <h4>📧 Webhook Race Condition — Duplicate Confirmation Emails</h4>
+          <p>Stripe webhook and <code>/api/checkout/verify-session</code> can both run simultaneously (0–30 second window). Both check <code>booking.status</code> non-atomically, both see 'pending', both send confirmation emails. Customer receives 2 emails, admin gets 2 notifications, n8n processes payment twice.</p>
+          <div class="refs">Confirmed by: SEC-03 · API-01</div>
+        </div>
+        <div class="critical-item">
+          <h4>🎨 Design System is Dead — tokens.ts Imported by Zero Components</h4>
+          <p><code>tokens.ts</code> defines a complete design system (colors, spacing, typography, shadows) but is not imported anywhere. All components hardcode hex values. Brand color change requires updating 4+ files manually instead of 1.</p>
+          <div class="refs">Confirmed by: ARCH-03 · BRAND-01</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK WINS -->
+    <h3 style="font-size:18px;margin-bottom:6px">⚡ Top Quick Wins</h3>
+    <p style="color:var(--text2);font-size:13px;margin-bottom:16px">Low effort, high impact — can be done today</p>
+    <div class="quick-wins">
+      <div class="quick-win">
+        <div class="qw-id">IMP-CRO-01 / IMP-UX-01</div>
+        <h4>Fix Deposit % — 15 Minutes</h4>
+        <p>Change "30% deposit" to "15% deposit" in <code>PricingContent.tsx:319</code>. Eliminates the #1 trust killer at the decision moment.</p>
+        <div class="qw-time">⏱ 15 min · Estimated lift: +8–12% conversions</div>
+      </div>
+      <div class="quick-win">
+        <div class="qw-id">IMP-PERF-02</div>
+        <h4>Fix CLS Bug — 2 Minutes</h4>
+        <p>Remove <code>contain: strict</code> from <code>globals.css:57</code>. Eliminates risk of CLS 0.1–0.3 on booth image grid — a single CSS property change.</p>
+        <div class="qw-time">⏱ 2 min · Eliminates major CLS risk</div>
+      </div>
+      <div class="quick-win">
+        <div class="qw-id">IMP-SEC-03 / IMP-API-01</div>
+        <h4>Webhook Idempotency — 30 Minutes</h4>
+        <p>Add <code>Redis SET NX</code> atomic check at start of webhook handler. Prevents duplicate emails and double n8n processing on Stripe retries.</p>
+        <div class="qw-time">⏱ 30 min · Prevents revenue &amp; trust damage</div>
+      </div>
+      <div class="quick-win">
+        <div class="qw-id">IMP-A11Y-01 + IMP-A11Y-02 + IMP-A11Y-03</div>
+        <h4>Fix 3 Critical A11y Issues — 1 Hour</h4>
+        <p>Border contrast fix, aria-label on "Learn more" links, aria-current="page" on nav. All 3 are trivial code changes with WCAG AA impact.</p>
+        <div class="qw-time">⏱ 1 hour · Fixes 3 WCAG AA violations</div>
+      </div>
+      <div class="quick-win">
+        <div class="qw-id">IMP-UX-02</div>
+        <h4>Fix Cart Icon href — 5 Minutes</h4>
+        <p>Change <code>href='/book'</code> to <code>href='/cart'</code> on the ShoppingCart icon in <code>Navbar.tsx:117</code>. Matches universal mental model.</p>
+        <div class="qw-time">⏱ 5 min · Fixes broken navigation pattern</div>
+      </div>
+      <div class="quick-win">
+        <div class="qw-id">IMP-MOB-01</div>
+        <h4>Fix iOS Zoom Bug — 10 Minutes</h4>
+        <p>Add <code>input, select, textarea { font-size: 16px; }</code> on mobile in <code>globals.css</code>. Prevents Safari auto-zoom on all form inputs.</p>
+        <div class="qw-time">⏱ 10 min · Fixes #1 iOS conversion killer</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR (global) -->
+<div style="background:var(--surface2);border-bottom:1px solid var(--border);padding:12px 0;position:sticky;top:53px;z-index:40">
+  <div class="container">
+    <div class="filter-bar">
+      <span class="filter-label">Filter by priority:</span>
+      <button class="filter-btn active" onclick="filterPriority('all',this)">All</button>
+      <button class="filter-btn" onclick="filterPriority('critical',this)">🔴 Critical</button>
+      <button class="filter-btn" onclick="filterPriority('high',this)">🟠 High</button>
+      <button class="filter-btn" onclick="filterPriority('medium',this)">🟡 Medium</button>
+      <button class="filter-btn" onclick="filterPriority('low',this)">🟢 Low</button>
+    </div>
+  </div>
+</div>
+
+<!-- SECURITY -->
+<div class="section" id="security">
+  <div class="container">
+    <div class="spec-card">
+      <div class="spec-header" onclick="toggleSpec(this)">
+        <div class="spec-emoji">🔒</div>
+        <div class="spec-info">
+          <div class="spec-name">Security Engineer</div>
+          <div class="spec-domain">OWASP Top 10 · CSP · GDPR · Auth · Injection</div>
+        </div>
+        <div class="score-badge score-orange">6.5</div>
+        <div class="spec-toggle">▼</div>
+      </div>
+      <div class="spec-body open">
+        <div class="debate-box">5 rounds of debate consensus: The site has solid foundations — Zod validation, HSTS with preload, Stripe webhook signature verification, honeypot anti-bot, and rate limiting. Critical deductions come from: price manipulation (totalPrice from client used directly in Stripe, enabling £0.30 payment for £500 service), GDPR violations (PII stored plaintext in Redis, email in Stripe metadata), unsafe-eval in CSP, and missing idempotency on webhook handlers. A developer with security awareness but critical gaps in payment implementation.</div>
+        <h4 style="margin:16px 0 8px;color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:0.06em">Weaknesses</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Priority</th><th>Finding</th><th>Evidence</th></tr></thead>
+            <tbody>
+              <tr class="priority-critical"><td class="id-cell">SEC-01</td><td><span class="badge badge-critical">Critical</span></td><td><strong>Price Manipulation</strong> — totalPrice controlled by client, Stripe session created with manipulated amount</td><td class="evidence-cell">create-session/route.ts:50–56 · schemas.ts:69 z.number().positive() no min/catalog check</td></tr>
+              <tr class="priority-high"><td class="id-cell">SEC-02</td><td><span class="badge badge-high">High</span></td><td><strong>CSP unsafe-eval</strong> — partially neutralises XSS protection; not needed in Next.js 15 production</td><td class="evidence-cell">next.config.ts:8 script-src includes 'unsafe-eval'</td></tr>
+              <tr class="priority-high"><td class="id-cell">SEC-03</td><td><span class="badge badge-high">High</span></td><td><strong>No Webhook Idempotency</strong> — Stripe retries trigger duplicate confirmation emails &amp; n8n pipelines</td><td class="evidence-cell">webhooks/stripe/route.ts:35–104 no status check before sending emails</td></tr>
+              <tr class="priority-high"><td class="id-cell">SEC-04</td><td><span class="badge badge-high">High</span></td><td><strong>PII Plaintext in Redis</strong> — name, email, phone, venue stored unencrypted; GDPR Art. 32 violation</td><td class="evidence-cell">lib/stripe.ts:103–108 redis.setex with JSON.stringify(booking)</td></tr>
+              <tr class="priority-high"><td class="id-cell">SEC-05</td><td><span class="badge badge-high">High</span></td><td><strong>Email in Stripe Metadata</strong> — metadata.bookingId = email + ':' + eventDate exposes PII in Stripe Dashboard</td><td class="evidence-cell">lib/stripe.ts:81–83</td></tr>
+              <tr class="priority-medium"><td class="id-cell">SEC-06</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Information Disclosure</strong> — error.message returned in HTTP 500 responses (infra details leaked)</td><td class="evidence-cell">create-session/route.ts:117–122 · webhooks/stripe/route.ts:124</td></tr>
+              <tr class="priority-medium"><td class="id-cell">SEC-07</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Missing COOP/CORP Headers</strong> — Cross-Origin-Opener-Policy and Cross-Origin-Resource-Policy absent</td><td class="evidence-cell">next.config.ts:3–42</td></tr>
+              <tr class="priority-medium"><td class="id-cell">SEC-08</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Upsells Without Whitelist</strong> — arbitrary upsell IDs accepted; business logic bypass, price 0 fallback</td><td class="evidence-cell">schemas.ts:11 z.array(z.string()) · webhooks/stripe/route.ts:67</td></tr>
+              <tr class="priority-medium"><td class="id-cell">SEC-09</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Double Email Send</strong> — confirmation sent from /api/book (before payment) AND from webhook (after payment)</td><td class="evidence-cell">book/route.ts:151 · webhooks/stripe/route.ts:71</td></tr>
+              <tr class="priority-low"><td class="id-cell">SEC-10</td><td><span class="badge badge-low">Low</span></td><td><strong>Real Data in .env.example</strong> — real Gmail, personal calendar ID, localhost URLs exposed if repo is public</td><td class="evidence-cell">.env.example:16,78,108–109</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h4 style="margin:20px 0 8px;color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:0.06em">Top Improvements</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Effort</th><th>Impact</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">IMP-SEC-01</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Server-side price validation</strong> — calculateServerPrice(productId, tier, upsells) in lib/services.ts; compare with client value; reject if &gt;1% mismatch; use server price for Stripe</td></tr>
+              <tr><td class="id-cell">IMP-SEC-02</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Remove unsafe-eval from CSP</strong> — test production build without it; add Reporting-Endpoints header + /api/csp-report route</td></tr>
+              <tr><td class="id-cell">IMP-SEC-03</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Idempotency key</strong> — Redis <code>SET processed:{sessionId} 1 NX EX 86400</code> at start of webhook handler; skip if key exists</td></tr>
+              <tr><td class="id-cell">IMP-SEC-04</td><td><span class="badge badge-effort-high">High</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Minimise Redis PII</strong> — store only sessionId/status/productId/tier in Redis; retrieve PII from Stripe Session object when needed</td></tr>
+              <tr><td class="id-cell">IMP-SEC-05</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>Opaque metadata ID</strong> — replace email in Stripe metadata with <code>crypto.randomBytes(16).toString('hex')</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UI/UX -->
+<div class="section" id="ux">
+  <div class="container">
+    <div class="spec-card">
+      <div class="spec-header" onclick="toggleSpec(this)">
+        <div class="spec-emoji">🎨</div>
+        <div class="spec-info">
+          <div class="spec-name">UI/UX Designer</div>
+          <div class="spec-domain">User Flows · Usability · Visual Hierarchy · CTA Optimization</div>
+        </div>
+        <div class="score-badge score-orange">6.8</div>
+        <div class="spec-toggle">▼</div>
+      </div>
+      <div class="spec-body open">
+        <div class="debate-box">5 rounds consensus: The site has solid visual foundations, professional animations and correct accessibility implementation. Score penalised by 3 issues that directly break the conversion flow end-to-end: the deposit inconsistency (15% vs 30%) creates distrust at the payment moment; the cart icon pointing to /book instead of /cart disorients users; and "Book This Package" CTAs on pricing don't add anything to cart, creating a 3+ step detour. Individual components are good quality — the connections between pages are where the funnel breaks.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Priority</th><th>Finding</th><th>UX Principle</th></tr></thead>
+            <tbody>
+              <tr class="priority-critical"><td class="id-cell">UX-01</td><td><span class="badge badge-critical">Critical</span></td><td><strong>Deposit Inconsistency</strong> — PricingContent.tsx:319 shows "30% deposit", FAQ shows 15%, booking calculates 15%</td><td class="evidence-cell">Nielsen #1 Visibility + #4 Consistency</td></tr>
+              <tr class="priority-high"><td class="id-cell">UX-02</td><td><span class="badge badge-high">High</span></td><td><strong>Cart Icon → /book (not /cart)</strong> — Navbar.tsx:117 href='/book' bypasses the cart review page entirely</td><td class="evidence-cell">Jakob's Law · Mental Model</td></tr>
+              <tr class="priority-high"><td class="id-cell">UX-03</td><td><span class="badge badge-high">High</span></td><td><strong>"Book This Package" Broken Funnel</strong> — links to /book, BookingFlow redirects to /services if cart empty; 3+ extra steps</td><td class="evidence-cell">Nielsen #6 Recognition over Recall</td></tr>
+              <tr class="priority-high"><td class="id-cell">UX-04</td><td><span class="badge badge-high">High</span></td><td><strong>No Trust Signals at Checkout</strong> — no reviews, no Stripe security badge, no refund reminder on booking form</td><td class="evidence-cell">Cialdini — Social Proof at decision point</td></tr>
+              <tr class="priority-medium"><td class="id-cell">UX-05</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Cosmetic Progress Indicator</strong> — step indicator updates automatically from formData, not from explicit user action; single scroll page</td><td class="evidence-cell">Nielsen #1 Visibility of System Status</td></tr>
+              <tr class="priority-medium"><td class="id-cell">UX-06</td><td><span class="badge badge-medium">Medium</span></td><td><strong>"How It Works" Ends Without CTA</strong> — convinced users have no affordance to act after the 3-step process section</td><td class="evidence-cell">Don Norman Action Cycle</td></tr>
+              <tr class="priority-low"><td class="id-cell">UX-07</td><td><span class="badge badge-low">Low</span></td><td><strong>Event Type Cards Decorative</strong> — hover effect implies interactivity but motion.div has no href; false affordance</td><td class="evidence-cell">Nielsen #1 + Affordance</td></tr>
+              <tr class="priority-low"><td class="id-cell">UX-08</td><td><span class="badge badge-low">Low</span></td><td><strong>Alternative Date Input Inconsistency</strong> — primary date uses CustomCalendar, alt date uses native input[type=date]</td><td class="evidence-cell">Nielsen #4 Consistency</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Effort</th><th>Impact</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">IMP-UX-01</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Fix deposit % copy</strong> — change "30% deposit" to "15% deposit" in PricingContent.tsx:319 and CTA section; centralise as DEPOSIT_LABEL constant</td></tr>
+              <tr><td class="id-cell">IMP-UX-02</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Fix cart icon href</strong> — Navbar.tsx:117 change href='/book' to href='/cart'</td></tr>
+              <tr><td class="id-cell">IMP-UX-03</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Add-to-cart on pricing CTAs</strong> — convert to client button: addToCart(productId, tier) then router.push('/book'). Or use URL params: href={`/book?product=${id}&tier=${tier}`}</td></tr>
+              <tr><td class="id-cell">IMP-UX-04</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Trust signals on checkout</strong> — add review score, Stripe security badge, and cancellation policy to Summary sidebar in BookingFlow.tsx</td></tr>
+              <tr><td class="id-cell">IMP-UX-06</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>CTA after "How It Works"</strong> — add Browse Packages link with ArrowRight icon at end of section in HomeContent.tsx</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PERFORMANCE -->
+<div class="section" id="performance">
+  <div class="container">
+    <div class="spec-card">
+      <div class="spec-header" onclick="toggleSpec(this)">
+        <div class="spec-emoji">⚡</div>
+        <div class="spec-info">
+          <div class="spec-name">Performance Engineer</div>
+          <div class="spec-domain">Core Web Vitals · Bundle · Caching · Image Loading</div>
+        </div>
+        <div class="score-badge score-green">7.8</div>
+        <div class="spec-toggle">▼</div>
+      </div>
+      <div class="spec-body open">
+        <div class="debate-box">5 rounds consensus: Strong foundation from Next.js 15 automatic optimisations — priority image with fetchpriority=high, self-hosted fonts, GA4 with afterInteractive, 1-year image cache, compress:true, Tailwind v4 CSS tree-shaking. Score reduced by: Framer Motion full bundle (~100KB gzipped) loaded in hero without lazy loading; contain:strict on lazy images creates risk of CLS 0.1–0.3 (single line CSS fix!); hero h1 with opacity:0 and 0.1s delay artificially degrades LCP by 100–400ms; WebVitals.tsx has an incorrect INP formula that over-reports by 20–40%; missing preconnect links for GTM/GA4.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Priority</th><th>Finding</th><th>Metric</th></tr></thead>
+            <tbody>
+              <tr class="priority-critical"><td class="id-cell">PERF-01</td><td><span class="badge badge-critical">Critical</span></td><td><strong>Framer Motion Full Bundle in Hero</strong> — ~100KB gzipped loaded at first paint; TBT +150–250ms on mid-range mobile</td><td>LCP / TBT</td></tr>
+              <tr class="priority-critical"><td class="id-cell">PERF-03</td><td><span class="badge badge-critical">Critical</span></td><td><strong>contain:strict on lazy images</strong> — globals.css:57 causes fill images to collapse to 0px; CLS risk 0.1–0.3 on booth grid</td><td>CLS</td></tr>
+              <tr class="priority-high"><td class="id-cell">PERF-02</td><td><span class="badge badge-high">High</span></td><td><strong>Hero h1 opacity:0 + 0.1s delay</strong> — Lighthouse measures LCP when element becomes visible; adds 100–400ms artificially</td><td>LCP</td></tr>
+              <tr class="priority-medium"><td class="id-cell">PERF-04</td><td><span class="badge badge-medium">Medium</span></td><td><strong>No blur placeholder on images</strong> — users see #0a0a0e background during image load; perceived LCP worse</td><td>LCP</td></tr>
+              <tr class="priority-medium"><td class="id-cell">PERF-05</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Missing preconnect for GTM/GA4/Stripe</strong> — DNS+TCP+TLS adds 200–500ms per domain on first visit</td><td>TTFB</td></tr>
+              <tr class="priority-medium"><td class="id-cell">PERF-06</td><td><span class="badge badge-medium">Medium</span></td><td><strong>INP Formula Bug in WebVitals.tsx:81</strong> — doubles input delay; GA4 INP values over-reported by 20–40%; also typo: ini→inp in performance.ts</td><td>INP</td></tr>
+              <tr class="priority-medium"><td class="id-cell">PERF-07</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Scroll listener without RAF throttle</strong> — Navbar.tsx:29 fires setState at 60–120Hz; re-renders on every scroll event</td><td>INP</td></tr>
+              <tr class="priority-low"><td class="id-cell">PERF-08</td><td><span class="badge badge-low">Low</span></td><td><strong>SVG feTurbulence grain position:fixed</strong> — triggers repaint on scroll; iOS drops from 60fps to 45–55fps</td><td>INP</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Effort</th><th>Impact</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">IMP-PERF-02</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Fix contain:strict</strong> — globals.css:57 change <code>contain: strict</code> to <code>contain: content</code> (2 minutes, eliminates CLS risk)</td></tr>
+              <tr><td class="id-cell">IMP-PERF-03</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Remove hero h1 delay</strong> — set delay:0 on motion.h1 in HomeContent.tsx; add blur placeholder via plaiceholder package</td></tr>
+              <tr><td class="id-cell">IMP-PERF-01</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Lazy-load Framer Motion below fold</strong> — replace hero animations with CSS @keyframes; use next/dynamic for below-fold sections. Saves 60–90KB gzipped</td></tr>
+              <tr><td class="id-cell">IMP-PERF-04</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>Add preconnect links</strong> — in layout.tsx head: preconnect to googletagmanager.com, google-analytics.com; dns-prefetch for js.stripe.com</td></tr>
+              <tr><td class="id-cell">IMP-PERF-05</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>Migrate to web-vitals npm package</strong> — replace manual PerformanceObserver in WebVitals.tsx with <code>onINP, onLCP, onCLS</code> from 'web-vitals/attribution'</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACCESSIBILITY -->
+<div class="section" id="accessibility">
+  <div class="container">
+    <div class="spec-card">
+      <div class="spec-header" onclick="toggleSpec(this)">
+        <div class="spec-emoji">♿</div>
+        <div class="spec-info">
+          <div class="spec-name">Accessibility Expert</div>
+          <div class="spec-domain">WCAG 2.1 AA · ARIA · Screen Readers · Keyboard Navigation</div>
+        </div>
+        <div class="score-badge score-orange">6.8</div>
+        <div class="spec-toggle">▼</div>
+      </div>
+      <div class="spec-body open">
+        <div class="debate-box">5 rounds consensus: Solid foundations — skip link correct, prefers-reduced-motion comprehensive, :focus-visible contrast 9:1+, lang="en-GB", touch targets 44/48px, FormInput fully ARIA-wired (useId/aria-invalid/aria-describedby), Modal with focus restore and Escape handler. Critical deductions: input border contrast 1.39:1 (FAIL 1.4.11, minimum 3:1), three identical "Learn more" links unresolvable by screen reader, missing aria-current on active nav, role=alert combined with aria-live=polite creates undefined behaviour, FormTextarea/FormSelect hint missing id and aria-describedby.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Priority</th><th>Finding</th><th>WCAG SC</th></tr></thead>
+            <tbody>
+              <tr class="priority-critical"><td class="id-cell">A11Y-01</td><td><span class="badge badge-critical">Critical</span></td><td><strong>Input Border Contrast 1.39:1</strong> — FAIL; #2a2a3a on #13131a; minimum required 3:1 for UI components</td><td>1.4.11 Non-text Contrast</td></tr>
+              <tr class="priority-critical"><td class="id-cell">A11Y-02</td><td><span class="badge badge-critical">Critical</span></td><td><strong>3× "Learn more" Identical Link Text</strong> — screen reader users cannot distinguish which booth each link refers to</td><td>2.4.6 Headings &amp; Labels</td></tr>
+              <tr class="priority-critical"><td class="id-cell">A11Y-03</td><td><span class="badge badge-critical">Critical</span></td><td><strong>Missing aria-current="page"</strong> — Navbar active state is CSS-only; screen readers cannot announce current page</td><td>1.3.1 Info &amp; Relationships</td></tr>
+              <tr class="priority-high"><td class="id-cell">A11Y-04</td><td><span class="badge badge-high">High</span></td><td><strong>role=alert + aria-live=polite conflict</strong> — in all 3 form components; role=alert implies assertive; polite creates undefined behaviour</td><td>4.1.3 Status Messages</td></tr>
+              <tr class="priority-high"><td class="id-cell">A11Y-05</td><td><span class="badge badge-high">High</span></td><td><strong>FormTextarea/FormSelect hint without id</strong> — hint text not associated via aria-describedby; screen readers skip it</td><td>1.3.1 · 3.3.2</td></tr>
+              <tr class="priority-high"><td class="id-cell">A11Y-06</td><td><span class="badge badge-high">High</span></td><td><strong>Modal hardcoded id="modal-title"</strong> — duplicate ID if two modals in DOM; aria-labelledby reads wrong title</td><td>4.1.1 Parsing</td></tr>
+              <tr class="priority-medium"><td class="id-cell">A11Y-07</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Cart badge not in aria-label</strong> — static "Shopping cart" label doesn't announce item count to screen readers</td><td>4.1.2 Name Role Value</td></tr>
+              <tr class="priority-medium"><td class="id-cell">A11Y-08</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Sections without aria-labelledby</strong> — major sections lack landmark labels; VoiceOver/NVDA rotor unusable for navigation</td><td>1.3.6 Identify Purpose</td></tr>
+              <tr class="priority-medium"><td class="id-cell">A11Y-09</td><td><span class="badge badge-medium">Medium</span></td><td><strong>★★★★★ Unicode stars read aloud</strong> — NVDA announces "black star black star black star…" without sr-only alternative</td><td>1.1.1 Non-text Content</td></tr>
+              <tr class="priority-low"><td class="id-cell">A11Y-10</td><td><span class="badge badge-low">Low</span></td><td><strong>External links without warning</strong> — target="_blank" links no "opens in new tab" announcement</td><td>3.2.2 On Input</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Effort</th><th>Impact</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">IMP-A11Y-01</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Fix input border contrast</strong> — change border-[#2a2a3a] to border-[#6a6a8a] in FormInput.tsx baseInputClass (contrast ratio 3.34:1 ✓)</td></tr>
+              <tr><td class="id-cell">IMP-A11Y-02</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Descriptive aria-labels on "Learn more" links</strong> — add aria-label={`Learn more about ${booth.name}`}; add aria-hidden="true" on ChevronRight icon</td></tr>
+              <tr><td class="id-cell">IMP-A11Y-03</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Add aria-current="page"</strong> — Navbar.tsx:98 and :159 add aria-current={pathname===link.href ? 'page' : undefined}</td></tr>
+              <tr><td class="id-cell">IMP-A11Y-04</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Remove redundant aria-live=polite</strong> — in all 3 form components; role=alert already implies assertive; removing polite fixes cross-browser behaviour</td></tr>
+              <tr><td class="id-cell">IMP-A11Y-06</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>useId() for modal title</strong> — Modal.tsx: add const titleId = useId(); replace hardcoded 'modal-title' references</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEO -->
+<div class="section" id="seo">
+  <div class="container">
+    <div class="spec-card">
+      <div class="spec-header" onclick="toggleSpec(this)">
+        <div class="spec-emoji">🔍</div>
+        <div class="spec-info">
+          <div class="spec-name">SEO Strategist</div>
+          <div class="spec-domain">Technical SEO · Local SEO · Schema.org · Content Strategy</div>
+        </div>
+        <div class="score-badge score-orange">6.5</div>
+        <div class="spec-toggle">▼</div>
+      </div>
+      <div class="spec-body open">
+        <div class="debate-box">5 rounds consensus: Solid technical foundations — correct canonicals, complete OpenGraph, dynamic sitemap, SSG for city landing pages, FAQPage schema on /pricing, next/image with AVIF/WebP. Score reduced by: blog index page missing (404 on breadcrumb), single blog post not in sitemap, static hardcoded aggregateRating (risk of Google penalty post-2024 review spam updates), Gmail in schema (weak E-E-A-T signal), no BreadcrumbList schema on 9 city pages, zero internal links from homepage to city pages, major content gap (zero event-type landing pages for /weddings, /school-proms etc.).</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Priority</th><th>Finding</th><th>Factor</th></tr></thead>
+            <tbody>
+              <tr class="priority-critical"><td class="id-cell">SEO-01</td><td><span class="badge badge-critical">Critical</span></td><td><strong>/blog page missing (404)</strong> — breadcrumb in blog post links to /blog which doesn't exist; blog post also absent from sitemap.ts</td><td>Technical</td></tr>
+              <tr class="priority-high"><td class="id-cell">SEO-02</td><td><span class="badge badge-high">High</span></td><td><strong>Static aggregateRating</strong> — hardcoded 4.9/48 reviews without verified source link; risk of manual penalty under 2024–2025 review spam updates</td><td>Technical</td></tr>
+              <tr class="priority-high"><td class="id-cell">SEO-03</td><td><span class="badge badge-high">High</span></td><td><strong>No BreadcrumbList on 9 city pages</strong> — no structured data at all on /locations/* pages; misses breadcrumb rich snippets in SERP</td><td>Local</td></tr>
+              <tr class="priority-high"><td class="id-cell">SEO-04</td><td><span class="badge badge-high">High</span></td><td><strong>Zero homepage → city page links</strong> — homepage (highest PageRank) distributes zero link equity to local landing pages</td><td>Links</td></tr>
+              <tr class="priority-high"><td class="id-cell">SEO-05</td><td><span class="badge badge-high">High</span></td><td><strong>Content gap — no event-type pages</strong> — "wedding photo booth hire Essex" (~390/mo), "corporate photo booth hire" (~390/mo) unaddressed by dedicated landing pages</td><td>Content</td></tr>
+              <tr class="priority-medium"><td class="id-cell">SEO-06</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Gmail in schema.org</strong> — FunLoading360@gmail.com in LocalBusiness schema; weak E-E-A-T signal for a .co.uk business</td><td>On-Page</td></tr>
+              <tr class="priority-medium"><td class="id-cell">SEO-07</td><td><span class="badge badge-medium">Medium</span></td><td><strong>No geo-keywords in /pricing and /about metadata</strong> — "Photo Booth Hire | Choose Your Experience" has no location targeting</td><td>On-Page</td></tr>
+              <tr class="priority-medium"><td class="id-cell">SEO-08</td><td><span class="badge badge-medium">Medium</span></td><td><strong>No Service/Offer schema on /pricing</strong> — price rich snippets possible but missing; competitor opportunity</td><td>Technical</td></tr>
+              <tr class="priority-medium"><td class="id-cell">SEO-09</td><td><span class="badge badge-medium">Medium</span></td><td><strong>sameAs missing GBP, Bark.com, Poptop</strong> — Google Business Profile URL absent; weakens Local Pack signals</td><td>Local</td></tr>
+              <tr class="priority-low"><td class="id-cell">SEO-10</td><td><span class="badge badge-low">Low</span></td><td><strong>BlogPosting schema incomplete</strong> — type is 'Article' not 'BlogPosting'; missing required 'image' field (blocks rich result eligibility)</td><td>Technical</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Effort</th><th>Impact</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">IMP-SEO-01</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Create /blog/page.tsx + add to sitemap</strong> — add blog index page with metadata; add /blog and /blog/photo-booth-wedding-guide to sitemap.ts staticPages</td></tr>
+              <tr><td class="id-cell">IMP-SEO-02</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Remove or anchor aggregateRating</strong> — either remove until dynamic reviews API integrated, or add sameAs pointing to Bark.com profile</td></tr>
+              <tr><td class="id-cell">IMP-SEO-03</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>BreadcrumbList + LocalBusiness on city pages</strong> — add JSON-LD in /locations/[city]/page.tsx using existing cityData (lat, lng, name, slug already available)</td></tr>
+              <tr><td class="id-cell">IMP-SEO-04</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Internal links homepage → city pages</strong> — add "Areas We Serve" section in HomeContent.tsx with Link components to /locations/[city]</td></tr>
+              <tr><td class="id-cell">IMP-SEO-07</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>Geo-keywords in /pricing and /about metadata</strong> — add "Essex, Kent &amp; London" to title/description; avoid cannibalization with homepage</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FRONTEND ARCH -->
+<div class="section" id="frontend">
+  <div class="container">
+    <div class="spec-card">
+      <div class="spec-header" onclick="toggleSpec(this)">
+        <div class="spec-emoji">🏗️</div>
+        <div class="spec-info">
+          <div class="spec-name">Frontend Architect</div>
+          <div class="spec-domain">TypeScript · React Patterns · Component Design · Testing</div>
+        </div>
+        <div class="score-badge score-orange">6.8</div>
+        <div class="spec-toggle">▼</div>
+      </div>
+      <div class="spec-body open">
+        <div class="debate-box">5 rounds consensus: Good intent (tokens.ts, Zod, Playwright, Storybook, forwardRef, useId) but a systematic pattern of infrastructure created without being connected. tokens.ts exists but is imported by zero components. cn() is installed but bypassed. Storybook is configured but stories excluded from TypeScript check. Two live ARIA bugs in production (Modal duplicate ID, hintId missing in FormTextarea/FormSelect). Zero unit tests for business logic despite Zod being available. localStorage cast without validation. Score reflects solid base with inconsistent execution.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Priority</th><th>Finding</th><th>Category</th></tr></thead>
+            <tbody>
+              <tr class="priority-critical"><td class="id-cell">ARCH-01</td><td><span class="badge badge-critical">Critical</span></td><td><strong>Modal hardcoded id="modal-title"</strong> — duplicate ID ARIA violation; two modals in DOM = screen reader reads wrong title</td><td>Components</td></tr>
+              <tr class="priority-critical"><td class="id-cell">ARCH-02</td><td><span class="badge badge-critical">Critical</span></td><td><strong>FormTextarea/FormSelect hint missing id</strong> — aria-describedby references non-existent ID; hint not read by screen readers</td><td>Components</td></tr>
+              <tr class="priority-high"><td class="id-cell">ARCH-03</td><td><span class="badge badge-high">High</span></td><td><strong>tokens.ts imported by zero components</strong> — all components hardcode hex values; brand color change requires 4+ file edits instead of 1</td><td>Components</td></tr>
+              <tr class="priority-high"><td class="id-cell">ARCH-04</td><td><span class="badge badge-high">High</span></td><td><strong>cn() bypassed — manual className concatenation</strong> — all 4 components use .filter(Boolean).join(' '); Tailwind class conflicts unresolved</td><td>DX</td></tr>
+              <tr class="priority-high"><td class="id-cell">ARCH-05</td><td><span class="badge badge-high">High</span></td><td><strong>Zero unit tests</strong> — no Vitest/Jest; useCart hook, all Zod schemas, cn(), validatePhone() have zero coverage</td><td>Testing</td></tr>
+              <tr class="priority-high"><td class="id-cell">ARCH-06</td><td><span class="badge badge-high">High</span></td><td><strong>localStorage unsafe JSON cast</strong> — useCart.ts:101 JSON.parse() directly cast to Cart type without Zod validation; corrupted data = crash</td><td>Patterns</td></tr>
+              <tr class="priority-medium"><td class="id-cell">ARCH-07</td><td><span class="badge badge-medium">Medium</span></td><td><strong>E2E selectors in Romanian</strong> — full-flow.spec.ts has selectors like "Adaugă în Coș" that don't match current English UI; likely failing in CI</td><td>Testing</td></tr>
+              <tr class="priority-medium"><td class="id-cell">ARCH-08</td><td><span class="badge badge-medium">Medium</span></td><td><strong>'use client' on hook + forwardRef deprecated</strong> — useCart.ts has 'use client' directive (anti-pattern for hooks); Button/Card use deprecated forwardRef in React 19</td><td>Patterns</td></tr>
+              <tr class="priority-medium"><td class="id-cell">ARCH-09</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Phone regex duplicated in 2 schemas</strong> — identical regex and date validation in BookingSchema and CheckoutSessionSchema</td><td>TypeScript</td></tr>
+              <tr class="priority-medium"><td class="id-cell">ARCH-10</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Missing strictness flags in tsconfig</strong> — noUncheckedIndexedAccess and exactOptionalPropertyTypes absent; stories excluded from type check</td><td>TypeScript</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Effort</th><th>Impact</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">IMP-ARCH-01</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>useId() in Modal.tsx</strong> — replace hardcoded 'modal-title' with const titleId = useId(); update aria-labelledby and id references (3 lines)</td></tr>
+              <tr><td class="id-cell">IMP-ARCH-02</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>FormField wrapper</strong> — extract shared label+hint+error JSX into FormField component; adds hintId consistently to FormTextarea and FormSelect</td></tr>
+              <tr><td class="id-cell">IMP-ARCH-03</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Connect tokens.ts to Tailwind</strong> — import tokens into tailwind.config.ts; add theme.colors.gold, theme.colors.surface etc.; replace hex literals in components</td></tr>
+              <tr><td class="id-cell">IMP-ARCH-04</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>Use cn() in all 4 components</strong> — import {cn} from '@/lib/utils'; replace .filter(Boolean).join(' ') with cn(...) for proper Tailwind class merging</td></tr>
+              <tr><td class="id-cell">IMP-ARCH-05</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Add Vitest + Testing Library</strong> — install vitest, @testing-library/react; add 'test' script; prioritise: useCart hook, Zod schemas, phone regex edge cases</td></tr>
+              <tr><td class="id-cell">IMP-ARCH-06</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Zod validate localStorage cart</strong> — useCart.ts:101 replace direct cast with CartSchema.safeParse(raw); graceful reset on invalid data</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE -->
+<div class="section" id="mobile">
+  <div class="container">
+    <div class="spec-card">
+      <div class="spec-header" onclick="toggleSpec(this)">
+        <div class="spec-emoji">📱</div>
+        <div class="spec-info">
+          <div class="spec-name">Mobile/Responsive Expert</div>
+          <div class="spec-domain">Mobile-First Design · Touch UX · Responsive Layouts · PWA</div>
+        </div>
+        <div class="score-badge score-red">6.2</div>
+        <div class="spec-toggle">▼</div>
+      </div>
+      <div class="spec-body open">
+        <div class="debate-box">5 rounds consensus: Site has a solid responsive base (single-column mobile layout, 48px min CTA touch targets, safe-area-inset-bottom, overflow-x-hidden, focus trap in Navbar, reduced-motion). But 2 critical issues directly affect the mobile conversion path: iOS input zoom (text-sm = 14px triggers Safari auto-zoom on all form inputs) and the broken pricing CTA funnel (same as UX-03). Combined with missing mobile price summary bar, oversized vertical padding (96px on mobile), and zero PWA setup for a site with 70%+ mobile traffic — score stays at 6.2.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Priority</th><th>Finding</th><th>Device</th></tr></thead>
+            <tbody>
+              <tr class="priority-critical"><td class="id-cell">MOB-01</td><td><span class="badge badge-critical">Critical</span></td><td><strong>iOS Safari auto-zoom on inputs</strong> — all inputs use text-sm (14px); iOS zooms viewport on focus; breaks layout, requires manual zoom-out</td><td>Mobile</td></tr>
+              <tr class="priority-critical"><td class="id-cell">MOB-02</td><td><span class="badge badge-critical">Critical</span></td><td><strong>Pricing CTA dead end on mobile</strong> — "Book This Package" → /book → redirect to /services if cart empty; broken journey for 70%+ of traffic</td><td>Mobile</td></tr>
+              <tr class="priority-high"><td class="id-cell">MOB-03</td><td><span class="badge badge-high">High</span></td><td><strong>Submit button not full-width on mobile</strong> — justify-end alignment puts "Proceed to Payment" in hardest-to-reach thumb zone</td><td>Mobile</td></tr>
+              <tr class="priority-high"><td class="id-cell">MOB-04</td><td><span class="badge badge-high">High</span></td><td><strong>Hamburger touch target ~40px</strong> — p-2 + 24px icon = 40px; below WCAG 2.5.8 minimum 44px</td><td>Mobile</td></tr>
+              <tr class="priority-high"><td class="id-cell">MOB-05</td><td><span class="badge badge-high">High</span></td><td><strong>No mobile price summary bar</strong> — summary sidebar only visible at bottom of page (lg:sticky); user fills entire form without seeing total price</td><td>Mobile</td></tr>
+              <tr class="priority-medium"><td class="id-cell">MOB-06</td><td><span class="badge badge-medium">Medium</span></td><td><strong>No autocomplete attributes</strong> — name, email, phone, venue inputs missing autoComplete; adds 3–5 min extra form completion time on mobile</td><td>Mobile</td></tr>
+              <tr class="priority-medium"><td class="id-cell">MOB-07</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Excessive vertical padding on mobile</strong> — py-24 (96px) on all homepage sections; consumes full iPhone SE screen height in padding alone</td><td>Mobile</td></tr>
+              <tr class="priority-medium"><td class="id-cell">MOB-08</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Zero PWA setup</strong> — no manifest.json, no theme-color, no service worker for 70%+ mobile traffic</td><td>Mobile</td></tr>
+              <tr class="priority-medium"><td class="id-cell">MOB-09</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Mobile menu appears instantly (no animation)</strong> — conditional rendering with no AnimatePresence; Framer Motion already installed but unused in Navbar</td><td>Mobile</td></tr>
+              <tr class="priority-low"><td class="id-cell">MOB-10</td><td><span class="badge badge-low">Low</span></td><td><strong>Cart delete button ~36–40px</strong> — p-2 + w-5 icon; sub-WCAG touch target; accidental taps cause cart abandonment</td><td>Mobile</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Effort</th><th>Impact</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">IMP-MOB-01</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Fix iOS zoom</strong> — globals.css: <code>input,select,textarea{font-size:16px} @media(min-width:641px){…{font-size:0.875rem}}</code> (10 minutes)</td></tr>
+              <tr><td class="id-cell">IMP-MOB-03</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Submit button w-full on mobile</strong> — BookingFlow.tsx: change justify-end div to flex; add w-full lg:w-auto on submit button</td></tr>
+              <tr><td class="id-cell">IMP-MOB-04</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Sticky mobile price bar</strong> — create MobilePriceSummaryBar component: fixed bottom-0, shows cart total + "Proceed to Payment" button, respects safe-area-inset-bottom</td></tr>
+              <tr><td class="id-cell">IMP-MOB-05</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>Add autocomplete attrs</strong> — name/email/phone/venue inputs: autoComplete='name','email','tel','address-line1'; add enterKeyHint='next'/'done'</td></tr>
+              <tr><td class="id-cell">IMP-MOB-06</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>PWA basics</strong> — create /public/manifest.json with name, theme_color:#f5a623, background_color:#0a0a0e; add &lt;link rel=manifest&gt; and &lt;meta name=theme-color&gt; in layout.tsx</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BRAND -->
+<div class="section" id="brand">
+  <div class="container">
+    <div class="spec-card">
+      <div class="spec-header" onclick="toggleSpec(this)">
+        <div class="spec-emoji">✨</div>
+        <div class="spec-info">
+          <div class="spec-name">Brand &amp; Visual Designer</div>
+          <div class="spec-domain">Brand Consistency · Design System · Typography · Visual Identity</div>
+        </div>
+        <div class="score-badge score-red">6.2</div>
+        <div class="spec-toggle">▼</div>
+      </div>
+      <div class="spec-body open">
+        <div class="debate-box">5 rounds consensus: Site demonstrates visual competence — consistent dark theme, correct typographic pair (Inter + Playfair Display), gold accent applied uniformly, coherent Framer Motion animations via variants.ts. But at deeper inspection: tokens.ts is decorative dead code (no component imports it), there's an unresolved "Fun vs Premium" brand tension, the logo is a generic Lucide Camera icon, multi-colour event cards fragment the gold palette, and there's a text-primary mismatch (#ffffff vs #f0ede8) between files. At £229–£499 price points, these inconsistencies undermine the luxury positioning.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Priority</th><th>Finding</th><th>Aspect</th></tr></thead>
+            <tbody>
+              <tr class="priority-critical"><td class="id-cell">BRAND-01</td><td><span class="badge badge-critical">Critical</span></td><td><strong>tokens.ts dead code</strong> — complete design system defined but zero component imports it; hex values hardcoded everywhere</td><td>Color</td></tr>
+              <tr class="priority-critical"><td class="id-cell">BRAND-02</td><td><span class="badge badge-critical">Critical</span></td><td><strong>"Fun" vs "Premium" brand split</strong> — "goes viral", "Jaw-dropping" vs "Timeless Elegance", Playfair Display; incompatible registers for wedding/corporate clients paying £499+</td><td>Tone</td></tr>
+              <tr class="priority-high"><td class="id-cell">BRAND-03</td><td><span class="badge badge-high">High</span></td><td><strong>Generic Lucide Camera logo</strong> — same SVG icon used on millions of websites; no brand mark differentiation; no custom favicon</td><td>Iconography</td></tr>
+              <tr class="priority-high"><td class="id-cell">BRAND-04</td><td><span class="badge badge-high">High</span></td><td><strong>Multi-colour fragmentation</strong> — event cards use rose-400, blue-400, amber-400, emerald-400; booth cards use purple/amber/emerald gradients; breaks the gold palette</td><td>Color</td></tr>
+              <tr class="priority-high"><td class="id-cell">BRAND-05</td><td><span class="badge badge-high">High</span></td><td><strong>Text primary inconsistency</strong> — globals.css defines --fg:#f0ede8 (warm white) but layout.tsx and components use text-white (#ffffff); perceptible on OLED screens</td><td>Color</td></tr>
+              <tr class="priority-medium"><td class="id-cell">BRAND-06</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Typography scale stops at 3xl in tokens</strong> — site uses text-7xl but tokens.ts only defines up to 3xl (1.875rem); no lineHeight/letterSpacing tokens for display headings</td><td>Typography</td></tr>
+              <tr class="priority-medium"><td class="id-cell">BRAND-07</td><td><span class="badge badge-medium">Medium</span></td><td><strong>CTA font-weight inconsistent</strong> — Book Now uses font-bold in some places, font-semibold in others (Navbar desktop vs mobile)</td><td>Typography</td></tr>
+              <tr class="priority-medium"><td class="id-cell">BRAND-08</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Grain texture opacity 0.03 imperceptible</strong> — texture intended for premium feel is invisible on most screens; doesn't justify technical cost</td><td>Color</td></tr>
+              <tr class="priority-medium"><td class="id-cell">BRAND-09</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Spacing tokens incomplete</strong> — py-24/32 (96px/128px section padding) not in tokens.ts; all section spacing decisions are ad-hoc</td><td>Spacing</td></tr>
+              <tr class="priority-low"><td class="id-cell">BRAND-10</td><td><span class="badge badge-low">Low</span></td><td><strong>Animation timing dispersed</strong> — 3 different animation durations (0.5/0.6/0.7s) defined inline in same viewport; variants.ts not consistently used</td><td>Animation</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Effort</th><th>Impact</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">IMP-BRAND-02</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Copy rewrite toward premium</strong> — replace "goes viral", "Jaw-dropping", "Show-Stopper" with "cinematic", "crafted to last", "statement piece"; keep excellent tagline "Your Celebration, Captured Forever"</td></tr>
+              <tr><td class="id-cell">IMP-BRAND-04</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Unify event card colours on gold palette</strong> — HomeContent.tsx: change rose-400/blue-400/amber-400/emerald-400 to text-[#f5a623]/bg-[#f5a623]/10/border-[#f5a623]/20; differentiate by icon only</td></tr>
+              <tr><td class="id-cell">IMP-BRAND-01</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Adopt tokens.ts via CSS custom properties</strong> — add all token values as CSS vars in globals.css :root; use var(--color-gold) etc. in components; Tailwind @theme block already partially does this — extend it</td></tr>
+              <tr><td class="id-cell">IMP-BRAND-03</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Custom logo mark</strong> — design F360 SVG monogram in Playfair Display; save as /public/logo.svg and /public/favicon.svg; add &lt;link rel=icon href=/favicon.svg&gt; in layout.tsx</td></tr>
+              <tr><td class="id-cell">IMP-BRAND-05</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>Standardise text primary on #f0ede8</strong> — update tokens.ts textPrimary; replace text-white with text-foreground across layout.tsx, HomeContent.tsx, Navbar.tsx, components</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BACKEND/API -->
+<div class="section" id="api">
+  <div class="container">
+    <div class="spec-card">
+      <div class="spec-header" onclick="toggleSpec(this)">
+        <div class="spec-emoji">🔧</div>
+        <div class="spec-info">
+          <div class="spec-name">Backend/API Architect</div>
+          <div class="spec-domain">API Design · Error Handling · Data Models · Webhooks · Reliability</div>
+        </div>
+        <div class="score-badge score-red">6.4</div>
+        <div class="spec-toggle">▼</div>
+      </div>
+      <div class="spec-body open">
+        <div class="debate-box">5 rounds consensus: Backend has a solid foundation — correct Stripe webhook signature verification (using request.text() not json()), rate limiting on all endpoints, Zod validation, honeypot, exponential backoff on email retry, fail-open Calendar design. Critical deductions: TOCTOU race condition between webhook and verify-session handlers (both can read 'pending', both update to 'completed', both send emails in 0–30s window); totalPrice accepted from client enables price manipulation; upsell price map duplicated in 3 files; booking ref is non-unique; Redis as sole persistent store with no audit trail for pending→expired transitions.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Priority</th><th>Finding</th><th>Category</th></tr></thead>
+            <tbody>
+              <tr class="priority-critical"><td class="id-cell">API-01</td><td><span class="badge badge-critical">Critical</span></td><td><strong>TOCTOU race condition</strong> — webhook and verify-session both non-atomically read 'pending', update to 'completed', send emails; duplicate emails and n8n triggers possible</td><td>Reliability</td></tr>
+              <tr class="priority-critical"><td class="id-cell">API-02</td><td><span class="badge badge-critical">Critical</span></td><td><strong>totalPrice from client in Stripe session</strong> — same vulnerability as SEC-01; amountPaid = calculateDeposit(data.totalPrice) where data comes from request body</td><td>Security</td></tr>
+              <tr class="priority-high"><td class="id-cell">API-03</td><td><span class="badge badge-high">High</span></td><td><strong>Upsell price map in 3 files</strong> — identical map in book/route.ts, webhooks/stripe/route.ts, verify-session/route.ts; price change requires 3-file update</td><td>Design</td></tr>
+              <tr class="priority-high"><td class="id-cell">API-04</td><td><span class="badge badge-high">High</span></td><td><strong>Non-unique booking ref</strong> — generateBookingRef uses name+date; same client same day = collision; ref regenerated each time, not stored in BookingRecord</td><td>Design</td></tr>
+              <tr class="priority-high"><td class="id-cell">API-05</td><td><span class="badge badge-high">High</span></td><td><strong>Confirmation email sent before payment</strong> — /api/book sends "Booking Confirmed" + "Payment Confirmed: £X received" before any Stripe transaction</td><td>Design</td></tr>
+              <tr class="priority-high"><td class="id-cell">API-06</td><td><span class="badge badge-high">High</span></td><td><strong>Redis as sole data store</strong> — 30-day TTL; no secondary index; pending bookings expire silently; no business reporting possible</td><td>Reliability</td></tr>
+              <tr class="priority-medium"><td class="id-cell">API-07</td><td><span class="badge badge-medium">Medium</span></td><td><strong>No correlation IDs or structured logging</strong> — console.error strings with no request context; impossible to correlate webhook + verify-session logs</td><td>Observability</td></tr>
+              <tr class="priority-medium"><td class="id-cell">API-08</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Calendar endpoint no caching</strong> — Google Calendar API called on every request; cachedAt in response is cosmetic only</td><td>Performance</td></tr>
+              <tr class="priority-medium"><td class="id-cell">API-09</td><td><span class="badge badge-medium">Medium</span></td><td><strong>productIds not whitelisted in calendar endpoint</strong> — arbitrary strings accepted and passed to Google Calendar lookup</td><td>Security</td></tr>
+              <tr class="priority-low"><td class="id-cell">API-10</td><td><span class="badge badge-low">Low</span></td><td><strong>triggerQuoteGeneration is an empty stub</strong> — function body is just console.log; called from production booking flow</td><td>Design</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Effort</th><th>Impact</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">IMP-API-01</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Idempotency with Redis SET NX</strong> — add markSessionProcessed(sessionId): SET 'processed:{id}' 1 NX EX 86400; return false if already exists; skip all operations in both handlers if false</td></tr>
+              <tr><td class="id-cell">IMP-API-02</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Server-side price calculation</strong> — calculateServerPrice(productId, tier, upsells) in lib/services.ts; throw if productId invalid; use result instead of data.totalPrice in Stripe session</td></tr>
+              <tr><td class="id-cell">IMP-API-03</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>Centralise UPSELL_MAP</strong> — move to lib/constants.ts; import in all 3 route handlers; single price source of truth</td></tr>
+              <tr><td class="id-cell">IMP-API-07</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>Structured logging with requestId</strong> — const requestId = crypto.randomUUID(); log JSON with {level, msg, requestId, ts, sessionId}; add X-Request-ID response header</td></tr>
+              <tr><td class="id-cell">IMP-API-08</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>Redis cache for calendar availability</strong> — key: cal:{year}:{month}:{productIds.sort().join(',')}; TTL: 300s; call getUnavailableDates only on cache miss</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CRO -->
+<div class="section" id="cro">
+  <div class="container">
+    <div class="spec-card">
+      <div class="spec-header" onclick="toggleSpec(this)">
+        <div class="spec-emoji">📈</div>
+        <div class="spec-info">
+          <div class="spec-name">CRO Specialist</div>
+          <div class="spec-domain">Conversion Funnel · Trust Signals · Pricing Psychology · Growth</div>
+        </div>
+        <div class="score-badge score-red">6.2</div>
+        <div class="spec-toggle">▼</div>
+      </div>
+      <div class="spec-body open">
+        <div class="debate-box">5 rounds consensus: Remarkable technical foundation for CRO — A/B testing with 4 active tests, GA4 with 10+ custom events, Stripe integration, Google Calendar for real availability, 9-stage funnel tracking. Base score 8.5 reduced by: deposit bug (-0.8), complete funnel break on pricing→book route (-0.5), cart abandonment recovery entirely unimplemented (getAbandonedCartsForRecovery() always returns []) (-0.5), superficial social proof with all 5-star reviews outdated by 10–16 months (-0.3), Gmail email reducing corporate credibility (-0.2). With critical fixes applied, score reaches 7.8–8.2 and conversions can increase 20–30%.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Priority</th><th>Finding</th><th>Funnel Stage</th></tr></thead>
+            <tbody>
+              <tr class="priority-critical"><td class="id-cell">CRO-01</td><td><span class="badge badge-critical">Critical</span></td><td><strong>Deposit 30% vs 15%</strong> — PricingContent.tsx:319 shows 30%, constants.ts defines 0.15, booking calculates 15%, FAQ says 15%; 100% discrepancy at decision moment</td><td>Decision</td></tr>
+              <tr class="priority-critical"><td class="id-cell">CRO-02</td><td><span class="badge badge-critical">Critical</span></td><td><strong>Pricing → Book → Services loop</strong> — every "Book This Package" CTA on pricing page results in redirect back to services; paid traffic to /book converted to 0%</td><td>Decision</td></tr>
+              <tr class="priority-critical"><td class="id-cell">CRO-03</td><td><span class="badge badge-critical">Critical</span></td><td><strong>Cart abandonment recovery unimplemented</strong> — cartAbandonment.ts getAbandonedCartsForRecovery() always returns []; TODO comment; 60–70% abandonment rate with zero recovery</td><td>Consideration</td></tr>
+              <tr class="priority-high"><td class="id-cell">CRO-04</td><td><span class="badge badge-high">High</span></td><td><strong>Zero post-booking upsells</strong> — thank-you page has no upsell offers; Guest Book (£40)/Highlight Reel (£79) not offered at peak emotional satisfaction moment</td><td>Post-Purchase</td></tr>
+              <tr class="priority-high"><td class="id-cell">CRO-05</td><td><span class="badge badge-high">High</span></td><td><strong>Social proof: all 5★, outdated 10–16 months</strong> — 8 reviews all perfect; none link to Bark.com/Poptop profiles; dated Jan–May 2025 (now April 2026)</td><td>Awareness</td></tr>
+              <tr class="priority-high"><td class="id-cell">CRO-06</td><td><span class="badge badge-high">High</span></td><td><strong>Addon mismatch: pricing page shows 5, booking has 3</strong> — "Custom Overlay Design" (£50) and "Backdrop Upgrade" (£60) visible on pricing but unavailable at checkout</td><td>Decision</td></tr>
+              <tr class="priority-high"><td class="id-cell">CRO-07</td><td><span class="badge badge-high">High</span></td><td><strong>Homepage price anchor wrong</strong> — 360 Slow Motion shown "from £499" on homepage; actual minimum price in services.ts is £280; 78% discrepancy erodes trust</td><td>Awareness</td></tr>
+              <tr class="priority-medium"><td class="id-cell">CRO-08</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Gmail business email</strong> — FunLoading360@gmail.com in all customer-facing touch points; corporate clients associate with informal/micro businesses</td><td>Consideration</td></tr>
+              <tr class="priority-medium"><td class="id-cell">CRO-09</td><td><span class="badge badge-medium">Medium</span></td><td><strong>Generic urgency not using real calendar data</strong> — "Dates fill up fast" is vague; Google Calendar integration exists but unused for specific "2 Saturdays left in May" messaging</td><td>Decision</td></tr>
+              <tr class="priority-medium"><td class="id-cell">CRO-10</td><td><span class="badge badge-medium">Medium</span></td><td><strong>hashEmail() returns plaintext</strong> — analytics.ts:345 returns email as-is; sends real email to GA4 as 'email_sha256'; GDPR risk + degraded Google Ads Enhanced Conversions</td><td>Awareness</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Effort</th><th>Impact</th><th>Action</th><th>Estimated Lift</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">IMP-CRO-01</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Fix deposit % copy</strong> — PricingContent.tsx:319 + CTA section: "30%" → "15%"; add DEPOSIT_LABEL to constants.ts; grep for any other "30%" occurrences</td><td style="font-size:12px;color:var(--low)">+8–12% conversions</td></tr>
+              <tr><td class="id-cell">IMP-CRO-02</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Fix pricing→book funnel</strong> — URL params: href={`/book?product=${id}&tier=${tier}`}; BookingFlow reads params, calls addToCart() before redirect check; or remove redirect entirely</td><td style="font-size:12px;color:var(--low)">+15–25% funnel completion</td></tr>
+              <tr><td class="id-cell">IMP-CRO-03</td><td><span class="badge badge-effort-high">High</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Implement cart abandonment recovery</strong> — implement getAbandonedCartsForRecovery() with Redis ZADD index; Vercel Cron every 2h; send recovery email via Resend; capture email early via optional "Save cart" micro-form</td><td style="font-size:12px;color:var(--low)">+5–15% revenue recovery</td></tr>
+              <tr><td class="id-cell">IMP-CRO-04</td><td><span class="badge badge-effort-med">Medium</span></td><td><span class="badge badge-high">High</span></td><td class="impl-cell"><strong>Post-booking upsells on thank-you page</strong> — add "Complete Your Experience" section; Guest Book (£36, 10% off 24h) + Highlight Reel (£71, 10% off); API route to add upsell to existing booking</td><td style="font-size:12px;color:var(--low)">+8–15% revenue/booking</td></tr>
+              <tr><td class="id-cell">IMP-CRO-07</td><td><span class="badge badge-effort-low">Low</span></td><td><span class="badge badge-medium">Medium</span></td><td class="impl-cell"><strong>Fix homepage price anchors</strong> — use getMinPriceForProduct() from services.ts to generate dynamic "from £280" prices instead of hardcoded £499/£379/£229</td><td style="font-size:12px;color:var(--low)">−3–5% bounce rate</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CROSS CUTTING -->
+<div class="section" id="crosscutting">
+  <div class="container">
+    <div class="section-title">Cross-Cutting <span>Concerns</span></div>
+    <div class="section-sub">Issues confirmed independently by multiple specialists — highest confidence findings</div>
+
+    <div class="cross-item">
+      <div class="cross-title">💰 Price Manipulation — Client-Controlled Stripe Amount</div>
+      <div style="font-size:13px;color:var(--text2)">totalPrice sent from browser is used directly to create Stripe checkout session. Server never validates against catalog. Attacker pays £0.30 for £500 service. Confirmed by 2 specialists independently through different analysis paths.</div>
+      <div class="cross-refs"><span class="cross-ref">SEC-01</span><span class="cross-ref">API-02</span><span class="cross-ref badge badge-critical" style="border-radius:4px">CRITICAL</span></div>
+    </div>
+
+    <div class="cross-item">
+      <div class="cross-title">🔄 Deposit Inconsistency: 30% vs 15%</div>
+      <div style="font-size:13px;color:var(--text2)">PricingContent.tsx:319 displays "30% deposit required" while constants.ts defines 0.15, FAQ says 15%, and BookingFlow calculates 15%. Destroys user trust at the critical payment decision moment. Confirmed by 3 specialists.</div>
+      <div class="cross-refs"><span class="cross-ref">UX-01</span><span class="cross-ref">CRO-01</span><span class="cross-ref">API-05</span><span class="cross-ref badge badge-critical" style="border-radius:4px">CRITICAL</span></div>
+    </div>
+
+    <div class="cross-item">
+      <div class="cross-title">🔁 Broken Pricing → Booking Funnel Loop</div>
+      <div style="font-size:13px;color:var(--text2)">"Book This Package" links to /book. BookingFlow redirects to /services if cart is empty. Result: 100% of users from pricing page are looped back to services. Confirmed by 3 specialists from UX, mobile, and CRO perspectives.</div>
+      <div class="cross-refs"><span class="cross-ref">UX-03</span><span class="cross-ref">MOB-02</span><span class="cross-ref">CRO-02</span><span class="cross-ref badge badge-critical" style="border-radius:4px">CRITICAL</span></div>
+    </div>
+
+    <div class="cross-item">
+      <div class="cross-title">🎨 Design System Completely Disconnected</div>
+      <div style="font-size:13px;color:var(--text2)">tokens.ts defines colors, spacing, typography, shadows — but zero components import it. All components hardcode hex values. Brand color change requires editing 4+ files. cn() utility installed but unused in design system components.</div>
+      <div class="cross-refs"><span class="cross-ref">ARCH-03</span><span class="cross-ref">ARCH-04</span><span class="cross-ref">BRAND-01</span><span class="cross-ref badge badge-high" style="border-radius:4px">HIGH</span></div>
+    </div>
+
+    <div class="cross-item">
+      <div class="cross-title">🔑 Modal Hardcoded id="modal-title" — Duplicate ID Bug in Production</div>
+      <div style="font-size:13px;color:var(--text2)">Modal.tsx uses a hardcoded string as ARIA id. If two modal instances exist in DOM, screen readers read wrong title. Fix is 3 lines of code (useId()). Confirmed by both accessibility and architecture audits.</div>
+      <div class="cross-refs"><span class="cross-ref">A11Y-06</span><span class="cross-ref">ARCH-01</span><span class="cross-ref badge badge-critical" style="border-radius:4px">CRITICAL</span></div>
+    </div>
+
+    <div class="cross-item">
+      <div class="cross-title">📧 Gmail as Business Email — E-E-A-T and Credibility</div>
+      <div style="font-size:13px;color:var(--text2)">FunLoading360@gmail.com used in schema.org LocalBusiness, booking forms, thank-you page, and API alerts. The .co.uk domain exists but email is on Gmail consumer service. Flagged by both SEO (E-E-A-T signal) and CRO (corporate client trust).</div>
+      <div class="cross-refs"><span class="cross-ref">SEO-06</span><span class="cross-ref">CRO-08</span><span class="cross-ref badge badge-medium" style="border-radius:4px">MEDIUM</span></div>
+    </div>
+
+    <div class="cross-item">
+      <div class="cross-title">📨 Webhook Race Condition → Duplicate Emails</div>
+      <div style="font-size:13px;color:var(--text2)">Stripe webhook and /api/checkout/verify-session both non-atomically check booking.status and send confirmation emails. In the 0–30s window where Stripe delivers webhook, both handlers can process the same booking. Redis SET NX fixes this in 30 minutes.</div>
+      <div class="cross-refs"><span class="cross-ref">SEC-03</span><span class="cross-ref">API-01</span><span class="cross-ref">SEC-09</span><span class="cross-ref badge badge-high" style="border-radius:4px">HIGH</span></div>
+    </div>
+
+    <div class="cross-item">
+      <div class="cross-title">📊 WebVitals INP Formula Bug — Monitoring Data Unreliable</div>
+      <div style="font-size:13px;color:var(--text2)">WebVitals.tsx:81 calculates INP as processingStart-startTime+duration which doubles the input delay component. Real INP is just duration. GA4 data over-reports INP by 20–40%, potentially causing false alarms and wrong optimization decisions. Also: typo ini→inp in performance.ts.</div>
+      <div class="cross-refs"><span class="cross-ref">PERF-06</span><span class="cross-ref badge badge-medium" style="border-radius:4px">MEDIUM</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIORITIZATION MATRIX -->
+<div class="section" id="matrix">
+  <div class="container">
+    <div class="section-title">Prioritization <span>Matrix</span></div>
+    <div class="section-sub">Impact vs Effort — where to focus first</div>
+
+    <div class="matrix-wrap" style="max-width:800px;margin:0 auto">
+      <div class="matrix-axis-y" style="height:400px">IMPACT →</div>
+      <div>
+        <div class="matrix">
+          <!-- HIGH IMPACT, LOW EFFORT = QUICK WINS -->
+          <div class="matrix-cell" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2)">
+            <div class="matrix-label" style="color:var(--low)">⚡ Quick Wins<br><span style="font-weight:400;font-size:10px">High Impact · Low Effort</span></div>
+            <div class="matrix-items">
+              <div class="matrix-item">Fix deposit 30% → 15% (15 min)</div>
+              <div class="matrix-item">Fix contain:strict CSS bug (2 min)</div>
+              <div class="matrix-item">Webhook idempotency Redis NX (30 min)</div>
+              <div class="matrix-item">Cart icon href → /cart (5 min)</div>
+              <div class="matrix-item">iOS font-size 16px fix (10 min)</div>
+              <div class="matrix-item">aria-current, aria-label, role=alert (1h)</div>
+              <div class="matrix-item">useId() in Modal.tsx (5 min)</div>
+              <div class="matrix-item">preconnect links in layout.tsx (5 min)</div>
+            </div>
+          </div>
+          <!-- HIGH IMPACT, HIGH EFFORT = STRATEGIC -->
+          <div class="matrix-cell" style="background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.2)">
+            <div class="matrix-label" style="color:var(--high)">🎯 Strategic<br><span style="font-weight:400;font-size:10px">High Impact · High Effort</span></div>
+            <div class="matrix-items">
+              <div class="matrix-item">Server-side price validation (Stripe)</div>
+              <div class="matrix-item">Fix Pricing→Book funnel (URL params)</div>
+              <div class="matrix-item">Implement cart abandonment recovery</div>
+              <div class="matrix-item">Connect tokens.ts to Tailwind</div>
+              <div class="matrix-item">Add Vitest unit tests</div>
+              <div class="matrix-item">Mobile sticky price summary bar</div>
+              <div class="matrix-item">Post-booking upsells (thank-you page)</div>
+              <div class="matrix-item">Custom logo mark / favicon</div>
+            </div>
+          </div>
+          <!-- LOW IMPACT, LOW EFFORT = FILL-INS -->
+          <div class="matrix-cell" style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2)">
+            <div class="matrix-label" style="color:var(--blue)">🔧 Fill-ins<br><span style="font-weight:400;font-size:10px">Low Impact · Low Effort</span></div>
+            <div class="matrix-items">
+              <div class="matrix-item">Replace .filter().join() with cn()</div>
+              <div class="matrix-item">Remove 'use client' from useCart.ts</div>
+              <div class="matrix-item">Replace .env.example real data</div>
+              <div class="matrix-item">Add COOP/CORP headers</div>
+              <div class="matrix-item">Fix BlogPosting schema type</div>
+              <div class="matrix-item">Grain texture opacity 0.03→0.05</div>
+              <div class="matrix-item">Mobile menu animation (AnimatePresence)</div>
+              <div class="matrix-item">Fix E2E Romanian selectors</div>
+            </div>
+          </div>
+          <!-- LOW IMPACT, HIGH EFFORT = RECONSIDER -->
+          <div class="matrix-cell" style="background:rgba(107,114,128,0.06);border:1px solid rgba(107,114,128,0.2)">
+            <div class="matrix-label" style="color:var(--text3)">⏸ Reconsider<br><span style="font-weight:400;font-size:10px">Low Impact · High Effort</span></div>
+            <div class="matrix-items">
+              <div class="matrix-item">Full PII encryption in Redis (vs. minimise)</div>
+              <div class="matrix-item">Full PWA with service worker</div>
+              <div class="matrix-item">Referral program</div>
+              <div class="matrix-item">Event-type landing pages (/weddings etc.)</div>
+              <div class="matrix-item">Blog content strategy (4–5 articles)</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+          <div class="matrix-axis-x">LOW EFFORT</div>
+          <div class="matrix-axis-x">HIGH EFFORT</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACTION PLAN -->
+<div class="section" id="plan">
+  <div class="container">
+    <div class="section-title">30 / 60 / 90-Day <span>Action Plan</span></div>
+    <div class="section-sub">Prioritised roadmap from quick wins to strategic improvements</div>
+    <div class="grid-3">
+      <div class="timeline-col">
+        <div class="timeline-header" style="border-left:3px solid var(--critical)">
+          🔴 Days 1–30
+          <div class="timeline-days">Critical fixes &amp; quick wins</div>
+        </div>
+        <div class="timeline-items">
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--critical)"></div>
+            <div><div class="timeline-text">Fix deposit % — change "30%" to "15%" in PricingContent.tsx:319 and CTA</div><div class="timeline-tag">IMP-CRO-01 · 15 min · +8–12% conversion</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--critical)"></div>
+            <div><div class="timeline-text">Fix contain:strict in globals.css:57 → contain:content</div><div class="timeline-tag">IMP-PERF-02 · 2 min · eliminates CLS risk</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--critical)"></div>
+            <div><div class="timeline-text">Webhook idempotency — Redis SET NX on processed:{sessionId}</div><div class="timeline-tag">IMP-API-01 · 30 min · prevents duplicate emails</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--critical)"></div>
+            <div><div class="timeline-text">Server-side price validation in create-session route</div><div class="timeline-tag">IMP-SEC-01 · 2h · prevents £0.30 payments</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Fix cart icon href → /cart in Navbar.tsx:117</div><div class="timeline-tag">IMP-UX-02 · 5 min</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">iOS font-size fix — 16px on inputs in globals.css</div><div class="timeline-tag">IMP-MOB-01 · 10 min</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Fix 3 critical a11y: border contrast, aria-label on links, aria-current</div><div class="timeline-tag">IMP-A11Y-01/02/03 · 1h</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Modal useId() fix — 3 line change</div><div class="timeline-tag">IMP-ARCH-01 · 5 min</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Fix homepage price anchors from £499 → £280 using services.ts</div><div class="timeline-tag">IMP-CRO-07 · 30 min</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Remove unsafe-eval from CSP in next.config.ts</div><div class="timeline-tag">IMP-SEC-02 · 1h with testing</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Add preconnect links for GTM/GA4 in layout.tsx</div><div class="timeline-tag">IMP-PERF-04 · 5 min</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Create /blog/page.tsx + add to sitemap.ts</div><div class="timeline-tag">IMP-SEO-01 · 1h</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-col">
+        <div class="timeline-header" style="border-left:3px solid var(--high)">
+          🟠 Days 31–60
+          <div class="timeline-days">Funnel fixes &amp; strategic improvements</div>
+        </div>
+        <div class="timeline-items">
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--critical)"></div>
+            <div><div class="timeline-text">Fix Pricing → Book funnel with URL params: /book?product=&amp;tier=</div><div class="timeline-tag">IMP-CRO-02 · 1 day · +15–25% funnel</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Add trust signals to BookingFlow Summary sidebar</div><div class="timeline-tag">IMP-UX-04 · 2h</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Mobile sticky price summary bar in BookingFlow</div><div class="timeline-tag">IMP-MOB-04 · 1 day</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Connect tokens.ts to Tailwind config; replace hex literals in components</div><div class="timeline-tag">IMP-ARCH-03 · 1 day</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">BreadcrumbList + LocalBusiness schema on 9 city pages</div><div class="timeline-tag">IMP-SEO-03 · 3h</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Add "Areas We Serve" section on homepage with city page links</div><div class="timeline-tag">IMP-SEO-04 · 2h</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Sync addons: add Custom Overlay (£50) and Backdrop Upgrade (£60) to constants.ts + booking flow</div><div class="timeline-tag">IMP-CRO-06 · 30 min</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Premium copy rewrite — remove "goes viral" tone</div><div class="timeline-tag">IMP-BRAND-02 · 2h</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Replace Framer Motion hero with CSS keyframes; lazy load below-fold</div><div class="timeline-tag">IMP-PERF-01 · 1 day</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Migrate WebVitals.tsx to web-vitals npm package (fix INP formula)</div><div class="timeline-tag">IMP-PERF-05 · 1h</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Add Vitest + Testing Library; write tests for useCart hook and Zod schemas</div><div class="timeline-tag">IMP-ARCH-05 · 1 day</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Implement SHA256 hashing in hashEmail() for GDPR compliance</div><div class="timeline-tag">IMP-CRO-10 · 30 min</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-col">
+        <div class="timeline-header" style="border-left:3px solid var(--low)">
+          🟢 Days 61–90
+          <div class="timeline-days">Growth, brand &amp; long-term improvements</div>
+        </div>
+        <div class="timeline-items">
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Implement cart abandonment recovery emails (Vercel Cron + Resend)</div><div class="timeline-tag">IMP-CRO-03 · 2 days · +5–15% revenue</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Post-booking upsells on thank-you page with 24h time-limited discount</div><div class="timeline-tag">IMP-CRO-04 · 1 day · +8–15% AOV</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Create custom F360 SVG logo mark + favicon</div><div class="timeline-tag">IMP-BRAND-03 · design + 2h dev</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--high)"></div>
+            <div><div class="timeline-text">Unify event card colours on gold palette in HomeContent.tsx</div><div class="timeline-tag">IMP-BRAND-04 · 30 min</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">PWA manifest.json + theme-color + apple-touch-icon</div><div class="timeline-tag">IMP-MOB-06 · 2h</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Real urgency from Google Calendar: "2 Saturdays left in May" messaging</div><div class="timeline-tag">IMP-CRO-09 · 1 day</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Business email migration to hello@funloading360.co.uk</div><div class="timeline-tag">IMP-SEO-06 / IMP-CRO-08 · 2h</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Service/Offer schema on /pricing page (price rich snippets)</div><div class="timeline-tag">IMP-SEO-08 · 2h</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--medium)"></div>
+            <div><div class="timeline-text">Minimise Redis PII: store only IDs, retrieve sensitive data from Stripe API</div><div class="timeline-tag">IMP-SEC-04 · 1 day</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--low)"></div>
+            <div><div class="timeline-text">Event-type landing pages: /weddings, /school-proms (SEO &amp; conversion)</div><div class="timeline-tag">IMP-SEO-05 · 2–3 days</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--low)"></div>
+            <div><div class="timeline-text">Add @next/bundle-analyzer for ongoing bundle visibility in CI</div><div class="timeline-tag">IMP-PERF-08 · 30 min</div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--low)"></div>
+            <div><div class="timeline-text">Update testimonials with recent dates; link trust badge to Bark.com</div><div class="timeline-tag">IMP-CRO-05 · 1h</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div style="font-size:24px;margin-bottom:12px">✨</div>
+    <div style="margin-bottom:8px"><strong>FunLoading360 Multi-Agent Website Audit 2026</strong></div>
+    <div style="color:var(--text3);margin-bottom:16px">Generated by 10 specialised AI agents · 5 debate rounds each · 95 findings · 88 improvements</div>
+    <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:16px">
+      <div><strong style="color:var(--text2)">Overall Score</strong><br><span style="color:var(--gold);font-size:20px;font-weight:800">6.6 / 10</span></div>
+      <div><strong style="color:var(--text2)">Critical Issues</strong><br><span style="color:var(--critical);font-size:20px;font-weight:800">15</span></div>
+      <div><strong style="color:var(--text2)">High Priority</strong><br><span style="color:var(--high);font-size:20px;font-weight:800">32</span></div>
+      <div><strong style="color:var(--text2)">Quick Wins</strong><br><span style="color:var(--low);font-size:20px;font-weight:800">8</span></div>
+    </div>
+    <div style="color:var(--text3);font-size:11px">Audit date: April 2026 · Stack: Next.js 15, React 19, TypeScript 5, Tailwind v4 · Claude Sonnet 4.6</div>
+  </div>
+</footer>
+
+<!-- SCROLL TO TOP -->
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// Toggle specialist sections
+function toggleSpec(header){
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.spec-toggle');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  header.classList.toggle('open',!isOpen);
+  toggle.textContent = isOpen ? '▼' : '▲';
+}
+
+// Filter by priority
+function filterPriority(level, btn){
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const rows = document.querySelectorAll('table tbody tr');
+  rows.forEach(row => {
+    if(level === 'all'){
+      row.classList.remove('hidden-row');
+    } else {
+      const hasBadge = row.querySelector('.badge-'+level);
+      row.classList.toggle('hidden-row', !hasBadge);
+    }
+  });
+}
+
+// Scroll to top button
+window.addEventListener('scroll', function(){
+  const btn = document.getElementById('scrollTopBtn');
+  if(btn) btn.classList.toggle('visible', window.scrollY > 400);
+});
+
+// Close all specs except on page load (keep them open)
+// All specialist sections start open
+</script>
+</body>
+</html>

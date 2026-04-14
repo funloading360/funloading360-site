@@ -36,7 +36,7 @@ export default function SocialProofSection() {
   ];
 
   return (
-    <section className="py-16 lg:py-24 bg-[#13131a]/50">
+    <section className="py-16 lg:py-24 bg-surface/50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Metrics Row */}
         <motion.div
@@ -54,7 +54,7 @@ export default function SocialProofSection() {
               transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: idx * 0.1 }}
             >
               <motion.div
-                className="text-3xl sm:text-4xl font-bold text-[#f5a623] mb-2"
+                className="text-3xl sm:text-4xl font-bold text-gold mb-2"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={prefersReducedMotion ? { duration: 0 } : { duration: 1, delay: idx * 0.2 }}
@@ -81,7 +81,7 @@ export default function SocialProofSection() {
           </h2>
 
           {/* Testimonial Card */}
-          <div className="relative bg-[#0a0a0e] border border-[#2a2a3a] rounded-3xl p-8 sm:p-12 mb-8">
+          <div className="relative bg-background border border-border rounded-3xl p-8 sm:p-12 mb-8">
             <AnimatePresence mode="wait">
               <motion.div
                 key={current.id}
@@ -96,7 +96,7 @@ export default function SocialProofSection() {
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className="w-5 h-5 text-[#f5a623] fill-[#f5a623]"
+                      className="w-5 h-5 text-gold fill-gold"
                     />
                   ))}
                 </div>
@@ -139,7 +139,7 @@ export default function SocialProofSection() {
                 key={index}
                 onClick={() => setCurrentIndex(index)}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentIndex ? "bg-[#f5a623] w-8" : "bg-gray-600"
+                  index === currentIndex ? "bg-gold w-8" : "bg-gray-600"
                 }`}
                 aria-label={`Go to testimonial ${index + 1}`}
               />

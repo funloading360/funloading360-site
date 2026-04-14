@@ -68,35 +68,35 @@ const travelFacts = [
     icon: Car,
     label: "Free within 25 miles",
     sub: "of Chelmsford, Essex",
-    accent: "text-[#f5a623]",
+    accent: "text-gold",
   },
   {
     icon: PoundSterling,
     label: "£1.50 per mile",
     sub: "beyond the free zone",
-    accent: "text-[#f5a623]",
+    accent: "text-gold",
   },
   {
     icon: MapPin,
     label: "London supplement",
     sub: "+£50 flat rate",
-    accent: "text-[#f5a623]",
+    accent: "text-gold",
   },
   {
     icon: AlertCircle,
     label: "Full quote included",
     sub: "in your booking confirmation",
-    accent: "text-[#f5a623]",
+    accent: "text-gold",
   },
 ];
 
 export default function LocationsPage() {
   return (
-    <div className="bg-[#0a0a0e] text-white pt-20 overflow-x-hidden">
+    <div className="bg-background text-white pt-20 overflow-x-hidden">
       {/* ── HERO ── */}
       <section className="relative py-24 lg:py-32 text-center overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-[#f5a623]/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gold/5 rounded-full blur-3xl" />
           <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-blue-600/5 rounded-full blur-3xl" />
           <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-purple-600/5 rounded-full blur-3xl" />
         </div>
@@ -106,7 +106,7 @@ export default function LocationsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f5a623]/10 border border-[#f5a623]/20 text-[#f5a623] text-sm font-medium mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20 text-gold text-sm font-medium mb-8"
           >
             <MapPin className="w-3.5 h-3.5" />
             <span>Essex · Kent · London</span>
@@ -123,7 +123,7 @@ export default function LocationsPage() {
             <span
               style={{
                 background:
-                  "linear-gradient(135deg, #f5a623 0%, #fbbf4a 50%, #f5a623 100%)",
+                  "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -153,7 +153,7 @@ export default function LocationsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="relative rounded-3xl overflow-hidden border border-[#2a2a3a] bg-[#0d0d16]"
+            className="relative rounded-3xl overflow-hidden border border-border bg-[#0d0d16]"
             style={{ minHeight: "380px" }}
           >
             {/* Grid pattern background */}
@@ -161,7 +161,7 @@ export default function LocationsPage() {
               className="absolute inset-0 opacity-[0.04]"
               style={{
                 backgroundImage:
-                  "linear-gradient(#f5a623 1px, transparent 1px), linear-gradient(90deg, #f5a623 1px, transparent 1px)",
+                  "linear-gradient(var(--gold) 1px, transparent 1px), linear-gradient(90deg, var(--gold) 1px, transparent 1px)",
                 backgroundSize: "40px 40px",
               }}
             />
@@ -242,12 +242,12 @@ export default function LocationsPage() {
               <div className="flex flex-col items-center gap-3 text-center">
                 {/* Pulsing marker */}
                 <div className="relative">
-                  <div className="absolute -inset-3 rounded-full bg-[#f5a623]/10 animate-ping motion-reduce:animate-none" />
-                  <div className="absolute -inset-1.5 rounded-full bg-[#f5a623]/20" />
-                  <div className="relative w-5 h-5 rounded-full bg-[#f5a623] shadow-[0_0_20px_rgba(245,166,35,0.6)]" />
+                  <div className="absolute -inset-3 rounded-full bg-gold/10 animate-ping motion-reduce:animate-none" />
+                  <div className="absolute -inset-1.5 rounded-full bg-gold/20" />
+                  <div className="relative w-5 h-5 rounded-full bg-gold shadow-[0_0_20px_rgba(245,166,35,0.6)]" />
                 </div>
-                <div className="px-4 py-2 rounded-xl bg-[#13131a]/90 border border-[#f5a623]/30 backdrop-blur-sm">
-                  <p className="text-[#f5a623] text-xs font-bold tracking-wide">
+                <div className="px-4 py-2 rounded-xl bg-surface/90 border border-gold/30 backdrop-blur-sm">
+                  <p className="text-gold text-xs font-bold tracking-wide">
                     Base: Chelmsford
                   </p>
                   <p className="text-gray-500 text-[10px] mt-0.5">
@@ -256,8 +256,8 @@ export default function LocationsPage() {
                 </div>
 
                 {/* Radius ring */}
-                <div className="absolute w-48 h-48 rounded-full border border-dashed border-[#f5a623]/15 pointer-events-none" />
-                <div className="absolute w-80 h-80 rounded-full border border-dashed border-[#f5a623]/8 pointer-events-none" />
+                <div className="absolute w-48 h-48 rounded-full border border-dashed border-gold/15 pointer-events-none" />
+                <div className="absolute w-80 h-80 rounded-full border border-dashed border-gold/8 pointer-events-none" />
               </div>
             </motion.div>
 
@@ -281,7 +281,7 @@ export default function LocationsPage() {
             variants={fadeUp}
             className="text-center mb-14"
           >
-            <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">
+            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
               Where We Operate
             </p>
             <h2
@@ -297,7 +297,7 @@ export default function LocationsPage() {
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
             variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
           >
             {regions.map((region, i) => (
               <motion.div
@@ -328,7 +328,7 @@ export default function LocationsPage() {
                       />
                       {town}
                       {town === "Chelmsford" && (
-                        <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-[#f5a623]/15 border border-[#f5a623]/20 text-[#f5a623] font-medium">
+                        <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-gold/15 border border-gold/20 text-gold font-medium">
                           Base
                         </span>
                       )}
@@ -338,6 +338,25 @@ export default function LocationsPage() {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* ── GOOGLE MAPS BANNER ── */}
+      <section className="py-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mt-8 rounded-xl overflow-hidden border border-white/10">
+            <div className="p-4 bg-white/5 text-center">
+              <p className="text-sm text-gray-400 mb-3">We serve Essex, Kent &amp; London</p>
+              <a
+                href="https://maps.google.com/?q=FunLoading360,+South+Woodham+Ferrers,+Essex+CM3+5NF"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-yellow-500 text-black font-bold px-6 py-3 rounded-lg hover:bg-yellow-400 transition-colors"
+              >
+                📍 View Our Coverage Area on Google Maps
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -351,7 +370,7 @@ export default function LocationsPage() {
             variants={fadeUp}
             className="text-center mb-12"
           >
-            <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">
+            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
               No Surprises
             </p>
             <h2
@@ -367,10 +386,10 @@ export default function LocationsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="relative rounded-3xl bg-[#13131a] border border-[#2a2a3a] overflow-hidden"
+            className="relative rounded-3xl bg-surface border border-border overflow-hidden"
           >
             {/* Top gold line */}
-            <div className="h-1 w-full bg-gradient-to-r from-transparent via-[#f5a623] to-transparent" />
+            <div className="h-1 w-full bg-gradient-to-r from-transparent via-gold to-transparent" />
 
             <div className="p-8 lg:p-10">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -381,10 +400,10 @@ export default function LocationsPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: i * 0.08 }}
-                    className="flex items-start gap-4 p-4 rounded-2xl bg-[#0d0d16] border border-[#2a2a3a]"
+                    className="flex items-start gap-4 p-4 rounded-2xl bg-[#0d0d16] border border-border"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-[#f5a623]/10 border border-[#f5a623]/20 flex items-center justify-center flex-shrink-0">
-                      <fact.icon className="w-5 h-5 text-[#f5a623]" />
+                    <div className="w-10 h-10 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center flex-shrink-0">
+                      <fact.icon className="w-5 h-5 text-gold" />
                     </div>
                     <div>
                       <p className="text-white font-semibold text-sm leading-snug">
@@ -396,10 +415,10 @@ export default function LocationsPage() {
                 ))}
               </div>
 
-              <div className="mt-6 pt-6 border-t border-[#2a2a3a] text-center">
+              <div className="mt-6 pt-6 border-t border-border text-center">
                 <p className="text-gray-400 text-sm">
                   Travel costs are calculated from{" "}
-                  <span className="text-[#f5a623] font-medium">
+                  <span className="text-gold font-medium">
                     Chelmsford, Essex
                   </span>
                   . Your full quote — including any travel — will be confirmed
@@ -419,12 +438,12 @@ export default function LocationsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="relative p-10 lg:p-14 rounded-3xl bg-gradient-to-br from-[#13131a] to-[#0f0f1c] border border-[#2a2a3a] overflow-hidden"
+            className="relative p-10 lg:p-14 rounded-3xl bg-gradient-to-br from-surface to-[#0f0f1c] border border-border overflow-hidden"
           >
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-24 bg-[#f5a623]/8 rounded-full blur-3xl" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-24 bg-gold/8 rounded-full blur-3xl" />
             <div className="relative z-10">
-              <div className="w-14 h-14 rounded-2xl bg-[#f5a623]/10 border border-[#f5a623]/20 flex items-center justify-center mx-auto mb-6">
-                <MapPin className="w-7 h-7 text-[#f5a623]" />
+              <div className="w-14 h-14 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center mx-auto mb-6">
+                <MapPin className="w-7 h-7 text-gold" />
               </div>
               <h2
                 className="text-2xl sm:text-3xl font-bold text-white mb-4"
@@ -438,7 +457,7 @@ export default function LocationsPage() {
               </p>
               <Link
                 href="/book"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#f5a623] text-[#0a0a0e] font-bold hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-[#f5a623]/25 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gold text-background font-bold hover:bg-gold-light transition-all duration-200 shadow-lg shadow-gold/25 hover:-translate-y-0.5"
               >
                 Get In Touch
                 <ArrowRight className="w-4 h-4" />

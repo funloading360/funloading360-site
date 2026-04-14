@@ -1,30 +1,11 @@
-import { Metadata } from "next";
-import CartContent from "./CartContent";
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Your Cart — FunLoading360",
-  description:
-    "Review your cart items, customize quantities and packages, then proceed to checkout.",
-  robots: {
-    index: false, // Cart pages shouldn't be indexed
-    follow: true,
-  },
-  openGraph: {
-    title: "Your Cart — FunLoading360",
-    description: "Review and manage your cart items.",
-    type: "website",
-    url: "https://www.funloading360.co.uk/cart",
-  },
-  twitter: {
-    card: "summary",
-    title: "Your Cart — FunLoading360",
-    description: "Review your cart items.",
-  },
-  alternates: {
-    canonical: "https://www.funloading360.co.uk/cart",
-  },
+  title: "Your Cart | FunLoading360",
+  robots: { index: false, follow: false },
 };
 
 export default function CartPage() {
-  return <CartContent />;
+  redirect("/book");
 }

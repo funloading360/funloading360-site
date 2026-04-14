@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { boothPricing, formatPrice } from "@/lib/packages";
 import PricingComparisonModal from "./PricingComparisonModal";
+import { DEPOSIT_LABEL } from "@/lib/constants";
 
 import { fadeUp } from "@/lib/variants";
 import { useReducedMotion } from "@/lib/useReducedMotion";
@@ -85,11 +86,11 @@ export default function PricingPage() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <div className="bg-[#0a0a0e] text-white pt-20">
+    <div className="bg-background text-white pt-20">
       {/* Header */}
       <section className="py-20 lg:py-28 text-center relative overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-[#f5a623]/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gold/5 rounded-full blur-3xl" />
         </div>
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -97,7 +98,7 @@ export default function PricingPage() {
             animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
           >
-            <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">
+            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
               Transparent Pricing
             </p>
             <h1
@@ -114,6 +115,17 @@ export default function PricingPage() {
         </div>
       </section>
 
+      {/* Guarantee banner */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 mb-8">
+        <div className="flex items-center gap-3 bg-green-950/40 border border-green-700/40 rounded-xl px-5 py-3">
+          <span className="text-2xl">🛡️</span>
+          <div>
+            <p className="text-green-400 font-semibold text-sm">Book with complete confidence</p>
+            <p className="text-gray-300 text-sm">Full 100% refund if you cancel 90+ days before your event. No questions asked.</p>
+          </div>
+        </div>
+      </div>
+
       {/* Pricing by Booth Type */}
       {/* Comparison CTA */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 lg:pb-32">
@@ -122,7 +134,7 @@ export default function PricingPage() {
           whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
-          className="mb-16 p-8 rounded-2xl bg-[#13131a] border border-[#2a2a3a]"
+          className="mb-16 p-8 rounded-2xl bg-surface border border-border"
         >
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex-1">
@@ -135,7 +147,7 @@ export default function PricingPage() {
             </div>
             <button
               onClick={() => setShowComparison(true)}
-              className="px-6 py-2.5 rounded-full border border-[#f5a623] text-[#f5a623] hover:bg-[#f5a623]/10 transition-all duration-200 font-semibold text-sm whitespace-nowrap"
+              className="px-6 py-2.5 rounded-full border border-gold text-gold hover:bg-gold/10 transition-all duration-200 font-semibold text-sm whitespace-nowrap"
             >
               Compare All Packages
             </button>
@@ -147,7 +159,7 @@ export default function PricingPage() {
       {boothPricing.map((booth, boothIdx) => (
         <section
           key={booth.booth}
-          className={`py-20 lg:py-24 ${boothIdx % 2 === 0 ? "bg-[#13131a]/30" : "bg-[#0a0a0e]"}`}
+          className={`py-20 lg:py-24 ${boothIdx % 2 === 0 ? "bg-surface/30" : "bg-background"}`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
@@ -158,7 +170,7 @@ export default function PricingPage() {
             >
               {/* Booth header - Minimal */}
               <div className="text-left mb-12">
-                <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-2">
+                <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-2">
                   {booth.tagline}
                 </p>
                 <h2
@@ -185,13 +197,13 @@ export default function PricingPage() {
                       }}
                       className={`relative rounded-3xl flex flex-col ${
                         isSignature
-                          ? "bg-gradient-to-b from-[#1c1228] to-[#13131a] border-2 border-[#f5a623]/50 shadow-xl shadow-[#f5a623]/10"
-                          : "bg-[#13131a] border border-[#2a2a3a]"
+                          ? "bg-gradient-to-b from-[#1c1228] to-surface border-2 border-gold/50 shadow-xl shadow-gold/10"
+                          : "bg-surface border border-border"
                       }`}
                     >
                       {isSignature && (
                         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#f5a623] text-[#0a0a0e] text-xs font-bold uppercase tracking-wide shadow-lg shadow-[#f5a623]/30">
+                          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gold text-background text-xs font-bold uppercase tracking-wide shadow-lg shadow-gold/30">
                             <Star className="w-3 h-3 fill-current" />
                             Most Popular
                           </span>
@@ -204,8 +216,8 @@ export default function PricingPage() {
                           <div
                             className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${
                               isSignature
-                                ? "bg-[#f5a623]/20 border border-[#f5a623]/30"
-                                : "bg-white/5 border border-[#2a2a3a]"
+                                ? "bg-gold/20 border border-gold/30"
+                                : "bg-white/5 border border-border"
                             }`}
                           >
                             {(() => {
@@ -214,7 +226,7 @@ export default function PricingPage() {
                                 <Icon
                                   className={`w-6 h-6 ${
                                     isSignature
-                                      ? "text-[#f5a623]"
+                                      ? "text-gold"
                                       : "text-gray-400"
                                   }`}
                                 />
@@ -233,7 +245,7 @@ export default function PricingPage() {
                         </div>
 
                         {/* Pricing options */}
-                        <div className="mb-6 pb-6 border-b border-[#2a2a3a]">
+                        <div className="mb-6 pb-6 border-b border-border">
                           <div className="space-y-2">
                             {tier.prices.map((priceOpt) => (
                               <div
@@ -246,7 +258,7 @@ export default function PricingPage() {
                                 <span
                                   className={`text-lg font-bold ${
                                     isSignature
-                                      ? "text-[#f5a623]"
+                                      ? "text-gold"
                                       : "text-white"
                                   }`}
                                 >
@@ -267,7 +279,7 @@ export default function PricingPage() {
                               <Check
                                 className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
                                   isSignature
-                                    ? "text-[#f5a623]"
+                                    ? "text-gold"
                                     : "text-emerald-400"
                                 }`}
                               />
@@ -278,11 +290,11 @@ export default function PricingPage() {
 
                         {/* CTA */}
                         <Link
-                          href="/book"
+                          href={`/book?productId=${booth.slug}&tier=${tierKey}`}
                           className={`block w-full text-center py-3 sm:py-2.5 rounded-full font-semibold text-sm transition-all duration-200 min-h-[48px] sm:min-h-[44px] flex items-center justify-center ${
                             isSignature
-                              ? "bg-[#f5a623] text-[#0a0a0e] hover:bg-[#fbbf4a] shadow-lg shadow-[#f5a623]/25 hover:shadow-[#f5a623]/40 hover:-translate-y-0.5"
-                              : "border border-[#2a2a3a] text-white hover:border-[#f5a623]/40 hover:bg-white/5"
+                              ? "bg-gold text-background hover:bg-gold-light shadow-lg shadow-gold/25 hover:shadow-gold/40 hover:-translate-y-0.5"
+                              : "border border-border text-white hover:border-gold/40 hover:bg-white/5"
                           }`}
                         >
                           Book This Package
@@ -305,7 +317,7 @@ export default function PricingPage() {
           transition={{ delay: 0.5 }}
           className="text-center text-gray-500 text-sm py-8"
         >
-          All prices include VAT. 30% deposit required to secure your date.
+          All prices include VAT. {DEPOSIT_LABEL} deposit required to secure your date.
         </motion.p>
       </div>
 
@@ -319,7 +331,7 @@ export default function PricingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">
+            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
               Enhance Your Experience
             </p>
             <h2
@@ -341,13 +353,13 @@ export default function PricingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="p-5 rounded-2xl bg-[#13131a] border border-[#2a2a3a] hover:border-[#f5a623]/30 transition-colors"
+                className="p-5 rounded-2xl bg-surface border border-border hover:border-gold/30 transition-colors"
               >
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-white font-semibold text-sm">
                     {addon.name}
                   </h3>
-                  <span className="text-[#f5a623] font-bold text-sm ml-3 flex-shrink-0">
+                  <span className="text-gold font-bold text-sm ml-3 flex-shrink-0">
                     +{addon.price}
                   </span>
                 </div>
@@ -370,7 +382,7 @@ export default function PricingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <p className="text-[#f5a623] text-sm font-semibold uppercase tracking-widest mb-3">
+            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
               Got Questions?
             </p>
             <h2
@@ -389,7 +401,7 @@ export default function PricingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="rounded-2xl bg-[#13131a] border border-[#2a2a3a] overflow-hidden"
+                className="rounded-2xl bg-surface border border-border overflow-hidden"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
@@ -400,7 +412,7 @@ export default function PricingPage() {
                     {faq.question}
                   </span>
                   <ChevronDown
-                    className={`w-5 h-5 text-[#f5a623] flex-shrink-0 transition-transform duration-300 ${
+                    className={`w-5 h-5 text-gold flex-shrink-0 transition-transform duration-300 ${
                       openFaq === i ? "rotate-180" : ""
                     }`}
                   />
@@ -415,7 +427,7 @@ export default function PricingPage() {
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 pb-5 text-gray-400 text-sm leading-relaxed border-t border-[#2a2a3a] pt-4">
+                      <div className="px-5 pb-5 text-gray-400 text-sm leading-relaxed border-t border-border pt-4">
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -436,7 +448,7 @@ export default function PricingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Zap className="w-10 h-10 text-[#f5a623] mx-auto mb-4" />
+            <Zap className="w-10 h-10 text-gold mx-auto mb-4" />
             <h2
               className="text-3xl font-bold text-white mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -444,16 +456,20 @@ export default function PricingPage() {
               Ready to Secure Your Date?
             </h2>
             <p className="text-gray-400 mb-8">
-              Dates fill up fast — especially weekends. Book today with just a
-              30% deposit.
+              Dates fill up fast — especially weekends. Book today with just a{" "}
+              {DEPOSIT_LABEL} deposit.
             </p>
             <Link
               href="/book"
-              className="inline-flex items-center gap-2 px-8 py-4 sm:py-3 rounded-full bg-[#f5a623] text-[#0a0a0e] font-bold hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-[#f5a623]/25 hover:-translate-y-0.5 min-h-[48px] sm:min-h-[44px]"
+              className="inline-flex items-center gap-2 px-8 py-4 sm:py-3 rounded-full bg-gold text-background font-bold hover:bg-gold-light transition-all duration-200 shadow-lg shadow-gold/25 hover:-translate-y-0.5 min-h-[48px] sm:min-h-[44px]"
             >
               Book Now
               <ArrowRight className="w-4 h-4" />
             </Link>
+            <div className="flex items-center gap-2 text-sm text-orange-400 mt-3">
+              <span>⚡</span>
+              <span>Weekends book fast — secure your date early to avoid disappointment</span>
+            </div>
           </motion.div>
         </div>
       </section>

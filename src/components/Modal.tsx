@@ -25,8 +25,8 @@ const sizeClasses: Record<ModalSize, string> = {
 };
 
 const variantClasses: Record<ModalVariant, string> = {
-  default: "border-[#2a2a3a]",
-  accent: "border-[#f5a623]/50",
+  default: "border-border",
+  accent: "border-gold/50",
   error: "border-red-500/50",
 };
 
@@ -98,7 +98,7 @@ export default function Modal({
         ref={panelRef}
         tabIndex={-1}
         className={[
-          "relative w-full bg-[#13131a] border rounded-3xl p-8 outline-none",
+          "relative w-full bg-surface border rounded-3xl p-8 outline-none",
           "max-h-[90vh] overflow-y-auto",
           sizeClasses[size],
           variantClasses[variant],
@@ -124,7 +124,7 @@ export default function Modal({
             id="modal-title"
             className={[
               "text-2xl font-bold mb-4 pr-8",
-              variant === "error" ? "text-red-400" : variant === "accent" ? "text-[#f5a623]" : "text-white",
+              variant === "error" ? "text-red-400" : variant === "accent" ? "text-gold" : "text-white",
             ].join(" ")}
           >
             {title}
