@@ -99,12 +99,18 @@ export async function createCheckoutSession(
  * Store booking data in Redis
  * Key format: booking:{checkoutSessionId}
  * TTL: 30 days
+ * NOTE: Fails gracefully if Redis unavailable (logs warning but doesn't block checkout)
  */
 export async function storeBooking(booking: BookingRecord): Promise<void> {
-  const key = `booking:${booking.checkoutSessionId}`;
-  const ttl = 30 * 24 * 60 * 60;
-
-  await redis.setex(key, ttl, JSON.stringify(booking));
+  try {
+    const key = `booking:${booking.checkoutSessionId}`;
+    const ttl = 30 * 24 * 60 * 60;
+    await redis.setex(key, ttl, JSON.stringify(booking));
+  } catch (error) {
+    // Redis unavailable — log warning but allow checkout to proceed
+    // In production with Redis available, this will store the booking for webhook processing
+    console.warn("[storeBooking] Redis unavailable, booking not stored:", error);
+  }
 }
 
 /**
