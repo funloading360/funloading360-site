@@ -19,7 +19,6 @@ async function sendToN8n(event: QueuedCrmEvent['event']): Promise<boolean> {
         'x-crm-secret': process.env.N8N_CRM_SECRET || '',
       },
       body: JSON.stringify(event),
-      // @ts-expect-error — Node 18+ fetch supports signal
       signal: AbortSignal.timeout(5000),
     });
     return res.ok;
