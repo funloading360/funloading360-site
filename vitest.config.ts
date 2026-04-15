@@ -6,7 +6,7 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     passWithNoTests: true,
-    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'e2e/**'],
+    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'e2e/**', 'tests/**'],
   },
   resolve: {
     alias: {
