@@ -389,3 +389,32 @@ export async function isDateAvailable(
     return true;
   }
 }
+
+interface CreateBookingEventParams {
+  date: string;
+  clientName: string;
+  productName: string;
+  venue?: string;
+  bookingRef: string;
+  productIds?: string[];
+}
+
+export async function createBookingEvent(params: CreateBookingEventParams): Promise<void> {
+  const calendar = await getCalendarClient();
+  const { date, clientName, productName, venue, bookingRef } = params;
+
+  const startDate = new Date(date);
+  const endDate = new Date(date);
+  endDate.setDate(endDate.getDate() + 1);
+
+  await calendar.events.insert({
+    calendarId: process.env.GOOGLE_CALENDAR_CALENDAR_ID!,
+    requestBody: {
+      summary: `[BOOKED] ${productName} — ${clientName}`,
+      description: `Booking Ref: ${bookingRef}\nClient: ${clientName}\nProduct: ${productName}${venue ? `\nVenue: ${venue}` : ""}`,
+      start: { date: startDate.toISOString().split("T")[0] },
+      end: { date: endDate.toISOString().split("T")[0] },
+      status: "confirmed",
+    },
+  });
+}
