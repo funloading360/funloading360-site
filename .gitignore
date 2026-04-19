@@ -36,3 +36,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 n8n/.env
+BOOKING_PAYMENT_TEST_REPORT.md
+BOOKING_SYSTEM_SUMMARY.md
