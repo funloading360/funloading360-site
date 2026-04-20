@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import WebVitals from "@/components/WebVitals";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -129,6 +130,7 @@ export default function RootLayout({
         <CookieBanner />
         <GoogleAnalytics />
         <WebVitals />
+        <Analytics />
       </body>
     </html>
   );
