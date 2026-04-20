@@ -48,6 +48,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: ["https://www.funloading360.co.uk/og-image.jpg"],
   },
+  verification: {
+    google: "zUgQ1msi7OF4yIhBQHA_Q3GGe6tESvhPY4uOYmCvqYs",
+  },
 };
 
 const jsonLd = {
