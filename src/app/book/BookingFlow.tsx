@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Check, Lock, Loader2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getProductById, formatPrice, getPriceForTierAndHours, PricingTier } from "@/lib/services";
-import { ADDONS } from "@/lib/constants";
+import { ADDONS, DEPOSIT_PERCENT } from "@/lib/constants";
 import { useCart } from "@/hooks/useCart";
 import CustomCalendar from "@/components/CustomCalendar";
 import CartItemsEditor from "./CartItemsEditor";
@@ -118,7 +118,7 @@ export default function BookPage() {
   }
 
   const [selectedUpsells, setSelectedUpsells] = useState<string[]>([]);
-  const [paymentType, setPaymentType] = useState<"deposit" | "full">("deposit");
+  const [paymentType, setPaymentType] = useState<"deposit" | "full" | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [cancelled, setCancelled] = useState(false);
@@ -273,6 +273,13 @@ export default function BookPage() {
         const element = document.getElementById(`book-${firstError}`);
         element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+      return;
+    }
+
+    // Payment type is required
+    if (!paymentType) {
+      setSubmitError("Please select a payment option to continue");
+      document.getElementById("payment-option-section")?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
@@ -692,11 +699,11 @@ export default function BookPage() {
                 <div className="flex justify-end pt-2">
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || paymentType === null}
                     className={cn(
                       "inline-flex items-center gap-2 px-8 py-3 sm:py-2.5 rounded-full font-bold text-sm transition-all duration-200 min-h-[48px] sm:min-h-[44px]",
-                      isSubmitting
-                        ? "bg-gold/70 text-background cursor-not-allowed"
+                      isSubmitting || paymentType === null
+                        ? "bg-gold/50 text-background cursor-not-allowed"
                         : "bg-gold text-background hover:bg-gold-light shadow-lg shadow-gold/25 hover:-translate-y-0.5"
                     )}
                   >
@@ -774,12 +781,24 @@ export default function BookPage() {
                   </div>
                 )}
 
+                {/* Package Total */}
+                <div className="border-t border-border pt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Package total</span>
+                    <span className="text-lg font-bold text-white">
+                      {getTotalPrice() > 0 ? formatPrice(getTotalPrice()) : "—"}
+                    </span>
+                  </div>
+                </div>
+
                 {/* Payment Option */}
-                <div className="space-y-2">
-                  <p className="text-xs text-gray-400 mb-2">Payment Option</p>
+                <div id="payment-option-section" className="space-y-2">
+                  <p className="text-xs text-gray-400 mb-2">
+                    Payment Option <span className="text-red-400">*</span>
+                  </p>
                   <button
                     type="button"
-                    onClick={() => setPaymentType("deposit")}
+                    onClick={() => { setPaymentType("deposit"); setSubmitError(null); }}
                     className={cn(
                       "w-full p-3 rounded-lg border-2 text-left transition-all",
                       paymentType === "deposit"
@@ -790,18 +809,18 @@ export default function BookPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-white font-medium">Pay 15% Deposit</span>
                       <span className="text-gold font-bold">
-                        {getTotalPrice() > 0 ? formatPrice(Math.round(getTotalPrice() * 0.15)) : "—"}
+                        {getTotalPrice() > 0 ? formatPrice(Math.round(getTotalPrice() * DEPOSIT_PERCENT)) : "—"}
                       </span>
                     </div>
                     {paymentType === "deposit" && (
                       <p className="text-xs text-gray-500 mt-1">
-                        Remaining balance ({formatPrice(getTotalPrice() - Math.round(getTotalPrice() * 0.15))}) due before event
+                        Remaining balance ({formatPrice(getTotalPrice() - Math.round(getTotalPrice() * DEPOSIT_PERCENT))}) due 14 days before event
                       </p>
                     )}
                   </button>
                   <button
                     type="button"
-                    onClick={() => setPaymentType("full")}
+                    onClick={() => { setPaymentType("full"); setSubmitError(null); }}
                     className={cn(
                       "w-full p-3 rounded-lg border-2 text-left transition-all",
                       paymentType === "full"
@@ -815,18 +834,41 @@ export default function BookPage() {
                         {getTotalPrice() > 0 ? formatPrice(getTotalPrice()) : "—"}
                       </span>
                     </div>
+                    {paymentType === "full" && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        No remaining balance — fully paid ✓
+                      </p>
+                    )}
                   </button>
                 </div>
 
-                {/* Total */}
-                <div className="border-t border-border pt-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-white">Total</span>
-                    <span className="text-2xl font-bold text-gold">
-                      {getTotalPrice() > 0 ? formatPrice(getTotalPrice()) : "—"}
-                    </span>
+                {/* Payment breakdown */}
+                {paymentType !== null && (
+                  <div className="border-t border-border pt-4 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Pay now</span>
+                      <span className="text-xl font-bold text-gold">
+                        {paymentType === "deposit"
+                          ? formatPrice(Math.round(getTotalPrice() * DEPOSIT_PERCENT))
+                          : formatPrice(getTotalPrice())}
+                      </span>
+                    </div>
+                    {paymentType === "deposit" && getTotalPrice() > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-500">Remaining (due 14 days before)</span>
+                        <span className="text-sm text-gray-400">
+                          {formatPrice(getTotalPrice() - Math.round(getTotalPrice() * DEPOSIT_PERCENT))}
+                        </span>
+                      </div>
+                    )}
+                    {paymentType === "full" && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-500">Remaining balance</span>
+                        <span className="text-sm text-green-400 font-medium">£0 ✓</span>
+                      </div>
+                    )}
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
