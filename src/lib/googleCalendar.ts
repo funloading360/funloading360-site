@@ -94,7 +94,7 @@ function getCalendarClient() {
       client_email: clientEmail,
       client_id: "",
     },
-    scopes: ["https://www.googleapis.com/auth/calendar.readonly"],
+    scopes: ["https://www.googleapis.com/auth/calendar.events"],
   });
 
   return google.calendar({ version: "v3", auth });
