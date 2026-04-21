@@ -147,16 +147,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (error instanceof SyntaxError) {
+      return Response.json(
+        {
+          ok: false,
+          error: { message: "Invalid request format", code: "INVALID_REQUEST" },
+        },
+        { status: 400 }
+      );
+    }
+
     return Response.json(
       {
         ok: false,
-        error: {
-          message:
-            error instanceof Error
-              ? error.message
-              : "Failed to create checkout session",
-          code: "INTERNAL_ERROR",
-        },
+        error: { message: "Internal server error", code: "INTERNAL_ERROR" },
       },
       { status: 500 }
     );
