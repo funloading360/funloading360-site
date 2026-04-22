@@ -4,7 +4,7 @@ import HomeContent from "./HomeContent";
 export const metadata: Metadata = {
   title: "Photo Booth Hire Essex, Kent & London | FunLoading360",
   description:
-    "Premium photo booth hire across Essex, Kent & London — 360 slow motion, glam vintage & selfie pods. Free setup, instant digital sharing. Book from £299. Confirm within 2 hours.",
+    "Premium photo booth hire across Essex, Kent & London — 360 slow motion, glam vintage & selfie pods. Free setup, instant digital sharing. Packages from £229. Confirm within 2 hours.",
   openGraph: {
     title: "Photo Booth Hire Essex, Kent & London | FunLoading360",
     description:

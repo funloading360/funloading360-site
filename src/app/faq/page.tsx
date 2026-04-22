@@ -4,10 +4,10 @@ export const metadata: Metadata = {
   title: "Frequently Asked Questions | FunLoading360 Photo Booth Hire",
   description: "Everything you need to know about hiring a photo booth from FunLoading360. Answers about booking, pricing, setup, and cancellation.",
   openGraph: {
-    title: "FAQ | FunLoading360",
-    description: "Common questions about our photo booth hire service.",
+    title: "Frequently Asked Questions | FunLoading360 Photo Booth Hire",
+    description: "Answers to common questions about photo booth hire — booking, pricing, setup, travel and cancellation. Serving Essex, Kent & London.",
     url: "https://www.funloading360.co.uk/faq",
-    images: [{ url: "https://www.funloading360.co.uk/og-image.jpg", width: 1200, height: 630 }],
+    images: [{ url: "https://www.funloading360.co.uk/og-image.jpg", width: 1200, height: 630, alt: "FunLoading360 photo booth hire — FAQ" }],
   },
 };
 
