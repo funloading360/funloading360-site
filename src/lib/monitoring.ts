@@ -9,6 +9,7 @@
 
 const ALERT_EMAIL = process.env.ALERT_EMAIL || "FunLoading360@gmail.com";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 
 export type AlertSeverity = "info" | "warning" | "critical";
 
@@ -89,6 +90,43 @@ export async function alert(event: AlertEvent): Promise<void> {
   // Only email for warning and critical to avoid noise
   if (event.severity !== "info") {
     await sendAlertEmail(event);
+  }
+}
+
+/**
+ * Send instant alert to Slack/Discord webhook.
+ * Dual-channel with email — much faster for on-call awareness.
+ */
+export async function sendSlackAlert(
+  severity: AlertSeverity,
+  message: string,
+  metadata?: Record<string, string | number | boolean>
+): Promise<void> {
+  if (!SLACK_WEBHOOK_URL) return;
+  const emoji = { info: "ℹ️", warning: "⚠️", critical: "🚨" }[severity];
+  try {
+    await fetch(SLACK_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: `${emoji} **[${severity.toUpperCase()}]** ${message}`,
+        embeds: metadata
+          ? [
+              {
+                color: severity === "critical" ? 0xff0000 : severity === "warning" ? 0xffa500 : 0x0099ff,
+                fields: Object.entries(metadata).map(([k, v]) => ({
+                  name: k,
+                  value: String(v),
+                  inline: true,
+                })),
+                timestamp: new Date().toISOString(),
+              },
+            ]
+          : undefined,
+      }),
+    });
+  } catch {
+    // Never let monitoring failures propagate
   }
 }
 

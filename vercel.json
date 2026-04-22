@@ -6,6 +6,10 @@
     {
       "path": "/api/crm/flush",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/health/all",
+      "schedule": "*/15 * * * *"
     }
   ]
 }

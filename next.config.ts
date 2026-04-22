@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const securityHeaders = [
   {
@@ -93,4 +94,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: "funloading360",
+  project: "javascript-nextjs",
+  silent: true,
+  widenClientFileUpload: true,
+  disableLogger: true,
+  automaticVercelMonitors: true,
+});
