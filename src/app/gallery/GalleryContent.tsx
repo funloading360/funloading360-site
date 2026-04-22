@@ -30,7 +30,6 @@ interface GalleryCard {
 // ── Data ───────────────────────────────────────────────────────────────────────
 
 const filters: { key: FilterKey; label: string }[] = [
-  { key: "all", label: "All Services" },
   { key: "360", label: "360° Slow Motion" },
   { key: "glam", label: "Glam Vintage" },
   { key: "selfie", label: "Selfie Pod" },
@@ -278,14 +277,6 @@ function GalleryHero() {
         style={prefersReducedMotion ? {} : { y, opacity }}
         className="relative z-10 text-center px-4"
       >
-        <motion.p
-          initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-          animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
-          className="text-gold text-sm font-semibold uppercase tracking-widest mb-4"
-        >
-          Our Portfolio
-        </motion.p>
         <motion.h1
           initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
           animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
@@ -322,7 +313,7 @@ function GalleryHero() {
 // ── Main page ──────────────────────────────────────────────────────────────────
 
 export default function GalleryPage() {
-  const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
+  const [activeFilter, setActiveFilter] = useState<FilterKey>("360");
   const [selectedCard, setSelectedCard] = useState<GalleryCard | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [announcement, setAnnouncement] = useState<string>("");
@@ -504,10 +495,10 @@ export default function GalleryPage() {
             >
               <p className="text-gray-600 text-lg">No photos in this category yet.</p>
               <button
-                onClick={() => setActiveFilter("all")}
+                onClick={() => setActiveFilter("360")}
                 className="mt-4 text-gold text-sm font-semibold hover:underline"
               >
-                View all photos
+                View 360° photos
               </button>
             </motion.div>
           )}
@@ -515,7 +506,7 @@ export default function GalleryPage() {
       </section>
 
       {/* ── Bottom CTA ── */}
-      <section className="py-20 lg:py-28">
+      <section className="py-16 lg:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 40 }}

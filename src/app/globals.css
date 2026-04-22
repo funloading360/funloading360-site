@@ -193,6 +193,10 @@ a[href*="poptop.uk"]:hover,
   color: var(--gold);
 }
 
+.booth-btn:hover .booth-btn-text {
+  color: #111;
+}
+
 .bg-gold {
   background-color: var(--gold);
 }

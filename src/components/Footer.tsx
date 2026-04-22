@@ -19,6 +19,7 @@ const quickLinks = [
   { label: "Gallery", href: "/gallery" },
   { label: "Corporate Events", href: "/corporate" },
   { label: "Locations", href: "/locations" },
+  { label: "About Us", href: "/about" },
   { label: "Book Now", href: "/book" },
 ];
 

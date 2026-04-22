@@ -62,7 +62,7 @@ export default function ServicesContent() {
   return (
     <div className="bg-background text-white pt-20 min-h-screen">
       {/* Header */}
-      <section className="py-20 lg:py-28 text-center relative overflow-hidden">
+      <section className="py-16 lg:py-24 text-center relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gold/5 rounded-full blur-3xl" />
         </div>
@@ -72,9 +72,6 @@ export default function ServicesContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Our Services
-            </p>
             <h1
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -118,7 +115,7 @@ export default function ServicesContent() {
       </AnimatePresence>
 
       {/* Services Grid */}
-      <section className="pb-24 lg:pb-32">
+      <section className="pb-16 lg:pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
           {products.map((product, i) => (
             <motion.div
@@ -162,9 +159,6 @@ export default function ServicesContent() {
                 variants={fadeUp}
                 className={i % 2 === 1 ? "lg:col-start-1 lg:row-start-1" : ""}
               >
-                <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-                  {product.tagline}
-                </p>
                 <h2
                   className="text-3xl sm:text-4xl font-bold text-white mb-4"
                   style={{ fontFamily: "var(--font-playfair)" }}
@@ -215,7 +209,7 @@ export default function ServicesContent() {
       </section>
 
       {/* CTA Comparare */}
-      <section className="py-20 lg:py-24 bg-[#080810]">
+      <section className="py-16 lg:py-24 bg-[#080810]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

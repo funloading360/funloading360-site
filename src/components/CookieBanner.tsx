@@ -11,7 +11,7 @@ type ConsentState = 'accepted' | 'declined' | null;
 
 export default function CookieBanner() {
   const [consent, setConsent] = useState<ConsentState>(null);
-  const [consentCheckbox, setConsentCheckbox] = useState(false);
+  const [consentCheckbox, setConsentCheckbox] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

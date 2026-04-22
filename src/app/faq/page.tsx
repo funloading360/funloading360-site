@@ -55,44 +55,63 @@ export default function FAQPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <main className="min-h-screen bg-[#08080d] text-white">
-        <div className="max-w-3xl mx-auto px-6 py-20">
-          <div className="mb-12 text-center">
-            <p className="text-xs font-bold tracking-widest text-yellow-400 uppercase mb-4">Support</p>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Frequently Asked Questions</h1>
-            <p className="text-gray-400 text-lg">Everything you need to know about hiring a photo booth.</p>
-          </div>
+      <main className="min-h-screen bg-background text-white pt-20">
+        <section className="py-16 lg:py-24">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-10 lg:mb-12 text-center">
+              <h1
+                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4"
+                style={{ fontFamily: "var(--font-playfair)" }}
+              >
+                Frequently Asked Questions
+              </h1>
+              <p className="text-gray-400 text-lg">Everything you need to know about hiring a photo booth.</p>
+            </div>
 
-          {categories.map(cat => (
-            <div key={cat} className="mb-10">
-              <h2 className="text-yellow-400 font-bold text-sm uppercase tracking-widest mb-4">{cat}</h2>
-              <div className="space-y-4">
-                {faqs.filter(f => f.category === cat).map((faq, i) => (
-                  <details key={i} className="group border border-white/10 rounded-xl overflow-hidden">
-                    <summary className="flex items-center justify-between p-5 cursor-pointer font-medium text-white hover:text-yellow-400 transition-colors list-none">
-                      {faq.q}
-                      <span className="ml-4 text-gray-500 group-open:rotate-180 transition-transform">&#9660;</span>
-                    </summary>
-                    <div className="px-5 pb-5 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-4">
-                      {faq.a}
-                    </div>
-                  </details>
-                ))}
+            {categories.map(cat => (
+              <div key={cat} className="mb-10">
+                <h2
+                  className="text-gold font-bold text-sm uppercase tracking-widest mb-4"
+                  style={{ fontFamily: "var(--font-playfair)" }}
+                >
+                  {cat}
+                </h2>
+                <div className="space-y-3">
+                  {faqs.filter(f => f.category === cat).map((faq, i) => (
+                    <details key={i} className="group rounded-2xl bg-surface border border-border overflow-hidden">
+                      <summary className="flex items-center justify-between p-5 cursor-pointer font-medium text-white hover:text-gold transition-colors list-none">
+                        <span className="text-sm leading-relaxed">{faq.q}</span>
+                        <span className="ml-4 text-gold flex-shrink-0 group-open:rotate-180 transition-transform duration-300">&#9660;</span>
+                      </summary>
+                      <div className="px-5 pb-5 text-gray-400 text-sm leading-relaxed border-t border-border pt-4">
+                        {faq.a}
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            <div className="mt-12 text-center bg-surface rounded-3xl p-8 border border-border">
+              <p className="text-lg font-semibold text-white mb-2">Still have questions?</p>
+              <p className="text-gray-400 mb-6">We&apos;re happy to help — get in touch.</p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a
+                  href="/book"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 sm:py-3 rounded-full bg-gold text-background font-bold hover:bg-gold-light transition-all duration-200 shadow-lg shadow-gold/25 hover:-translate-y-0.5 w-full sm:w-auto min-h-[48px] sm:min-h-[44px]"
+                >
+                  Book Now
+                </a>
+                <a
+                  href="tel:+447482112110"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 sm:py-3 rounded-full border border-border text-white font-semibold hover:border-gold/40 hover:bg-white/5 transition-all duration-200 w-full sm:w-auto min-h-[48px] sm:min-h-[44px]"
+                >
+                  Call Us
+                </a>
               </div>
             </div>
-          ))}
-
-          <div className="mt-12 text-center bg-white/5 rounded-2xl p-8 border border-white/10">
-            <p className="text-lg font-semibold mb-2">Still have questions?</p>
-            <p className="text-gray-400 mb-4">We&apos;re happy to help — get in touch.</p>
-            <a href="/book" className="inline-block bg-yellow-400 text-black font-bold px-8 py-3 rounded-xl hover:bg-yellow-300 transition-colors">
-              Book Now
-            </a>
-            <a href="tel:+447482112110" className="inline-block ml-3 border border-white/20 text-white px-8 py-3 rounded-xl hover:border-white/40 transition-colors">
-              Call Us
-            </a>
           </div>
-        </div>
+        </section>
       </main>
     </>
   );

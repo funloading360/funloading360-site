@@ -81,7 +81,7 @@ export default function ServiceGridContent() {
   return (
     <div className="bg-background text-white pt-20">
       {/* Hero Header */}
-      <section className="py-20 lg:py-28 text-center relative overflow-hidden">
+      <section className="py-16 lg:py-24 text-center relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gold/5 rounded-full blur-3xl" />
         </div>
@@ -91,9 +91,6 @@ export default function ServiceGridContent() {
             animate={anim({ opacity: 1, y: 0 })}
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Photo Booth Experiences
-            </p>
             <h1
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -109,7 +106,7 @@ export default function ServiceGridContent() {
       </section>
 
       {/* Service Postcard Grid */}
-      <section className="pb-28 lg:pb-36">
+      <section className="pb-16 lg:pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {boothPricing.map((booth, idx) => {
@@ -208,9 +205,9 @@ export default function ServiceGridContent() {
                       <span className="text-gray-500 text-xs">3 packages available</span>
                     </div>
 
-                    <span className="flex items-center justify-center gap-2 w-full py-3 rounded-full border border-gold/40 text-gold font-semibold text-sm hover:bg-gold hover:text-background transition-all duration-200 group-hover:border-gold">
-                      View Packages
-                      <ArrowRight className="w-4 h-4" />
+                    <span className="booth-btn flex items-center justify-center gap-2 w-full py-3 rounded-full border border-gold/40 hover:bg-gold hover:border-gold transition-all duration-200 group-hover:border-gold">
+                      <span className="booth-btn-text text-gold font-semibold text-sm transition-colors duration-200">View Packages</span>
+                      <ArrowRight className="booth-btn-text w-4 h-4 text-gold transition-colors duration-200" />
                     </span>
                   </div>
                   </motion.div>
@@ -222,18 +219,15 @@ export default function ServiceGridContent() {
       </section>
 
       {/* Add-ons */}
-      <section className="py-24 lg:py-32 bg-[#080810]">
+      <section className="py-16 lg:py-24 bg-[#080810]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={anim({ opacity: 0, y: 30 })}
             whileInView={anim({ opacity: 1, y: 0 })}
             viewport={{ once: true }}
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center mb-10 lg:mb-12"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Enhance Your Experience
-            </p>
             <h2
               className="text-3xl sm:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -269,18 +263,15 @@ export default function ServiceGridContent() {
       </section>
 
       {/* FAQ */}
-      <section className="py-24 lg:py-32">
+      <section className="py-16 lg:py-24">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={anim({ opacity: 0, y: 30 })}
             whileInView={anim({ opacity: 1, y: 0 })}
             viewport={{ once: true }}
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center mb-10 lg:mb-12"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Got Questions?
-            </p>
             <h2
               className="text-3xl sm:text-4xl font-bold text-white"
               style={{ fontFamily: "var(--font-playfair)" }}

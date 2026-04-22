@@ -21,8 +21,7 @@ import { fadeUp, stagger } from "@/lib/variants";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import VerifiedReviews from "@/components/VerifiedReviews";
 
-const googleBusinessUrl =
-  "https://www.google.com/maps/dir/FunLoading360+Photo+Booth,+Guys+Farm+Rd,+South+Woodham+Ferrers,+Chelmsford+CM3+5NF/FunLoading360+Photo+Booth,+Guys+Farm+Rd,+South+Woodham+Ferrers,+Chelmsford+CM3+5NF/@51.6390912,0.3506176,13z/data=!3m1!4b1!4m13!4m12!1m5!1m1!1s0x47d8ddbcb32b8c1f:0x36198f1517fd1c93!2m2!1d0.6127473!2d51.6457952!1m5!1m1!1s0x47d8ddbcb32b8c1f:0x36198f1517fd1c93!2m2!1d0.6127473!2d51.6457952";
+const googleBusinessUrl = "https://g.page/r/CZMc_RcVjxk2EBM/review";
 
 const trustBadges = [
   { icon: Star, label: "5-Star Rated", sub: "Reviews", href: googleBusinessUrl },
@@ -38,7 +37,7 @@ const booths = [
     description:
       "Jaw-dropping 360° video experiences with slow-motion effects. Guests step onto the platform and watch as the camera circles them, creating cinematic content that goes viral.",
     features: ["Slow-mo video", "RGB backdrop", "Instant sharing", "Custom overlay"],
-    price: "from £499 / 2 hrs",
+    price: "from £280 / 2 hrs",
     gradient: "from-purple-900/60 to-blue-900/60",
     accentColor: "bg-purple-400",
     href: "/pricing/360-slow-motion",
@@ -55,11 +54,11 @@ const booths = [
       "Props included",
       "Instant photos",
     ],
-    price: "from £379 / 2 hrs",
+    price: "from £280 / 2 hrs",
     gradient: "from-amber-900/60 to-rose-900/60",
     accentColor: "bg-amber-400",
     href: "/pricing/glam-vintage",
-    image: "/images/glam-vintage-booth.jpg",
+    image: "/images/glam-vintage/glam-vintage-new.jpg",
   },
   {
     name: "Selfie Pod",
@@ -72,11 +71,11 @@ const booths = [
       "Compact design",
       "Video messages",
     ],
-    price: "from £229 / 2 hrs",
+    price: "from £200 / 3 hrs",
     gradient: "from-emerald-900/60 to-teal-900/60",
     accentColor: "bg-emerald-400",
     href: "/pricing/selfie-pod",
-    image: "/images/selfie-pod/selfie-pod-venue.jpeg",
+    image: "/images/selfie-pod/selfie-pod-new.jpg",
   },
 ];
 
@@ -154,26 +153,13 @@ export default function HomePage() {
             priority
             quality={90}
           />
-          {/* Dark overlay for text readability */}
           <div className="absolute inset-0 bg-black/60" />
-          {/* Subtle radial glow */}
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gold/5 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/4 w-[400px] h-[400px] bg-purple-600/5 rounded-full blur-3xl" />
           <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-3xl" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Pre-headline badge */}
-          <motion.div
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20 text-gold text-sm font-medium mb-8"
-          >
-            <Star className="w-3.5 h-3.5 fill-current" />
-            <span>Essex, Kent &amp; London&apos;s Premier Photo Booth</span>
-          </motion.div>
-
           {/* Main headline */}
           <motion.h1
             initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
@@ -211,25 +197,12 @@ export default function HomePage() {
             </span>
           </motion.p>
 
-          {/* Reviews badge */}
-          <motion.div
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.25 }}
-            className="flex items-center justify-center gap-2 text-sm mb-8"
-          >
-            <span className="text-yellow-400 text-lg">★★★★★</span>
-            <span className="text-white font-semibold">4.9</span>
-            <span className="text-gray-400">· 48 verified reviews on</span>
-            <span className="text-white font-medium">Bark.com &amp; Poptop</span>
-          </motion.div>
-
           {/* CTAs */}
           <motion.div
             initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
             animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10"
           >
             <Link
               href="/pricing"
@@ -296,18 +269,15 @@ export default function HomePage() {
       </section>
 
       {/* ── OUR BOOTHS ── */}
-      <section className="py-24 lg:py-32">
+      <section className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={fadeUp}
-            className="text-center mb-16"
+            className="text-center mb-10 lg:mb-12"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Our Fleet
-            </p>
             <h2
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -334,7 +304,6 @@ export default function HomePage() {
                   custom={i}
                   className="group relative rounded-3xl overflow-hidden border border-border bg-surface hover:border-gold/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full"
                 >
-                {/* Booth image */}
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
                     src={booth.image}
@@ -346,17 +315,9 @@ export default function HomePage() {
                     priority={i === 0}
                     loading={i === 0 ? "eager" : "lazy"}
                   />
-                  {/* Gradient overlay - fades on hover for clearer image */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${booth.gradient} transition-opacity duration-500 group-hover:opacity-0`} />
-                  {/* Tagline badge */}
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-medium border border-white/10">
-                      {booth.tagline}
-                    </span>
-                  </div>
                 </div>
 
-                {/* Content */}
                 <div className="p-6">
                   <h3
                     className="text-xl font-bold text-white mb-2"
@@ -378,10 +339,10 @@ export default function HomePage() {
                       </li>
                     ))}
                   </ul>
-                  <span className="inline-block text-yellow-400 font-semibold text-sm mb-4">{booth.price}</span>
-                  <span className="inline-flex items-center gap-1.5 text-gold text-sm font-semibold">
-                    View packages
-                    <ChevronRight className="w-4 h-4" />
+                  <p className="text-gold font-semibold text-sm mb-3">{booth.price}</p>
+                  <span className="booth-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-gold/40 hover:bg-gold hover:border-gold transition-all duration-200">
+                    <span className="booth-btn-text text-gold text-sm font-semibold transition-colors duration-200">View packages</span>
+                    <ChevronRight className="booth-btn-text w-4 h-4 text-gold transition-colors duration-200" />
                   </span>
                 </div>
                 </motion.div>
@@ -408,91 +369,29 @@ export default function HomePage() {
       </section>
 
       {/* ── VERIFIED REVIEWS ── */}
-      <section className="py-24 lg:py-32">
+      <section className="py-0 bg-[#080810]">
         <VerifiedReviews />
       </section>
 
-      {/* ── HOW IT WORKS ── */}
-      <section className="py-24 lg:py-32 bg-[#080810]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeUp}
-            className="text-center mb-16"
-          >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Simple Process
-            </p>
-            <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white"
-              style={{ fontFamily: "var(--font-playfair)" }}
-            >
-              How It Works
-            </h2>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={stagger}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 lg:gap-12"
-          >
-            {steps.map((step, i) => (
-              <motion.div
-                key={step.number}
-                variants={fadeUp}
-                custom={i}
-                className="relative text-center"
-              >
-                {/* Connector line */}
-                {i < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-10 left-[60%] right-[-40%] h-px bg-gradient-to-r from-gold/30 to-transparent" />
-                )}
-                <div className="inline-flex w-20 h-20 rounded-full bg-surface border-2 border-gold/30 items-center justify-center mb-6">
-                  <span
-                    className="text-2xl font-bold text-gold"
-                    style={{ fontFamily: "var(--font-playfair)" }}
-                  >
-                    {step.number}
-                  </span>
-                </div>
-                <h3
-                  className="text-xl font-bold text-white mb-3"
-                  style={{ fontFamily: "var(--font-playfair)" }}
-                >
-                  {step.title}
-                </h3>
-                <p className="text-gray-400 leading-relaxed text-sm">
-                  {step.description}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* ── PERFECT FOR ── */}
-      <section className="py-24 lg:py-32 bg-[#080810]">
+      <section className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={fadeUp}
-            className="text-center mb-16"
+            className="text-center mb-10"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Any Occasion
-            </p>
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
               Perfect For
             </h2>
+            <p className="text-gray-400 max-w-xl mx-auto text-lg">
+              From intimate weddings to large corporate events — our photo booth hire covers every occasion across Essex, Kent &amp; London.
+            </p>
           </motion.div>
 
           <motion.div
@@ -529,27 +428,84 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── HOW IT WORKS ── */}
+      <section className="py-16 lg:py-24 bg-[#080810]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeUp}
+            className="text-center mb-10 lg:mb-12"
+          >
+            <h2
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
+              style={{ fontFamily: "var(--font-playfair)" }}
+            >
+              How It Works
+            </h2>
+            <p className="text-gray-400 max-w-xl mx-auto text-lg">
+              Booking photo booth hire in Essex, Kent or London couldn&apos;t be simpler — just pick your date and we handle the rest.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={stagger}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 lg:gap-12"
+          >
+            {steps.map((step, i) => (
+              <motion.div
+                key={step.number}
+                variants={fadeUp}
+                custom={i}
+                className="relative text-center"
+              >
+                {i < steps.length - 1 && (
+                  <div className="hidden md:block absolute top-10 left-[60%] right-[-40%] h-px bg-gradient-to-r from-gold/30 to-transparent" />
+                )}
+                <div className="inline-flex w-20 h-20 rounded-full bg-surface border-2 border-gold/30 items-center justify-center mb-6">
+                  <span
+                    className="text-2xl font-bold text-gold"
+                    style={{ fontFamily: "var(--font-playfair)" }}
+                  >
+                    {step.number}
+                  </span>
+                </div>
+                <h3
+                  className="text-xl font-bold text-white mb-3"
+                  style={{ fontFamily: "var(--font-playfair)" }}
+                >
+                  {step.title}
+                </h3>
+                <p className="text-gray-400 leading-relaxed text-sm">
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
       {/* ── FINAL CTA ── */}
-      <section className="py-24 lg:py-32">
+      <section className="py-16 lg:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={fadeUp}
-            className="relative p-10 lg:p-16 rounded-3xl bg-gradient-to-br from-surface to-[#1c1228] border border-gold/20 overflow-hidden"
+            className="relative px-6 py-10 sm:p-10 lg:p-12 rounded-3xl bg-gradient-to-br from-surface to-[#1c1228] border border-gold/20 overflow-hidden"
           >
-            {/* Glow */}
             <div className="absolute inset-0 bg-gold/3 rounded-3xl" />
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-gold/10 rounded-full blur-3xl" />
 
             <div className="relative z-10">
               <div className="flex items-center justify-center gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 text-gold fill-current"
-                  />
+                  <Star key={i} className="w-4 h-4 text-gold fill-current" />
                 ))}
               </div>
               <h2
@@ -559,7 +515,7 @@ export default function HomePage() {
                 Ready to Book?
               </h2>
               <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
-                Secure your date today. Packages from just £299 with free setup
+                Secure your date today. Packages from just £229 with free setup
                 and instant sharing included.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

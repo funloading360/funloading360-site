@@ -497,18 +497,15 @@ export default function CorporatePage() {
       </section>
 
       {/* ── WHY CORPORATE CLIENTS CHOOSE US ── */}
-      <section className="py-24 lg:py-32">
+      <section className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={fadeUp}
-            className="mb-16"
+            className="mb-10 lg:mb-12"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Why FunLoading360
-            </p>
             <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
               <h2
                 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white max-w-xl leading-tight"
@@ -567,18 +564,15 @@ export default function CorporatePage() {
       </section>
 
       {/* ── CORPORATE PACKAGES ── */}
-      <section id="packages" className="py-24 lg:py-32 bg-[#08080f]">
+      <section id="packages" className="py-16 lg:py-24 bg-[#08080f]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={fadeUp}
-            className="text-center mb-16"
+            className="text-center mb-10 lg:mb-12"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Corporate Pricing
-            </p>
             <h2
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -704,18 +698,15 @@ export default function CorporatePage() {
       </section>
 
       {/* ── HOW IT WORKS (HORIZONTAL TIMELINE) ── */}
-      <section className="py-24 lg:py-32 overflow-hidden">
+      <section className="py-16 lg:py-24 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={fadeUp}
-            className="text-center mb-16"
+            className="text-center mb-10 lg:mb-12"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              The Process
-            </p>
             <h2
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -815,18 +806,15 @@ export default function CorporatePage() {
       </section>
 
       {/* ── LEAD FORM ── */}
-      <section id="quote-form" className="py-24 lg:py-32 bg-[#08080f]">
+      <section id="quote-form" className="py-16 lg:py-24 bg-[#08080f]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={fadeUp}
-            className="text-center mb-12"
+            className="text-center mb-10 lg:mb-12"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Let&apos;s Talk
-            </p>
             <h2
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}

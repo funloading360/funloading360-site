@@ -72,10 +72,7 @@ function BrowserFrame({ src, alt, platform }: { src: string; alt: string; platfo
           <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
         </div>
-        {/* URL bar */}
-        <div className="flex-1 mx-2 px-3 py-1 rounded-md bg-[#1a1a2e] text-[11px] text-gray-400 font-mono truncate">
-          {PLATFORM[platform].url}/funloading360
-        </div>
+        <div className="flex-1" />
       </div>
       {/* Screenshot inside frame */}
       <div className="bg-white">
@@ -126,13 +123,9 @@ function ReviewCard({ review }: { review: PlatformReview }) {
       {/* Card body */}
       <div className="flex flex-col p-5 gap-3">
 
-        {/* Stars + badge */}
-        <div className="flex items-center justify-between">
+        {/* Stars */}
+        <div className="flex items-center">
           <StarRating rating={review.rating} />
-          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold text-white ${PLATFORM[review.platform].badge}`}>
-            <ShieldCheck className="w-3 h-3" />
-            {PLATFORM[review.platform].label}
-          </span>
         </div>
 
         {/* Quote */}
@@ -150,18 +143,6 @@ function ReviewCard({ review }: { review: PlatformReview }) {
           )}
         </div>
 
-        {/* Platform link */}
-        <a
-          href={review.profileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs font-medium transition-colors duration-150 w-fit"
-          style={{ color: PLATFORM[review.platform].color }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <ExternalLink className="w-3 h-3" />
-          View on {PLATFORM[review.platform].label}
-        </a>
       </div>
     </article>
   );
@@ -217,7 +198,7 @@ export default function VerifiedReviews() {
   };
 
   return (
-    <div className="py-20">
+    <div className="py-16 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -228,49 +209,13 @@ export default function VerifiedReviews() {
           transition={{ duration: 0.6 }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 mb-4">
-            <ShieldCheck className="w-4 h-4 text-gold" />
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest">
-              Verified Reviews
-            </p>
-          </div>
           <h2
             className="text-3xl sm:text-4xl font-bold text-white mb-4"
             style={{ fontFamily: 'var(--font-playfair)' }}
           >
             What Real Clients Say
           </h2>
-          <p className="text-gray-400 text-base max-w-xl mx-auto">
-            Unedited reviews from{' '}
-            <a href="https://www.bark.com/en/gb/b/funloading360/lMM9G/" target="_blank" rel="noopener noreferrer" className="text-[#e8690a] hover:underline font-medium">Bark.com</a>
-            {' '}and{' '}
-            <a href="https://www.poptop.uk.com/services/37059/" target="_blank" rel="noopener noreferrer" className="text-[#e91e8c] hover:underline font-medium">Poptop</a>
-            {' '}— real clients, real events.
-          </p>
         </motion.div>
-
-        {/* Filter tabs */}
-        <div className="flex justify-center gap-2 mb-10" role="tablist">
-          {TABS.map(({ key, label }) => {
-            const isActive = activeTab === key;
-            const count = key === 'all' ? reviews.length : reviews.filter(r => r.platform === key).length;
-            return (
-              <button
-                key={key} role="tab" aria-selected={isActive}
-                onClick={() => setActiveTab(key)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-200 ${
-                  isActive
-                    ? key === 'bark'   ? 'bg-[#e8690a] border-[#e8690a] text-white'
-                    : key === 'poptop' ? 'bg-[#e91e8c] border-[#e91e8c] text-white'
-                    :                    'bg-gold border-gold text-background'
-                    : 'bg-transparent border-border text-gray-400 hover:border-gray-500 hover:text-gray-200'
-                }`}
-              >
-                {label} <span className="ml-1 opacity-60 text-xs">({count})</span>
-              </button>
-            );
-          })}
-        </div>
 
         {/* Carousel */}
         <div
@@ -323,7 +268,7 @@ export default function VerifiedReviews() {
 
         {/* Dots */}
         {totalDots > 1 && (
-          <div className="flex justify-center gap-2 mt-8">
+          <div className="flex justify-center gap-2 mt-6 mb-2">
             {Array.from({ length: totalDots }).map((_, i) => (
               <button key={i} onClick={() => setIndex(i)} aria-label={`Slide ${i + 1}`}
                 className={`rounded-full transition-all duration-300 ${i === index ? 'w-8 h-2 bg-gold' : 'w-2 h-2 bg-gray-600 hover:bg-gray-400'}`}
@@ -332,18 +277,6 @@ export default function VerifiedReviews() {
           </div>
         )}
 
-        {/* Footer links */}
-        <div className="flex flex-wrap items-center justify-center gap-6 mt-10 pt-8 border-t border-border">
-          <p className="text-gray-500 text-sm">Read all reviews on:</p>
-          <a href="https://www.bark.com/en/gb/b/funloading360/lMM9G/" target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#e8690a] hover:text-[#ff7a1a] transition-colors">
-            <ExternalLink className="w-4 h-4" /> Bark.com
-          </a>
-          <a href="https://www.poptop.uk.com/services/37059/" target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#e91e8c] hover:text-[#ff2ea0] transition-colors">
-            <ExternalLink className="w-4 h-4" /> Poptop
-          </a>
-        </div>
 
       </div>
     </div>

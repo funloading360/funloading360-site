@@ -49,7 +49,6 @@ export default function AboutContent() {
         </div>
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">About FunLoading360</p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6" style={{ fontFamily: "var(--font-playfair)" }}>
               Photo Booths Built for Real Events
             </h1>
@@ -71,7 +70,7 @@ export default function AboutContent() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mb-10 lg:mb-12"
           >
             <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
               Our Core Commitment
@@ -157,9 +156,9 @@ export default function AboutContent() {
               </Link>
               <Link
                 href="/pricing"
-                className="px-8 py-4 rounded-full border border-gold text-gold font-bold hover:bg-gold/10 transition-colors"
+                className="booth-btn inline-flex items-center gap-2 px-8 py-4 rounded-full border border-gold/40 hover:bg-gold hover:border-gold transition-all duration-200"
               >
-                View Pricing
+                <span className="booth-btn-text text-gold font-semibold text-sm transition-colors duration-200">View Pricing</span>
               </Link>
             </div>
           </motion.div>

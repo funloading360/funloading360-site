@@ -94,7 +94,7 @@ export default function LocationsPage() {
   return (
     <div className="bg-background text-white pt-20 overflow-x-hidden">
       {/* ── HERO ── */}
-      <section className="relative py-24 lg:py-32 text-center overflow-hidden">
+      <section className="relative py-16 lg:py-24 text-center overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gold/5 rounded-full blur-3xl" />
           <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-blue-600/5 rounded-full blur-3xl" />
@@ -272,18 +272,15 @@ export default function LocationsPage() {
       </section>
 
       {/* ── COVERAGE BY REGION ── */}
-      <section className="py-20 lg:py-28">
+      <section className="py-16 lg:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={fadeUp}
-            className="text-center mb-14"
+            className="text-center mb-10 lg:mb-12"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Where We Operate
-            </p>
             <h2
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -351,7 +348,7 @@ export default function LocationsPage() {
                 href="https://maps.google.com/?q=FunLoading360,+South+Woodham+Ferrers,+Essex+CM3+5NF"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-yellow-500 text-black font-bold px-6 py-3 rounded-lg hover:bg-yellow-400 transition-colors"
+                className="inline-flex items-center gap-2 bg-gold text-background font-bold px-6 py-3 rounded-full hover:bg-gold-light transition-colors"
               >
                 📍 View Our Coverage Area on Google Maps
               </a>
@@ -361,18 +358,15 @@ export default function LocationsPage() {
       </section>
 
       {/* ── TRAVEL PRICING ── */}
-      <section className="py-20 lg:py-28 bg-[#080810]">
+      <section className="py-16 lg:py-24 bg-[#080810]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={fadeUp}
-            className="text-center mb-12"
+            className="text-center mb-10 lg:mb-12"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              No Surprises
-            </p>
             <h2
               className="text-3xl sm:text-4xl font-bold text-white"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -431,7 +425,7 @@ export default function LocationsPage() {
       </section>
 
       {/* ── OUTSIDE OUR AREA? ── */}
-      <section className="py-20 lg:py-28">
+      <section className="py-16 lg:py-24">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

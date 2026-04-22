@@ -16,7 +16,6 @@ const navLinks = [
   { label: "Corporate", href: "/corporate" },
   { label: "Locations", href: "/locations" },
   { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
 ];
 
 export default function Navbar() {
@@ -129,13 +128,6 @@ export default function Navbar() {
               )}
             </Link>
 
-            {/* Book Button */}
-            <Link
-              href="/book"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gold text-background font-semibold text-sm hover:bg-[#fbbf4a] transition-all duration-200 shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:-translate-y-0.5 min-h-[44px]"
-            >
-              Book
-            </Link>
           </div>
 
           {/* Mobile hamburger */}

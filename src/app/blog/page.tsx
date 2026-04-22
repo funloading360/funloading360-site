@@ -30,25 +30,27 @@ export default function BlogPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <main className="min-h-screen bg-background text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center mb-16">
-            <div className="inline-block text-xs font-bold tracking-widest text-gold uppercase mb-4 bg-gold/10 px-3 py-1 rounded-full">
-              Resources
+      <main className="min-h-screen bg-background text-white pt-20">
+        <section className="py-16 lg:py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10 lg:mb-12">
+              <h1
+                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4"
+                style={{ fontFamily: "var(--font-playfair)" }}
+              >
+                Photo Booth Hire Blog
+              </h1>
+              <p className="text-gray-400 max-w-xl mx-auto text-lg">
+                Expert guides, local tips, and honest advice for photo booth hire across Essex, Kent &amp; London.
+              </p>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Photo Booth Hire Blog
-            </h1>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Expert guides, local tips, and honest advice for photo booth hire across Essex, Kent &amp; London.
-            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {blogPosts.map((post) => (
+                <BlogCard key={post.slug} post={post} />
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogPosts.map((post) => (
-              <BlogCard key={post.slug} post={post} />
-            ))}
-          </div>
-        </div>
+        </section>
       </main>
     </>
   );

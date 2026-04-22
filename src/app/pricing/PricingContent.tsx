@@ -88,7 +88,7 @@ export default function PricingPage() {
   return (
     <div className="bg-background text-white pt-20">
       {/* Header */}
-      <section className="py-20 lg:py-28 text-center relative overflow-hidden">
+      <section className="py-16 lg:py-24 text-center relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gold/5 rounded-full blur-3xl" />
         </div>
@@ -98,9 +98,6 @@ export default function PricingPage() {
             animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Transparent Pricing
-            </p>
             <h1
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -128,13 +125,13 @@ export default function PricingPage() {
 
       {/* Pricing by Booth Type */}
       {/* Comparison CTA */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 lg:pb-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24">
         <motion.div
           initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
           whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
-          className="mb-16 p-8 rounded-2xl bg-surface border border-border"
+          className="mb-10 lg:mb-12 p-8 rounded-2xl bg-surface border border-border"
         >
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex-1">
@@ -147,9 +144,9 @@ export default function PricingPage() {
             </div>
             <button
               onClick={() => setShowComparison(true)}
-              className="px-6 py-2.5 rounded-full border border-gold text-gold hover:bg-gold/10 transition-all duration-200 font-semibold text-sm whitespace-nowrap"
+              className="booth-btn inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gold/40 hover:bg-gold hover:border-gold transition-all duration-200 whitespace-nowrap"
             >
-              Compare All Packages
+              <span className="booth-btn-text text-gold font-semibold text-sm transition-colors duration-200">Compare All Packages</span>
             </button>
           </div>
         </motion.div>
@@ -159,7 +156,7 @@ export default function PricingPage() {
       {boothPricing.map((booth, boothIdx) => (
         <section
           key={booth.booth}
-          className={`py-20 lg:py-24 ${boothIdx % 2 === 0 ? "bg-surface/30" : "bg-background"}`}
+          className={`py-16 lg:py-24 ${boothIdx % 2 === 0 ? "bg-surface/30" : "bg-background"}`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
@@ -169,16 +166,14 @@ export default function PricingPage() {
               transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
             >
               {/* Booth header - Minimal */}
-              <div className="text-left mb-12">
-                <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-2">
-                  {booth.tagline}
-                </p>
+              <div className="text-left mb-10 lg:mb-12">
                 <h2
-                  className="text-3xl sm:text-4xl font-bold text-white"
+                  className="text-3xl sm:text-4xl font-bold text-white mb-2"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
                   {booth.booth}
                 </h2>
+                <p className="text-gray-400 text-base">{booth.tagline}</p>
               </div>
 
               {/* Three pricing tiers for this booth - Responsive Grid */}
@@ -322,18 +317,15 @@ export default function PricingPage() {
       </div>
 
       {/* Add-ons */}
-      <section className="py-24 lg:py-32 bg-[#080810]">
+      <section className="py-16 lg:py-24 bg-[#080810]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center mb-10 lg:mb-12"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Enhance Your Experience
-            </p>
             <h2
               className="text-3xl sm:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -373,18 +365,15 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ */}
-      <section className="py-24 lg:py-32">
+      <section className="py-16 lg:py-24">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center mb-10 lg:mb-12"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Got Questions?
-            </p>
             <h2
               className="text-3xl sm:text-4xl font-bold text-white"
               style={{ fontFamily: "var(--font-playfair)" }}
