@@ -76,11 +76,10 @@ export default function ServicesContent() {
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Professional Photo Booths
+              Photo Booth Hire Services — UK
             </h1>
-            <p className="text-gray-400 text-lg leading-relaxed">
-              Three unique experiences for any occasion. From cinematic 360° video to classic
-              vintage photos — find your perfect match.
+            <p className="text-gray-300 text-lg leading-relaxed" data-speakable-faq="0">
+              FunLoading360 offers three photo booth types for UK events: 360° slow-motion video booths from £280, glam vintage with unlimited prints from £300, and compact selfie pods from £260. Covering Essex, Kent and London with free delivery within 25 miles of Chelmsford.
             </p>
           </motion.div>
         </div>

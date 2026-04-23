@@ -1,0 +1,93 @@
+{
+  "name": "FunLoading360 — Daily Rank Tracking (30 keywords)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "days", "daysInterval": 1 }] },
+        "triggerAtHour": 7
+      },
+      "id": "cron-daily",
+      "name": "Cron: Daily 07:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "filePath": "/data/priority-keywords.json",
+        "options": {}
+      },
+      "id": "read-keywords",
+      "name": "Read priority-keywords.json",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": { "batchSize": 1 }
+      },
+      "id": "split",
+      "name": "Split into 30 items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.google.com/search?q={{ encodeURIComponent($json.keyword) }}&gl=uk&hl=en-gb&num=20",
+        "options": {
+          "timeout": 15000,
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+          }
+        }
+      },
+      "id": "serp-fetch",
+      "name": "SERP Fetch (rate-limited 4s)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const cheerio = require('cheerio');\nconst $ = cheerio.load($input.first().json.body);\nconst results = [];\n$('div.g, div[data-hveid]').each((i, el) => {\n  const link = $(el).find('a[href]').first().attr('href');\n  if (link && link.includes('funloading360.co.uk')) {\n    results.push({ position: results.length + 1, found: true, url: link });\n  } else if (link) {\n    results.push({ position: results.length + 1, found: false, url: link });\n  }\n});\nconst ourResult = results.find(r => r.found);\nreturn [{ json: { keyword: $input.first().json.keyword || 'unknown', position: ourResult?.position ?? null, found: !!ourResult, date: new Date().toISOString().split('T')[0] } }];"
+      },
+      "id": "parse",
+      "name": "Parse SERP HTML",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": { "amount": 4, "unit": "seconds" },
+      "id": "wait",
+      "name": "Wait 4s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "value": "RANKS_SHEET_ID", "mode": "id" },
+        "sheetName": "daily-ranks"
+      },
+      "id": "sheet-append",
+      "name": "Sheet: Append ranks",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1560, 300]
+    }
+  ],
+  "connections": {
+    "Cron: Daily 07:00": { "main": [[{ "node": "Read priority-keywords.json", "type": "main", "index": 0 }]] },
+    "Read priority-keywords.json": { "main": [[{ "node": "Split into 30 items", "type": "main", "index": 0 }]] },
+    "Split into 30 items": { "main": [[{ "node": "SERP Fetch (rate-limited 4s)", "type": "main", "index": 0 }]] },
+    "SERP Fetch (rate-limited 4s)": { "main": [[{ "node": "Parse SERP HTML", "type": "main", "index": 0 }]] },
+    "Parse SERP HTML": { "main": [[{ "node": "Wait 4s", "type": "main", "index": 0 }]] },
+    "Wait 4s": { "main": [[{ "node": "Sheet: Append ranks", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

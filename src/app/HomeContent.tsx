@@ -168,7 +168,7 @@ export default function HomePage() {
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-6"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Your Celebration,{" "}
+            Premium Photo Booth Hire{" "}
             <span
               className="block"
               style={{
@@ -179,18 +179,19 @@ export default function HomePage() {
                 backgroundClip: "text",
               }}
             >
-              Captured Forever
+              Essex · Kent · London
             </span>
           </motion.h1>
 
-          {/* Subline */}
+          {/* AEO-extractable subline */}
           <motion.p
             initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
             animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
-            className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed"
+            data-speakable-faq="0"
           >
-            Premium Photo Booth Hire — Essex, Kent &amp; London
+            FunLoading360 offers 360°, glam vintage &amp; selfie pod photo booth hire from £280 across Essex, Kent &amp; London. Free delivery within 25 miles of Chelmsford. 4.9★ from 48+ couples and event planners.
             <br className="hidden sm:block" />
             <span className="text-gray-500">
               360 Slow Motion &bull; Glam Vintage &bull; Selfie Pod

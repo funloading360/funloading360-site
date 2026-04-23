@@ -1,0 +1,80 @@
+{
+  "name": "FunLoading360 — GBP Review Collector → Review Schema",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "days", "daysInterval": 1 }] },
+        "triggerAtHour": 5
+      },
+      "id": "cron-daily",
+      "name": "Cron: Daily 05:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://mybusiness.googleapis.com/v4/accounts/{{ $env.GBP_ACCOUNT_ID }}/locations/{{ $env.GBP_LOCATION_ID }}/reviews",
+        "method": "GET",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api"
+      },
+      "id": "gbp-reviews",
+      "name": "GBP: Fetch Reviews",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300],
+      "credentials": { "oAuth2Api": { "id": "gbp-oauth", "name": "GBP OAuth" } }
+    },
+    {
+      "parameters": {
+        "functionCode": "const reviews = $input.first().json.reviews || [];\nconst transformed = reviews.map(r => ({\n  author: r.reviewer?.displayName || 'Anonymous',\n  rating: r.starRating === 'FIVE' ? 5 : r.starRating === 'FOUR' ? 4 : r.starRating === 'THREE' ? 3 : r.starRating === 'TWO' ? 2 : 1,\n  body: r.comment || '',\n  datePublished: r.createTime?.split('T')[0] || new Date().toISOString().split('T')[0],\n  source: 'GBP',\n  verifiedUrl: `https://search.google.com/local/reviews?placeid=${process.env.GBP_PLACE_ID}`\n}));\nreturn [{ json: { reviews: transformed, count: transformed.length, fetchedAt: new Date().toISOString() } }];"
+      },
+      "id": "transform",
+      "name": "Transform to Review schema shape",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/data/funloading360/reviews.json",
+        "options": { "append": false }
+      },
+      "id": "write-file",
+      "name": "Write /data/reviews.json",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/funloading360/photobooth-site/contents/src/data/reviews.json",
+        "method": "PUT",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": \"chore(seo): sync GBP reviews for Review schema\",\n  \"content\": \"{{ $binary.data.base64 }}\",\n  \"sha\": \"{{ $json.sha }}\"\n}"
+      },
+      "id": "github-commit",
+      "name": "GitHub: Commit reviews.json",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 400],
+      "credentials": { "httpHeaderAuth": { "id": "github-token", "name": "GitHub PAT" } }
+    }
+  ],
+  "connections": {
+    "Cron: Daily 05:00": { "main": [[{ "node": "GBP: Fetch Reviews", "type": "main", "index": 0 }]] },
+    "GBP: Fetch Reviews": { "main": [[{ "node": "Transform to Review schema shape", "type": "main", "index": 0 }]] },
+    "Transform to Review schema shape": {
+      "main": [[
+        { "node": "Write /data/reviews.json", "type": "main", "index": 0 },
+        { "node": "GitHub: Commit reviews.json", "type": "main", "index": 0 }
+      ]]
+    }
+  },
+  "settings": { "executionOrder": "v1" }
+}

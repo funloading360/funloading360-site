@@ -1,0 +1,80 @@
+{
+  "name": "FunLoading360 — GA4 Weekly Conversion Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "weeks", "weeksInterval": 1 }] },
+        "triggerOnWeekday": ["Monday"],
+        "triggerAtHour": 8
+      },
+      "id": "cron-weekly",
+      "name": "Cron: Mondays 08:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://analyticsdata.googleapis.com/v1beta/properties/{{ $env.GA4_PROPERTY_ID }}:runReport",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"dateRanges\": [\n    { \"startDate\": \"7daysAgo\", \"endDate\": \"yesterday\", \"name\": \"thisWeek\" },\n    { \"startDate\": \"14daysAgo\", \"endDate\": \"8daysAgo\", \"name\": \"lastWeek\" }\n  ],\n  \"metrics\": [\n    { \"name\": \"sessions\" },\n    { \"name\": \"totalUsers\" },\n    { \"name\": \"eventCount\", \"expression\": \"form_start\" },\n    { \"name\": \"eventCount\", \"expression\": \"form_complete\" },\n    { \"name\": \"eventCount\", \"expression\": \"booking_submitted\" },\n    { \"name\": \"eventCount\", \"expression\": \"deposit_paid\" }\n  ],\n  \"dimensions\": [\n    { \"name\": \"pagePath\" },\n    { \"name\": \"sessionSource\" }\n  ]\n}"
+      },
+      "id": "ga4",
+      "name": "GA4: Run Report (week-over-week)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300],
+      "credentials": { "oAuth2Api": { "id": "ga4-service-account", "name": "GA4 Service Account" } }
+    },
+    {
+      "parameters": {
+        "functionCode": "const rows = $input.first().json.rows || [];\n// Compute funnel rates and deltas per page.\nconst thisWeek = rows.filter(r => r.dimensionValues[0]?.value && r.metricValues);\nconst funnel = {\n  sessions: 0,\n  formStarts: 0,\n  formComplete: 0,\n  bookings: 0,\n  deposits: 0\n};\nthisWeek.forEach(r => {\n  funnel.sessions += parseInt(r.metricValues[0].value || 0);\n  funnel.formStarts += parseInt(r.metricValues[2].value || 0);\n  funnel.formComplete += parseInt(r.metricValues[3].value || 0);\n  funnel.bookings += parseInt(r.metricValues[4].value || 0);\n  funnel.deposits += parseInt(r.metricValues[5].value || 0);\n});\nconst rates = {\n  startRate: funnel.sessions ? (funnel.formStarts / funnel.sessions * 100).toFixed(2) : 0,\n  completionRate: funnel.formStarts ? (funnel.formComplete / funnel.formStarts * 100).toFixed(2) : 0,\n  bookingRate: funnel.formComplete ? (funnel.bookings / funnel.formComplete * 100).toFixed(2) : 0,\n  depositRate: funnel.bookings ? (funnel.deposits / funnel.bookings * 100).toFixed(2) : 0\n};\nreturn [{ json: { funnel, rates, weekEnding: new Date().toISOString().split('T')[0] } }];"
+      },
+      "id": "analyze",
+      "name": "Compute funnel rates",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "sendTo": "funloading360@gmail.com",
+        "subject": "Weekly GA4 Digest — {{ $json.weekEnding }}",
+        "message": "=FunLoading360 weekly funnel:\n\nSessions: {{ $json.funnel.sessions }}\nForm starts: {{ $json.funnel.formStarts }} ({{ $json.rates.startRate }}%)\nForm completions: {{ $json.funnel.formComplete }} ({{ $json.rates.completionRate }}%)\nBookings: {{ $json.funnel.bookings }} ({{ $json.rates.bookingRate }}%)\nDeposits paid: {{ $json.funnel.deposits }} ({{ $json.rates.depositRate }}%)\n\nTarget: form completion rate > 20% by week 8. Current: {{ $json.rates.completionRate }}%.\n\n- seo-orchestrator",
+        "options": {}
+      },
+      "id": "gmail",
+      "name": "Gmail: Weekly digest",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "value": "GA4_SHEET_ID", "mode": "id" },
+        "sheetName": "weekly-funnel"
+      },
+      "id": "sheet",
+      "name": "Sheet: Archive funnel",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [900, 400]
+    }
+  ],
+  "connections": {
+    "Cron: Mondays 08:00": { "main": [[{ "node": "GA4: Run Report (week-over-week)", "type": "main", "index": 0 }]] },
+    "GA4: Run Report (week-over-week)": { "main": [[{ "node": "Compute funnel rates", "type": "main", "index": 0 }]] },
+    "Compute funnel rates": {
+      "main": [[
+        { "node": "Gmail: Weekly digest", "type": "main", "index": 0 },
+        { "node": "Sheet: Archive funnel", "type": "main", "index": 0 }
+      ]]
+    }
+  },
+  "settings": { "executionOrder": "v1" }
+}

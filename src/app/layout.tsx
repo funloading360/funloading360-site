@@ -7,6 +7,10 @@ import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import WebVitals from "@/components/WebVitals";
+import {
+  buildLocalBusinessSchema,
+  buildOrganizationSchema,
+} from "@/lib/structured-data";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -53,56 +57,8 @@ export const metadata: Metadata = {
   },
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  name: "FunLoading360",
-  description:
-    "Premium photo booth hire across Essex, Kent & London for weddings, corporate events, birthdays and proms.",
-  url: "https://www.funloading360.co.uk",
-  telephone: "+44 7482 112110",
-  email: "FunLoading360@gmail.com",
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "Guys Farm Rd",
-    addressLocality: "South Woodham Ferrers",
-    postalCode: "CM3 5NF",
-    addressRegion: "Essex",
-    addressCountry: "GB",
-  },
-  areaServed: [
-    { "@type": "Place", name: "Essex" },
-    { "@type": "Place", name: "Kent" },
-    { "@type": "Place", name: "London" },
-  ],
-  priceRange: "££",
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.9",
-    reviewCount: "48",
-    bestRating: "5",
-    worstRating: "1",
-  },
-  openingHoursSpecification: {
-    "@type": "OpeningHoursSpecification",
-    dayOfWeek: [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ],
-    opens: "09:00",
-    closes: "22:00",
-  },
-  sameAs: [
-    "https://www.instagram.com/funloading360",
-    "https://www.tiktok.com/@funloading360",
-    "https://www.facebook.com/funloading360",
-  ],
-};
+const localBusinessSchema = buildLocalBusinessSchema();
+const organizationSchema = buildOrganizationSchema();
 
 export default function RootLayout({
   children,
@@ -114,7 +70,11 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
       <body

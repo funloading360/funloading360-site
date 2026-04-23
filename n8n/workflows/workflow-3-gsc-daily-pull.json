@@ -1,0 +1,62 @@
+{
+  "name": "FunLoading360 — GSC Daily Pull",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "days", "daysInterval": 1 }] },
+        "triggerAtHour": 6
+      },
+      "id": "cron-daily",
+      "name": "Cron: Daily 06:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/webmasters/v3/sites/sc-domain%3Afunloading360.co.uk/searchAnalytics/query",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"startDate\": \"{{ $now.minus({days: 28}).toFormat('yyyy-MM-dd') }}\",\n  \"endDate\": \"{{ $now.minus({days: 1}).toFormat('yyyy-MM-dd') }}\",\n  \"dimensions\": [\"query\", \"page\"],\n  \"rowLimit\": 1000\n}"
+      },
+      "id": "gsc-query",
+      "name": "GSC: Search Analytics Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300],
+      "credentials": { "oAuth2Api": { "id": "gsc-service-account", "name": "GSC Service Account" } }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": { "__rl": true, "value": "GSC_SHEET_ID", "mode": "id" },
+        "sheetName": "daily-pull",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date": "={{ $now.toFormat('yyyy-MM-dd') }}",
+            "query": "={{ $json.keys[0] }}",
+            "page": "={{ $json.keys[1] }}",
+            "clicks": "={{ $json.clicks }}",
+            "impressions": "={{ $json.impressions }}",
+            "ctr": "={{ $json.ctr }}",
+            "position": "={{ $json.position }}"
+          }
+        }
+      },
+      "id": "sheet-append",
+      "name": "Sheet: Append rows",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Cron: Daily 06:00": { "main": [[{ "node": "GSC: Search Analytics Query", "type": "main", "index": 0 }]] },
+    "GSC: Search Analytics Query": { "main": [[{ "node": "Sheet: Append rows", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

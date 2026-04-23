@@ -1,0 +1,106 @@
+{
+  "name": "FunLoading360 — Weekly AEO Prompt-Fanout Citation Tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "weeks", "weeksInterval": 1 }] },
+        "triggerOnWeekday": ["Wednesday"],
+        "triggerAtHour": 10
+      },
+      "id": "cron-weekly",
+      "name": "Cron: Wednesdays 10:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "filePath": "/data/prompt-fanout-list.json",
+        "options": {}
+      },
+      "id": "read-prompts",
+      "name": "Read 40 prompts from file",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": { "batchSize": 1 }
+      },
+      "id": "split",
+      "name": "Split 40 prompts",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.perplexity.ai/chat/completions",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"sonar\",\n  \"messages\": [{ \"role\": \"user\", \"content\": \"{{ $json.prompt }}\" }],\n  \"return_citations\": true\n}"
+      },
+      "id": "perplexity",
+      "name": "Perplexity query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 200],
+      "credentials": { "httpHeaderAuth": { "id": "perplexity-api", "name": "Perplexity API" } }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.search.brave.com/res/v1/web/search?q={{ encodeURIComponent($json.prompt) }}&country=GB",
+        "method": "GET",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "brave",
+      "name": "Brave Search query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 400],
+      "credentials": { "httpHeaderAuth": { "id": "brave-api", "name": "Brave Search API" } }
+    },
+    {
+      "parameters": {
+        "functionCode": "const prompt = $('Split 40 prompts').first().json.prompt;\nconst perplexityResult = $('Perplexity query').first()?.json;\nconst braveResult = $('Brave Search query').first()?.json;\n\nconst perplexityCited = JSON.stringify(perplexityResult || {}).includes('funloading360');\nconst braveCited = (braveResult?.web?.results || []).some(r => r.url?.includes('funloading360'));\nconst bravePosition = (braveResult?.web?.results || []).findIndex(r => r.url?.includes('funloading360'));\n\nreturn [{ json: {\n  date: new Date().toISOString().split('T')[0],\n  prompt,\n  perplexityCited,\n  braveCited,\n  bravePosition: bravePosition >= 0 ? bravePosition + 1 : null\n} }];"
+      },
+      "id": "merge",
+      "name": "Merge + detect citations",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "value": "AEO_SHEET_ID", "mode": "id" },
+        "sheetName": "weekly-presence"
+      },
+      "id": "sheet",
+      "name": "Sheet: Append AEO data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1340, 300]
+    }
+  ],
+  "connections": {
+    "Cron: Wednesdays 10:00": { "main": [[{ "node": "Read 40 prompts from file", "type": "main", "index": 0 }]] },
+    "Read 40 prompts from file": { "main": [[{ "node": "Split 40 prompts", "type": "main", "index": 0 }]] },
+    "Split 40 prompts": {
+      "main": [[
+        { "node": "Perplexity query", "type": "main", "index": 0 },
+        { "node": "Brave Search query", "type": "main", "index": 0 }
+      ]]
+    },
+    "Perplexity query": { "main": [[{ "node": "Merge + detect citations", "type": "main", "index": 0 }]] },
+    "Brave Search query": { "main": [[{ "node": "Merge + detect citations", "type": "main", "index": 0 }]] },
+    "Merge + detect citations": { "main": [[{ "node": "Sheet: Append AEO data", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

@@ -50,10 +50,10 @@ export default function AboutContent() {
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6" style={{ fontFamily: "var(--font-playfair)" }}>
-              Photo Booths Built for Real Events
+              About FunLoading360 — UK Photo Booth Hire Since 2023
             </h1>
-            <p className="text-gray-400 text-lg leading-relaxed max-w-2xl mx-auto">
-              Three professional booth types. Expert operators. Transparent pricing. Serving Essex, Kent &amp; London for weddings, corporate celebrations, and unforgettable moments.
+            <p className="text-gray-300 text-lg leading-relaxed max-w-2xl mx-auto" data-speakable-faq="0">
+              FunLoading360 is a UK photo booth hire company founded in 2023, headquartered in Chelmsford, Essex (CM3 5NF). We operate three professional booth types — 360° slow-motion, glam vintage, and selfie pod — serving weddings, corporate events, birthdays, and proms across Essex, Kent, and London. 4.9★ rating from 48+ verified reviews.
             </p>
           </motion.div>
         </div>

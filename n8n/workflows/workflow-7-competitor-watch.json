@@ -1,0 +1,73 @@
+{
+  "name": "FunLoading360 — Weekly Competitor SERP Watch",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "weeks", "weeksInterval": 1 }] },
+        "triggerOnWeekday": ["Sunday"],
+        "triggerAtHour": 20
+      },
+      "id": "cron-weekly",
+      "name": "Cron: Sundays 20:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// 6 priority keywords × top 3 competitor URLs = ~72 scrapes/month (Firecrawl free tier safe).\nconst keywords = [\n  'photo booth hire chelmsford',\n  'photo booth hire london',\n  '360 photo booth hire essex',\n  'wedding photo booth hire',\n  'corporate photo booth hire london',\n  'photo booth hire cost uk'\n];\nreturn keywords.map(k => ({ json: { keyword: k } }));"
+      },
+      "id": "keywords",
+      "name": "6 priority keywords",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.firecrawl.dev/v1/search",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"{{ $json.keyword }}\",\n  \"limit\": 3,\n  \"scrapeOptions\": { \"formats\": [\"markdown\"] }\n}"
+      },
+      "id": "firecrawl",
+      "name": "Firecrawl: Search top 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300],
+      "credentials": { "httpHeaderAuth": { "id": "firecrawl-api", "name": "Firecrawl API" } }
+    },
+    {
+      "parameters": {
+        "functionCode": "const items = $input.all();\nconst competitors = items.flatMap(i => (i.json.data || []).map(r => ({\n  keyword: i.json.keyword,\n  url: r.url,\n  title: r.metadata?.title,\n  description: r.metadata?.description,\n  wordCount: (r.markdown || '').split(/\\s+/).length,\n  hasSchema: (r.markdown || '').includes('@type'),\n  lastUpdated: r.metadata?.modifiedTime || 'unknown',\n  date: new Date().toISOString().split('T')[0]\n})));\nreturn competitors.map(c => ({ json: c }));"
+      },
+      "id": "transform",
+      "name": "Extract competitor signals",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "value": "COMPETITORS_SHEET_ID", "mode": "id" },
+        "sheetName": "weekly-watch"
+      },
+      "id": "sheet",
+      "name": "Sheet: Append competitor scan",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Cron: Sundays 20:00": { "main": [[{ "node": "6 priority keywords", "type": "main", "index": 0 }]] },
+    "6 priority keywords": { "main": [[{ "node": "Firecrawl: Search top 3", "type": "main", "index": 0 }]] },
+    "Firecrawl: Search top 3": { "main": [[{ "node": "Extract competitor signals", "type": "main", "index": 0 }]] },
+    "Extract competitor signals": { "main": [[{ "node": "Sheet: Append competitor scan", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

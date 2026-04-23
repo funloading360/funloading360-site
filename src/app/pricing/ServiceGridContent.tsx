@@ -95,11 +95,10 @@ export default function ServiceGridContent() {
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Experiences Worth Every Moment
+              Photo Booth Hire Prices — From £280
             </h1>
-            <p className="text-gray-400 text-lg leading-relaxed">
-              From jaw-dropping 360° slow-motion to glamorous vintage prints — choose the photo
-              booth experience that makes your event unforgettable.
+            <p className="text-gray-300 text-lg leading-relaxed" data-speakable-faq="0">
+              Photo booth hire in the UK costs £280-£470 for 2-4 hours, depending on booth type and package tier. Below: transparent, all-inclusive pricing for 360° Slow Motion, Glam Vintage with unlimited prints, and Selfie Pod booths — across Essex, Kent and London.
             </p>
           </motion.div>
         </div>

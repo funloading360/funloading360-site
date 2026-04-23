@@ -1,0 +1,70 @@
+{
+  "name": "FunLoading360 — Weekly CrUX Field Vitals",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "weeks", "weeksInterval": 1 }] },
+        "triggerOnWeekday": ["Monday"],
+        "triggerAtHour": 4
+      },
+      "id": "cron-weekly",
+      "name": "Cron: Mondays 04:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Priority URLs for CWV monitoring — city pages + core conversion surfaces.\nconst urls = [\n  'https://funloading360.co.uk/',\n  'https://funloading360.co.uk/book',\n  'https://funloading360.co.uk/corporate',\n  'https://funloading360.co.uk/weddings',\n  'https://funloading360.co.uk/pricing',\n  'https://funloading360.co.uk/locations/chelmsford',\n  'https://funloading360.co.uk/locations/london',\n  'https://funloading360.co.uk/locations/southend-on-sea',\n  'https://funloading360.co.uk/locations/basildon',\n  'https://funloading360.co.uk/locations/colchester',\n  'https://funloading360.co.uk/locations/romford',\n  'https://funloading360.co.uk/locations/maidstone',\n  'https://funloading360.co.uk/locations/canterbury',\n  'https://funloading360.co.uk/locations/bromley'\n];\nreturn urls.map(u => ({ json: { url: u } }));"
+      },
+      "id": "urls",
+      "name": "Priority URLs",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://chromeuxreport.googleapis.com/v1/records:queryRecord?key={{ $env.CRUX_API_KEY }}",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $json.url }}\",\n  \"formFactor\": \"PHONE\",\n  \"metrics\": [\"largest_contentful_paint\", \"interaction_to_next_paint\", \"cumulative_layout_shift\"]\n}"
+      },
+      "id": "crux",
+      "name": "CrUX API query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const r = $input.first().json.record;\nconst m = r?.metrics || {};\nconst lcp = m.largest_contentful_paint?.percentiles?.p75;\nconst inp = m.interaction_to_next_paint?.percentiles?.p75;\nconst cls = m.cumulative_layout_shift?.percentiles?.p75;\nreturn [{ json: {\n  url: r?.key?.url,\n  date: new Date().toISOString().split('T')[0],\n  lcp, inp, cls,\n  lcpStatus: lcp < 2500 ? 'good' : lcp < 4000 ? 'needs-improvement' : 'poor',\n  inpStatus: inp < 200 ? 'good' : inp < 500 ? 'needs-improvement' : 'poor',\n  clsStatus: cls < 0.1 ? 'good' : cls < 0.25 ? 'needs-improvement' : 'poor'\n} }];"
+      },
+      "id": "parse",
+      "name": "Parse CrUX response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "value": "CRUX_SHEET_ID", "mode": "id" },
+        "sheetName": "weekly-vitals"
+      },
+      "id": "sheet",
+      "name": "Sheet: Append vitals",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Cron: Mondays 04:00": { "main": [[{ "node": "Priority URLs", "type": "main", "index": 0 }]] },
+    "Priority URLs": { "main": [[{ "node": "CrUX API query", "type": "main", "index": 0 }]] },
+    "CrUX API query": { "main": [[{ "node": "Parse CrUX response", "type": "main", "index": 0 }]] },
+    "Parse CrUX response": { "main": [[{ "node": "Sheet: Append vitals", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

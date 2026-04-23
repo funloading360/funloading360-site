@@ -1,0 +1,91 @@
+{
+  "name": "FunLoading360 — Publish Hooks (Schema validate + IndexNow + Sitemap ping)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "content-published",
+        "responseMode": "onReceived",
+        "responseCode": 200,
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook: Content Published",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://validator.schema.org/validate?url={{ encodeURIComponent($json.url) }}",
+        "method": "GET"
+      },
+      "id": "schema-validate",
+      "name": "Schema.org Validator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://api.indexnow.org/indexnow",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"host\": \"funloading360.co.uk\",\n  \"key\": \"{{ $env.INDEXNOW_KEY }}\",\n  \"keyLocation\": \"https://funloading360.co.uk/{{ $env.INDEXNOW_KEY }}.txt\",\n  \"urlList\": [\"{{ $json.url }}\"]\n}"
+      },
+      "id": "indexnow",
+      "name": "IndexNow: Notify Bing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.google.com/ping?sitemap=https://funloading360.co.uk/sitemap.xml",
+        "method": "GET"
+      },
+      "id": "google-ping",
+      "name": "Google: Ping Sitemap",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "const schemaResult = $input.first().json;\nconst url = $('Webhook: Content Published').first().json.url;\nconst ok = !schemaResult.errors || schemaResult.errors.length === 0;\nif (!ok) {\n  return [{ json: { alert: 'SCHEMA_INVALID', url, errors: schemaResult.errors, action: 'notify Slack' } }];\n}\nreturn [{ json: { ok: true, url, validated: true } }];"
+      },
+      "id": "schema-gate",
+      "name": "Gate: Schema valid?",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \"🚨 Schema validation FAILED for {{ $json.url }}. Errors: {{ JSON.stringify($json.errors) }}\"\n}"
+      },
+      "id": "slack-alert",
+      "name": "Slack: Alert on invalid schema",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 200]
+    }
+  ],
+  "connections": {
+    "Webhook: Content Published": {
+      "main": [[
+        { "node": "Schema.org Validator", "type": "main", "index": 0 },
+        { "node": "IndexNow: Notify Bing", "type": "main", "index": 0 },
+        { "node": "Google: Ping Sitemap", "type": "main", "index": 0 }
+      ]]
+    },
+    "Schema.org Validator": { "main": [[{ "node": "Gate: Schema valid?", "type": "main", "index": 0 }]] },
+    "Gate: Schema valid?": { "main": [[{ "node": "Slack: Alert on invalid schema", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

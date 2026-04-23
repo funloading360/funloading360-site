@@ -419,7 +419,7 @@ export default function CorporatePage() {
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-6"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Make Your Brand{" "}
+            Corporate Photo Booth Hire{" "}
             <span
               style={{
                 background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%)",
@@ -428,7 +428,7 @@ export default function CorporatePage() {
                 backgroundClip: "text",
               }}
             >
-              Unforgettable
+              London &amp; Essex
             </span>
           </motion.h1>
 
@@ -436,11 +436,10 @@ export default function CorporatePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed"
+            data-speakable-faq="0"
           >
-            Premium branded photo booth experiences for corporate events across
-            Essex, Kent &amp; London. Trusted by event managers, HR teams and
-            brand activations specialists.
+            FunLoading360 provides corporate photo booth hire across London, Essex and Kent from £549 (half-day, 4h). Custom branded overlays, GDPR-compliant data capture, same-day analytics, and dedicated account manager. Trusted for product launches, brand activations, Christmas parties, and team events.
           </motion.p>
 
           <motion.div

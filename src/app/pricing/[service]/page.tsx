@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { boothPricing } from "@/lib/packages";
 import ServiceDetailContent from "./ServiceDetailContent";
+import { buildProductSchema, buildServiceSchema } from "@/lib/structured-data";
 
 interface Props {
   params: Promise<{ service: string }>;
@@ -51,29 +52,36 @@ export default async function ServiceDetailPage({ params }: Props) {
   const booth = boothPricing.find((b) => b.slug === service);
   if (!booth) notFound();
 
-  const productSchema = {
-    "@context": "https://schema.org",
-    "@type": "Service",
+  const allPrices = Object.values(booth.tiers).flatMap((t) =>
+    t.prices.map((p) => p.price)
+  );
+  const priceLow = Math.min(...allPrices);
+  const priceHigh = Math.max(...allPrices);
+  const boothUrl = `https://www.funloading360.co.uk/pricing/${booth.slug}`;
+
+  const serviceSchema = buildServiceSchema({
     name: `${booth.booth} Photo Booth Hire`,
     description: booth.longDescription[0],
-    provider: {
-      "@type": "LocalBusiness",
-      name: "FunLoading360",
-      url: "https://www.funloading360.co.uk",
-    },
-    areaServed: ["Essex", "Kent", "London"],
-    offers: Object.values(booth.tiers).flatMap((tier) =>
-      tier.prices.map((p) => ({
-        "@type": "Offer",
-        name: `${tier.name} — ${p.duration}`,
-        price: p.price,
-        priceCurrency: "GBP",
-      }))
-    ),
-  };
+    url: boothUrl,
+    price: priceLow,
+    areaName: "Essex, Kent, London",
+  });
+
+  const productSchema = buildProductSchema({
+    name: `${booth.booth} Photo Booth Hire`,
+    description: booth.longDescription[0],
+    url: boothUrl,
+    image: "https://www.funloading360.co.uk/og-image.jpg",
+    priceLow,
+    priceHigh,
+  });
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}

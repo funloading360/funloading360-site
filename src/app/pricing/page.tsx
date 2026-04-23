@@ -2,15 +2,30 @@ import type { Metadata } from "next";
 import ServiceGridContent from "./ServiceGridContent";
 
 export const metadata: Metadata = {
-  title: "Photo Booth Hire | Choose Your Experience | FunLoading360",
+  title: "Photo Booth Hire Prices UK — 360° from £280, Glam £300 | FunLoading360",
   description:
-    "Explore our 360° Slow Motion, Glam Vintage, and Selfie Pod photo booth experiences. Transparent pricing, no hidden fees. Covering Essex, Kent & London.",
+    "Photo booth hire prices from £280 for 2h. 360° slow-motion, glam vintage with unlimited prints, selfie pods. Transparent UK pricing — no hidden fees. Essex, Kent, London.",
+  keywords: [
+    "photo booth hire prices",
+    "photo booth hire cost uk",
+    "360 photo booth hire prices",
+    "wedding photo booth hire cost",
+    "glam photo booth price",
+    "selfie pod hire cost",
+  ],
   openGraph: {
-    title: "Photo Booth Hire | Choose Your Experience | FunLoading360",
+    title: "Photo Booth Hire Prices UK — 360° from £280 | FunLoading360",
     description:
-      "360° slow-motion, glam vintage prints, and selfie pod — find the perfect photo booth experience for your event. From £200.",
+      "Transparent photo booth hire pricing: 360° from £280, glam vintage from £300, selfie pod from £260. Essex, Kent, London.",
     url: "https://www.funloading360.co.uk/pricing",
-    images: [{ url: "https://www.funloading360.co.uk/og-image.jpg", width: 1200, height: 630, alt: "FunLoading360 photo booth hire — 360, glam vintage & selfie pod booths" }],
+    images: [
+      {
+        url: "https://www.funloading360.co.uk/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "FunLoading360 photo booth hire prices — 360, glam vintage & selfie pod booths",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
