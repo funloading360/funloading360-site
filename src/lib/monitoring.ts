@@ -10,6 +10,8 @@
 const ALERT_EMAIL = process.env.ALERT_EMAIL || "FunLoading360@gmail.com";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 export type AlertSeverity = "info" | "warning" | "critical";
 
@@ -82,20 +84,25 @@ function logMonitoringEvent(event: AlertEvent): void {
 }
 
 /**
- * Main alert function — logs + emails for critical events
+ * Main alert function — logs + emails + Telegram for critical events
  */
 export async function alert(event: AlertEvent): Promise<void> {
   logMonitoringEvent(event);
 
-  // Only email for warning and critical to avoid noise
   if (event.severity !== "info") {
-    await sendAlertEmail(event);
+    await Promise.allSettled([
+      sendAlertEmail(event),
+      sendTelegramAlert(event.severity, event.title, {
+        detail: event.message,
+        ...event.metadata,
+      }),
+    ]);
   }
 }
 
 /**
- * Send instant alert to Slack/Discord webhook.
- * Dual-channel with email — much faster for on-call awareness.
+ * Send instant alert to Slack/Discord webhook + Telegram simultaneously.
+ * Call this for health-check failures — it fans out to all configured channels.
  */
 export async function sendSlackAlert(
   severity: AlertSeverity,
@@ -128,6 +135,50 @@ export async function sendSlackAlert(
   } catch {
     // Never let monitoring failures propagate
   }
+}
+
+/**
+ * Send alert via Telegram bot.
+ * Setup: BotFather → create bot → get token + chat ID (see .env.local comments).
+ */
+export async function sendTelegramAlert(
+  severity: AlertSeverity,
+  message: string,
+  metadata?: Record<string, string | number | boolean>
+): Promise<void> {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+
+  const emoji = { info: "ℹ️", warning: "⚠️", critical: "🚨" }[severity];
+  const metaLines = metadata
+    ? Object.entries(metadata)
+        .map(([k, v]) => `  • <b>${k}</b>: ${v}`)
+        .join("\n")
+    : "";
+
+  const text = [
+    `${emoji} <b>[${severity.toUpperCase()}] FunLoading360</b>`,
+    message,
+    metaLines,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text,
+        parse_mode: "HTML",
+      }),
+    });
+  } catch {
+    // Never let monitoring failures propagate
+  }
+
+  // Fan-out to Telegram in parallel
+  await sendTelegramAlert(severity, message, metadata).catch(() => {});
 }
 
 // ── Predefined alert helpers ─────────────────────────────────────────────────
