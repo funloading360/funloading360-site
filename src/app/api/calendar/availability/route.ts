@@ -40,18 +40,23 @@ export async function GET(request: NextRequest) {
       request.headers.get("x-real-ip") ||
       "anonymous";
 
-    const { success } = await ratelimit.limit(ip);
-    if (!success) {
-      return Response.json(
-        {
-          ok: false,
-          error: {
-            message: "Rate limit exceeded. Please try again later.",
-            code: "RATE_LIMITED",
+    try {
+      const { success } = await ratelimit.limit(ip);
+      if (!success) {
+        return Response.json(
+          {
+            ok: false,
+            error: {
+              message: "Rate limit exceeded. Please try again later.",
+              code: "RATE_LIMITED",
+            },
           },
-        },
-        { status: 429 }
-      );
+          { status: 429 }
+        );
+      }
+    } catch (rateLimitError) {
+      // Redis unavailable — fail-open (allow request, skip rate limiting)
+      console.warn("[calendar/availability] Rate limiting unavailable:", rateLimitError);
     }
 
     // Parse query parameters

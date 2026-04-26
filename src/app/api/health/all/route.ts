@@ -32,11 +32,12 @@ export async function GET(request: NextRequest) {
 
   const start = Date.now();
 
-  const [stripe, email, redis, calendar] = await Promise.allSettled([
+  const [stripe, email, redis, calendar, booking] = await Promise.allSettled([
     checkService("stripe", "/api/health/stripe"),
     checkService("email", "/api/health/email"),
     checkService("redis", "/api/health/redis"),
     checkService("calendar", "/api/health/calendar"),
+    checkService("booking", "/api/health/booking"),
   ]);
 
   const services = {
@@ -44,23 +45,38 @@ export async function GET(request: NextRequest) {
     email: email.status === "fulfilled" ? email.value : { ok: false, error: "Check failed" },
     redis: redis.status === "fulfilled" ? redis.value : { ok: false, error: "Check failed" },
     calendar: calendar.status === "fulfilled" ? calendar.value : { ok: false, error: "Check failed" },
+    booking: booking.status === "fulfilled" ? booking.value : { ok: false, error: "Check failed" },
   };
 
-  const allHealthy = Object.values(services).every((s) => s.ok);
-  const anyUnhealthy = Object.values(services).some((s) => !s.ok);
+  // booking warnings (stuck pending) don't count as fatal — just alert
+  const criticalServices = Object.entries(services).filter(([name]) => name !== "booking");
+  const allHealthy = criticalServices.every(([, s]) => s.ok);
+  const anyUnhealthy = criticalServices.some(([, s]) => !s.ok);
+  const hasBookingWarning = !services.booking.ok;
 
-  const overallStatus = allHealthy ? "healthy" : anyUnhealthy ? "degraded" : "unhealthy";
+  const overallStatus = allHealthy
+    ? hasBookingWarning ? "warning" : "healthy"
+    : anyUnhealthy ? "degraded" : "unhealthy";
 
-  // Auto-alert on degraded/unhealthy (fires when called by Vercel cron)
-  if (!allHealthy) {
-    const failedServices = Object.entries(services)
-      .filter(([, s]) => !s.ok)
-      .map(([name]) => name)
-      .join(", ");
+  const failedCritical = criticalServices
+    .filter(([, s]) => !s.ok)
+    .map(([name]) => name);
 
-    await sendSlackAlert("critical", `Health check failed: ${failedServices}`, {
+  // Alert on critical failures
+  if (failedCritical.length > 0) {
+    await sendSlackAlert("critical", `🚨 Service down: ${failedCritical.join(", ")}`, {
       overallStatus,
-      failedServices,
+      failedServices: failedCritical.join(", "),
+      timestamp: new Date().toISOString(),
+    }).catch(() => {});
+  }
+
+  // Separate alert for stuck bookings (actionable: check Stripe dashboard)
+  if (hasBookingWarning) {
+    const bookingData = services.booking as Record<string, unknown>;
+    await sendSlackAlert("warning", `⚠️ Stuck bookings detected — check Stripe dashboard`, {
+      stuckCount: String(bookingData.stuckCount ?? "?"),
+      note: String(bookingData.note ?? ""),
       timestamp: new Date().toISOString(),
     }).catch(() => {});
   }

@@ -16,6 +16,7 @@ import { emitCrmEvent } from "@/lib/crmEvents";
 import { Redis } from "@upstash/redis";
 import { createBookingEvent } from "@/lib/googleCalendar";
 import { alertCalendarSyncFailed } from "@/lib/monitoring";
+import { releaseDateReservation } from "@/lib/dateReservation";
 
 const redis = Redis.fromEnv();
 
@@ -181,6 +182,19 @@ export async function POST(request: NextRequest) {
       case "checkout.session.expired": {
         console.log(`Checkout session expired: ${session.id}`);
         await updateBookingStatus(session.id, "failed");
+
+        // Release the date reservation so others can book this date
+        const expiredBookingData = session.metadata?.bookingData;
+        if (expiredBookingData) {
+          try {
+            const { eventDate } = JSON.parse(expiredBookingData);
+            if (eventDate) {
+              await releaseDateReservation(eventDate);
+            }
+          } catch (parseErr) {
+            console.warn("[WEBHOOK] Could not parse eventDate for lock release:", parseErr);
+          }
+        }
         break;
       }
 

@@ -16,6 +16,7 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { allProducts, getPriceForTierAndHours, type PricingTier } from "@/lib/services";
 import { ADDONS } from "@/lib/constants";
+import { tryReserveDate } from "@/lib/dateReservation";
 
 // Rate limiting: 10 requests per minute per IP
 const ratelimit = new Ratelimit({
@@ -81,6 +82,26 @@ export async function POST(request: NextRequest) {
       return Response.json(
         { ok: false, error: { message: "Price mismatch", code: "PRICE_MISMATCH" } },
         { status: 400 }
+      );
+    }
+
+    // Availability check + date reservation (prevents double bookings)
+    // Uses a temporary placeholder — updated to the real sessionId after Stripe responds
+    const tempReservationId = `pre-${data.email}-${Date.now()}`;
+    const reservation = await tryReserveDate(data.eventDate, tempReservationId);
+    if (!reservation.reserved) {
+      return Response.json(
+        {
+          ok: false,
+          error: {
+            message:
+              reservation.reason === "DATE_RESERVED"
+                ? "This date was just reserved by another customer. Please choose a different date."
+                : "This date is no longer available. Please choose a different date.",
+            code: reservation.reason,
+          },
+        },
+        { status: 409 }
       );
     }
 

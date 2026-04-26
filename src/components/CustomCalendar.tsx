@@ -36,6 +36,7 @@ export default function CustomCalendar({
   );
   const [perProductDates, setPerProductDates] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
 
   // Serialize productIds for stable dependency
   const productIdsKey = productIds?.join(",") || "";
@@ -44,6 +45,7 @@ export default function CustomCalendar({
   useEffect(() => {
     const fetchUnavailableDates = async () => {
       setLoading(true);
+      setFetchError(false);
       try {
         const year = currentMonth.getFullYear();
         const month = currentMonth.getMonth() + 1;
@@ -68,8 +70,12 @@ export default function CustomCalendar({
             setPerProductDates(json.data.perProduct);
             onPerProductData?.(json.data.perProduct);
           }
+        } else {
+          setFetchError(true);
+          console.error("Calendar availability API returned", response.status);
         }
       } catch (error) {
+        setFetchError(true);
         console.error("Failed to fetch unavailable dates:", error);
       } finally {
         setLoading(false);
@@ -265,10 +271,27 @@ export default function CustomCalendar({
         </>
       )}
 
+      {/* Availability error banner */}
+      {fetchError && (
+        <div className="mt-3 flex items-start gap-2 rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-2 text-amber-400 text-xs">
+          <span className="flex-shrink-0">⚠️</span>
+          <span>
+            Could not load availability — some dates may appear free when they are not.
+            Call us on{" "}
+            <a href="tel:+447482112110" className="underline">
+              +44 7482 112110
+            </a>{" "}
+            to confirm before booking.
+          </span>
+        </div>
+      )}
+
       {/* Info text */}
-      <p className="text-xs text-gray-500 mt-4 text-center">
-        Gray dates are unavailable
-      </p>
+      {!fetchError && (
+        <p className="text-xs text-gray-500 mt-4 text-center">
+          Gray dates are unavailable
+        </p>
+      )}
     </div>
   );
 }
