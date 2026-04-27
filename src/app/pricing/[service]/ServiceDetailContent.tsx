@@ -12,7 +12,6 @@ import {
   Camera,
   Sparkles,
   Zap,
-  ChevronRight,
 } from "lucide-react";
 import { boothPricing, formatPrice } from "@/lib/packages";
 import { useReducedMotion } from "@/lib/useReducedMotion";
@@ -41,75 +40,11 @@ export default function ServiceDetailContent({ slug }: Props) {
   const booth = boothPricing.find((b) => b.slug === slug);
   if (!booth) return null;
 
-  const minPrice = Math.min(
-    ...Object.values(booth.tiers).flatMap((t) => t.prices.map((p) => p.price))
-  );
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const anim = (props: Record<string, any>) => (prefersReducedMotion ? {} : props);
 
   return (
     <div className="bg-background text-white pt-20">
-      {/* Hero */}
-      <section
-        className={`relative py-24 lg:py-32 overflow-hidden bg-gradient-to-br ${booth.gradient}`}
-      >
-        <div className="absolute inset-0 bg-background/60" />
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-            <Link href="/pricing" className="hover:text-white transition-colors">
-              Pricing
-            </Link>
-            <ChevronRight className="w-4 h-4 text-gray-600" />
-            <span className="text-white">{booth.booth}</span>
-          </nav>
-
-          <motion.div
-            initial={anim({ opacity: 0, y: 30 })}
-            animate={anim({ opacity: 1, y: 0 })}
-            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/20 border border-gold/30 text-gold text-xs font-semibold mb-5">
-              {booth.tagline}
-            </div>
-            <h1
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4"
-              style={{ fontFamily: "var(--font-playfair)" }}
-            >
-              {booth.booth}
-            </h1>
-            <p className="text-gray-300 text-lg max-w-2xl mb-8">
-              {booth.shortDescription}
-            </p>
-            <div className="flex flex-wrap items-center gap-4">
-              <div>
-                <p className="text-gray-400 text-xs mb-0.5">Starting from</p>
-                <p className="text-3xl font-bold text-white">{formatPrice(minPrice)}</p>
-              </div>
-              <button
-                onClick={() => document.getElementById("packages")?.scrollIntoView({ behavior: "smooth" })}
-                className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-gold text-background font-bold hover:bg-gold-light transition-all duration-200 shadow-lg shadow-gold/25 hover:-translate-y-0.5"
-              >
-                See Packages
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Back link */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-          <Link
-            href="/pricing"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Explore All Experiences
-          </Link>
-        </div>
-      </section>
-
       {/* Packages */}
       <section id="packages" className="py-20 lg:py-24 bg-surface/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -120,9 +55,6 @@ export default function ServiceDetailContent({ slug }: Props) {
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
             className="text-center mb-14"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              Packages
-            </p>
             <h2
               className="text-3xl sm:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "var(--font-playfair)" }}
@@ -130,7 +62,7 @@ export default function ServiceDetailContent({ slug }: Props) {
               Find Your Perfect Package
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">
-              All prices include VAT. 20% deposit required to secure your date.
+              All prices include VAT. 15% deposit required to secure your date.
             </p>
           </motion.div>
 
@@ -271,9 +203,6 @@ export default function ServiceDetailContent({ slug }: Props) {
             transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
             className="mb-14"
           >
-            <p className="text-gold text-sm font-semibold uppercase tracking-widest mb-3">
-              The Experience
-            </p>
             <h2
               className="text-3xl sm:text-4xl font-bold text-white mb-8"
               style={{ fontFamily: "var(--font-playfair)" }}
